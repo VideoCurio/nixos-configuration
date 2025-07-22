@@ -53,8 +53,11 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
    nano configuration.nix
-   # Edit default user:
+   # Edit default user, change your name and your SSH pubkey:
    nano user-me.nix
+   # By default the install is on the first SSD: /dev/nvme0n1
+   # If you want to install NixOS on another disk, edit the variable DISK_PART
+   nano install-system.sh
    ```
 8. Run the installer, it will format your computer disk, copy the nix configuration files in the right directory and run the nixos-install command:
    > [!WARNING]

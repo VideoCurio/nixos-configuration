@@ -9,9 +9,6 @@
 
 set -e
 
-# To change TTY keyboard map
-#loadkeys fr
-
 # NVMe SSD
 DISK_PART="/dev/nvme0n1" # Change me!
 # On KVM/QEMU
