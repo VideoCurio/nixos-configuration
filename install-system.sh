@@ -4,20 +4,44 @@
 # !IMPORTANT! Run this script as sudo
 # It will create 3 partitions for '/boot', '/' and a 8Go swap
 
+set -e
+
 # To change TTY keyboard map
 #loadkeys fr
 
 # NVMe SSD
 DISK_PART="/dev/nvme0n1" # Change me!
-DISK_PART1="/dev/nvme0n1p1" # Change me!
-DISK_PART2="/dev/nvme0n1p2" # Change me!
-DISK_PART3="/dev/nvme0n1p3" # Change me!
 # On KVM/QEMU
-#DISK_PART="/dev/vda"
-#DISK_PART1="/dev/vda1"
-#DISK_PART2="/dev/vda2"
-#DISK_PART3="/dev/vda3"
-parted -l
+#DISK_PART="/dev/sdb"
+
+while true; do
+read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n) " yn
+
+case $yn in
+  [yY] ) echo "Proceeding...";
+    break;;
+  [nN] ) echo "Exiting...";
+    exit;;
+  * ) echo "Invalid response";;
+esac
+done
+
+# Check if disk exist
+if fdisk -l "$DISK_PART"; then
+  DISK_PART1="$DISK_PART"1
+  DISK_PART2="$DISK_PART"2
+  DISK_PART3="$DISK_PART"3
+  if [[ $DISK_PART =~ ^"/dev/nvme" ]]; then
+    DISK_PART1="$DISK_PART"p1
+    DISK_PART2="$DISK_PART"p2
+    DISK_PART3="$DISK_PART"p3
+  fi
+else
+  printf "\e[31mDisk %s not found! \e[0m \n" "$DISK_PART"
+  exit 2
+fi
+
+#parted -l
 #lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
 
 printf "\e[32m================================\e[0m \n"
@@ -55,17 +79,16 @@ echo "Finishing installation..."
 
 cp ./*.nix /mnt/etc/nixos/
 
-printf "\e[32m You SHOULD now edit /mnt/etc/nixos/configuration.nix to your liking.\e[0m \n"
 while true; do
 
-read -r -p "\e[32m When the configuration is set, proceed installation ? (y/n) \e[0m " yn
+read -r -p "Proceed with installation ? (y/n) " yn
 
 case $yn in
   [yY] ) echo "nixos-install";
     nixos-install --no-root-passwd
     # Temporary password should be set in configuration.nix
-    printf "\e[32m Done...\e[0m \n"
-    printf "\e[32m You can now reboot.\e[0m \n"
+    printf "\e[32m Done... \e[0m \n"
+    printf "\e[32m You can now reboot. \e[0m \n"
     break;;
   [nN] ) echo "Exiting...";
     exit;;

@@ -1,16 +1,74 @@
 [![NixOS Unstable](https://img.shields.io/badge/NixOS-25.05-blue.svg?style=flat-square&logo=NixOS&logoColor=white)](https://nixos.org)
 
+# NixOS + COSMIC
+
+This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
+
+------
+
+|               | Packages     |
+|---------------|--------------|
+| **Desktop:**  | COSMIC       | 
+| **Shell:**    | zsh          |
+| **Display:**  | Wayland      |
+| **Terminal:** | Alacritty    |
+| **Launcher:** | pop-launcher |
+| **Browser:**  | Brave        |
+
+-----
+
 > [!IMPORTANT]
-> **Disclaimer:** This is a work in progress
+> **Disclaimer:** This is a work in progress for a NixOS install and a Desktop Environment (COSMIC) still in Alpha stage.
+> You should be familiar with [NixOS manual](https://nixos.org/manual/nixos/stable/) and [NixOS Wiki](https://nixos.wiki/wiki/Main_Page), for NixOS related questions go to [NixOS discourse](https://discourse.nixos.org/).
 
 ## Quick start
 
-1. Get a NixOS 25.05+ ISO image:
+1. Get a NixOS 25.05+ Minimal ISO image:
    ```bash
-   wget 
+   wget https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso
    ```
 
-2. Burn it on a USB stick with Balena Etcher or Caligula .
+2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
+   ```bash
+   sudo dd if=latest-nixos-minimal-x86_64-linux.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   ```
+   Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
+3. Boot your machine on the USB stick.
+4. You should see a TTY command line as `nixos` user, switch to root user:
+   ```bash
+   sudo -i
+   ```
+5. (OPTIONAL) Switch keymap on non-us keyboard: 
+   ```bash
+   loadkeys fr
+   ```
+6. Go to /tmp directory and download this git repository: 
+   ```bash
+   cd /tmp
+   git clone https://github.com/VideoCurio/nixos-configuration
+   cd nixos-configuration/
+   ```
+7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an Intel x86 platform with a full encrypted disk (LUKS).
+   Change the `imports` section of the file to suit your needs and computer's hardware.
+   ```bash
+   # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
+   nano configuration.nix
+   # Edit default user:
+   nano user-me.nix
+   ```
+8. Run the installer, it will format your computer disk, copy the nix configuration files in the right directory and run the nixos-install command:
+   > [!WARNING]
+   > This script will format your disk !!! Backup your data before. 
+   ```bash
+   # For a full encrypted disk (LUKS + LVM):
+   ./install-system-luks.sh
+   # OR for a simple disk partition:
+   ./install-system.sh
+   ```
+9. If everything went according to plan, reboot and enjoy!
+   ```bash
+   reboot now
+   ```
 
 ## License
 

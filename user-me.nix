@@ -5,7 +5,9 @@
 
 let
   # Following variables can be edited.
-  password = "changeme"; # default user password, change it after your first boot with cosmic Parameters > System & Accounts or with passwd command line.
+  # Default user password, change it after your first boot with COSMIC Parameters > System & Accounts
+  # OR with 'passwd' command line.
+  password = "changeme";
 in {
   users.mutableUsers = true;
   # Define a user account. Don't forget to set a password with ‘passwd’.
