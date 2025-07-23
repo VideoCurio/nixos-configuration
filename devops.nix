@@ -17,6 +17,6 @@
     jetbrains.pycharm-community
     nmap
     zenmap
-    wireshark
+    wireshark # should add user to wireshark group
   ];
 }

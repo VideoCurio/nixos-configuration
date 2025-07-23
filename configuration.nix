@@ -252,9 +252,14 @@ in {
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  # Allow unfree packages
+  #nixpkgs.config.allowUnfree = true;
+
   # Automatic OS updates and cleanup
   system.autoUpgrade.enable = true;
   system.autoUpgrade.dates = "03:40";
+  # Reboot on new kernel, initrd or kernel module.
+  #system.autoUpgrade.allowReboot = true;
 
   nix.gc.automatic = true;
   nix.gc.dates = "03:05";

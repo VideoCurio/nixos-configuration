@@ -60,19 +60,36 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    # If you want to install NixOS on another disk, edit the variable DISK_PART
    nano install-system.sh
    ```
-8. Run the installer, it will format your computer disk, copy the nix configuration files in the right directory and run the nixos-install command:
-   > [!WARNING]
-   > This script will format your disk !!! Backup your data before. 
+8. Run the installer, it will format your computer disk, copy the nix configuration files in the right directory and run the nixos-install command: 
    ```bash
    # For a full encrypted disk (LUKS + LVM):
    ./install-system-luks.sh
    # OR for a simple disk partition:
    ./install-system.sh
    ```
+> [!WARNING]
+> This script will format your disk !!! Backup your data before.
+
 9. If everything went according to plan, reboot and enjoy!
    ```bash
    reboot now
    ```
+
+## NixOS management
+
+This configuration is set to auto upgrade every night at 03:40, see `systemctl list-timers`.
+
+If you want to modify your current configuration or add packages, edit the 'configuration.nix' file and rebuild it:
+```bash
+sudo nano /etc/nixos/configuration.nix
+sudo nixos-rebuild switch
+```
+
+See [NixOS manual](https://nixos.org/manual/nixos/stable/).
+
+## Dotfiles
+
+*TBD*
 
 ## License
 

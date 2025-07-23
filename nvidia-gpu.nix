@@ -21,7 +21,7 @@
   services.xserver.videoDrivers = ["nvidia"];
 
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = lib.mkDefault true;
   nixpkgs.config.nvidia.acceptLicense = true;
 
   hardware.nvidia = {
