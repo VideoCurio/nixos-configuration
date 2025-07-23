@@ -24,9 +24,9 @@ in {
       # EFI boot with systemd
       ./boot-efi.nix
       # LUKS + LVM filesystem as defined by install-system-luks.sh
-      #./filesystems-luks.nix
+      ./filesystems-luks.nix
       # OR minimum filesystem as defined by install-system.sh
-      ./filesystems-mini.nix
+      #./filesystems-mini.nix
       # Me
       ./user-me.nix
       #./devops.nix
