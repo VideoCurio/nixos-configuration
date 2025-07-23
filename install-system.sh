@@ -68,7 +68,8 @@ swapon /dev/disk/by-label/swap
 
 nixos-generate-config --root /mnt
 
-parted -l
+#parted -l
+fdisk -l "$DISK_PART"
 lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
@@ -77,7 +78,6 @@ echo "Finishing installation..."
 cp ./*.nix /mnt/etc/nixos/
 
 while true; do
-
 read -r -p "Proceed with installation ? (y/n) " yn
 
 case $yn in
@@ -91,5 +91,4 @@ case $yn in
     exit;;
   * ) echo "Invalid response";;
 esac
-
 done

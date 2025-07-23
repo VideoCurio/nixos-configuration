@@ -7,6 +7,7 @@
   # Use the systemd-boot EFI boot loader.
   boot = {
     # kernelPackages = pkgs.linuxPackages_latest;  # Use latest kernel instead of LTS.
+    initrd.systemd.enable = true;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

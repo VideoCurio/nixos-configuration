@@ -63,9 +63,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 > This script will format your disk !!! Backup your data before.
 
 8. Run the installer, it will:
-  * Format your computer disk.
-  * Copy various nix configuration files in the right directory (/mnt/etc/nixos).
-  * Run the nixos-install command .
+   * Format your computer disk.
+   * Copy various nix configuration files in the right directory (/mnt/etc/nixos).
+   * Run the nixos-install command.
    ```bash
    # By default the install is on the first SSD: /dev/nvme0n1
    # If you want to install NixOS on another disk, edit the variable DISK_PART

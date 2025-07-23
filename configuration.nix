@@ -66,18 +66,19 @@ in {
       LC_TIME = defaultLocale;
     };
   };
-  console = {
-  #   font = "Lat2-Terminus16";
-    keyMap = defaultConsoleKeymap;
-    useXkbConfig = false; # use xkb.options in tty.
-  };
 
   # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
+  #services.xserver.enable = true;
   # Configure keymap in X11
-  #services.xserver.xkb.layout = "us";
+  #services.xserver.xkb.layout = defaultConsoleKeymap;
   #services.xserver.xkb.options = "eurosign:e,caps:escape";
+
+  console = {
+    #font = "Lat2-Terminus16";
+    keyMap = defaultConsoleKeymap;
+    earlySetup = true; # initrd setup
+    useXkbConfig = false; # use xkb.options in tty.
+  };
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
