@@ -52,6 +52,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    Change the `imports` section of the file to suit your needs and computer's hardware.
    ```bash
    # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
+   # Edit all settings marked with 'Change me' comment.
    nano configuration.nix
    # Edit default user, change your name and your SSH pubkey:
    nano user-me.nix

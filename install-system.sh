@@ -9,7 +9,7 @@ set -e
 # NVMe SSD
 DISK_PART="/dev/nvme0n1" # Change me!
 # On KVM/QEMU
-#DISK_PART="/dev/sdb"
+#DISK_PART="/dev/vda"
 
 while true; do
 read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n) " yn

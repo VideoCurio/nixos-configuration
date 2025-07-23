@@ -11,15 +11,14 @@ let
 in {
   users.mutableUsers = true;
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  # CHANGE ME
-  users.users.david = {
+  users.users.david = { # Change me !!
     isNormalUser = true;
     initialPassword = password;
-    description = "David B.";
+    description = "David B."; # Change me !!
     extraGroups = [ "networkmanager" "wheel" "audio" "sound" "video" "docker" ]; # Enable ‘sudo’ for the user.
     useDefaultShell = true;
     # User SSH pubkey
-    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHkcdpx7N45SWb8RokTWnyPsKtMfvAki1TsxH3DhVI7 david@videocurio.com" ];
+    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHkcdpx7N45SWb8RokTWnyPsKtMfvAki1TsxH3DhVI7 david@videocurio.com" ]; # Change me !!
   };
 
 }
