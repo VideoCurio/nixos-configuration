@@ -3,6 +3,7 @@
 # NixOS + COSMIC
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
+![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/screenshot.png?raw=true "NixOS with COSMIC DE")
 
 ------
 
