@@ -58,22 +58,21 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    # Edit default user, change your name and your SSH pubkey:
    nano user-me.nix
    ```
-   If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
+   **_Tip_**: If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
 > [!WARNING]
 > This script will format your disk !!! Backup your data before.
 
 8. Run the installer, it will:
    * Format your computer disk.
    * Copy various nix configuration files in the right directory (/mnt/etc/nixos).
-   * Run the nixos-install command.
+   * Run the `nixos-install` command.
    ```bash
-   # By default the install is on the first SSD: /dev/nvme0n1
-   # If you want to install NixOS on another disk, edit the variable DISK_PART
-   nano install-system.sh
-   # For a full encrypted disk (LUKS + LVM):
-   ./install-system-luks.sh
-   # OR for a simple disk partition:
-   ./install-system.sh
+   # For a full encrypted disk (LUKS + LVM) on your first SSD:
+   ./install-system.sh --crypt /dev/nvme0n1
+   # OR for a simple disk partition on the first HDD:
+   ./install-system.sh /dev/sda
+   # See --help option for more details:
+   ./install-system.sh -h
    ```
 9. If everything went according to plan, reboot and enjoy!
    ```bash

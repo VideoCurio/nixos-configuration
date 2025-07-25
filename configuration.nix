@@ -261,9 +261,9 @@ in {
   system.autoUpgrade.dates = "03:40";
   # Reboot on new kernel, initrd or kernel module.
   #system.autoUpgrade.allowReboot = true;
-
+  # Collect garbage
   nix.gc.automatic = true;
-  nix.gc.dates = "03:05";
+  nix.gc.dates = "weekly";
   nix.gc.options = "--delete-older-than 15d";
   nix.settings.auto-optimise-store = true;
 

@@ -9,8 +9,11 @@
 
   environment.systemPackages = with pkgs; [
     # Devops
+    cloudflared
     docker-buildx
     docker-compose
+    gimp3
+    protonvpn-gui
     python313Full
     python313Packages.pip
     python313Packages.docker
