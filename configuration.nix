@@ -23,9 +23,9 @@ in {
       #./hardware-configuration-qemu.nix
       # EFI boot with systemd
       ./boot-efi.nix
-      # LUKS + LVM filesystem as defined by install-system-luks.sh
+      # LUKS + LVM filesystem as defined by ./install-system.sh --crypt /dev/XXX
       ./filesystems-luks.nix
-      # OR minimum filesystem as defined by install-system.sh
+      # OR minimum filesystem as defined by ./install-system.sh /dev/XXX
       #./filesystems-mini.nix
       # Me
       ./user-me.nix

@@ -31,16 +31,19 @@ Usage: ./install-system.sh [options] <disk_partition>
      --crypt          Full disk encryption with LVM+LUKS.
 
   Examples:
-     ./install-system.sh --crypt /dev/nvme0n1
-     ./install-system.sh /dev/sdb
-     ./install-system.sh /dev/vda
+    Full encrypted disk install on the first NVMe SSD:
+      ./install-system.sh --crypt /dev/nvme0n1
+    Standard install on the second HDD:
+      ./install-system.sh /dev/sdb
+    Standard install on a QEMU/KVM virtual disk:
+      ./install-system.sh /dev/vda
 EOF
   exit;
 }
 
 # Scripts arguments
 if [ $# -lt 1 ]; then
-	usage;
+  usage;
 fi;
 encrypt_disk=0;
 while getopts ":h-:" opt; do
