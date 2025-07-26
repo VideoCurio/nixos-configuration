@@ -6,6 +6,7 @@
 {
   # Virtualisation
   virtualisation.docker.enable = true;
+  # TODO: QEMU + KVM + virt-manager
 
   environment.systemPackages = with pkgs; [
     # Devops

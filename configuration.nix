@@ -38,18 +38,23 @@ in {
 
   networking = {
     hostName = "EVAUnit02"; # Change me!!
-    # wireless.enable = true;  # Enables wireless support via wpa_supplicant OR
+    #wireless.enable = true;  # Enables wireless support via wpa_supplicant OR
     networkmanager.enable = true;  # Easiest to use and most distros use this by default.
     nameservers = [ "9.9.9.9" "1.1.1.1" "2620:fe::fe" "2620:fe::9" ];
     useDHCP = lib.mkDefault true;
+    # Open ports in the firewall.
+    #firewall.allowedTCPPorts = [ ... ];
+    #firewall.allowedUDPPorts = [ ... ];
+    # Or disable the firewall altogether.
+    #firewall.enable = false;
   };
 
   # Set your time zone.
   time.timeZone = timeZone;
 
   # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  #networking.proxy.default = "http://user:password@proxy:port/";
+  #networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
   i18n = {
@@ -68,10 +73,11 @@ in {
   };
 
   # Enable the X11 windowing system.
-  #services.xserver.enable = true;
-  # Configure keymap in X11
-  #services.xserver.xkb.layout = defaultConsoleKeymap;
-  #services.xserver.xkb.options = "eurosign:e,caps:escape";
+  #services.xserver = {
+  #  enable = true;
+  #  xkb.layout = defaultConsoleKeymap;
+  #  xkb.options = "eurosign:e,caps:escape";
+  #};
 
   console = {
     #font = "Lat2-Terminus16";
@@ -81,10 +87,10 @@ in {
   };
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  #services.printing.enable = true;
 
   # Enable sound.
-  # services.pulseaudio.enable = true;
+  #services.pulseaudio.enable = true;
   # OR
   services.pipewire = {
     enable = true;
@@ -94,7 +100,7 @@ in {
   security.rtkit.enable = true; # realtime scheduling priority for pipewire.
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.libinput.enable = true;
+  #services.libinput.enable = true;
 
   # ZSH
   programs.zsh = {
@@ -195,11 +201,11 @@ in {
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  #programs.mtr.enable = true;
+  #programs.gnupg.agent = {
+  #  enable = true;
+  #  enableSSHSupport = true;
+  #};
 
   # List services that you want to enable:
 
@@ -219,6 +225,7 @@ in {
 
   # Enabling Flatpak
   services.flatpak.enable = true;
+  # TODO: systemd.service."flatpak-autoupdate"
 
   # Enabling PCSC-lite for Yubikey
   services.pcscd.enable = true;
@@ -236,22 +243,16 @@ in {
   programs.dconf.enable = true;
   programs.gnome-disks.enable = true;
   # Fast terminal file manager
-  # programs.yazi = {
-  #   enable = true;
-  # };
+  #programs.yazi = {
+  #  enable = true;
+  #};
 
-  # required dbus services
+  # Required dbus services
   services.accounts-daemon.enable = true;
   services.upower.enable = true;
   security.polkit.enable = true;
   services.power-profiles-daemon.enable = true;
   services.geoclue2.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Allow unfree packages
   #nixpkgs.config.allowUnfree = true;

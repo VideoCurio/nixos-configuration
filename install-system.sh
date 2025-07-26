@@ -29,6 +29,7 @@ Usage: ./install-system.sh [options] <disk_partition>
   Options:
      -h, --help       Print this message.
      --crypt          Full disk encryption with LVM+LUKS.
+     --rpi4           Raspberry PI 4 installation. (exclude --crypt option)
 
   Examples:
     Full encrypted disk install on the first NVMe SSD:
@@ -46,12 +47,14 @@ if [ $# -lt 1 ]; then
   usage;
 fi;
 encrypt_disk=0;
+rpi4_install=0;
 while getopts ":h-:" opt; do
   case "${opt}" in
     -)
       case "${OPTARG}" in
         crypt) encrypt_disk=1; ;;
         help) usage; ;;
+        rpi4) rpi4_install=1; encrypt_disk=0; ;;
         *) usage; ;;
       esac;;
     h) usage; ;;
@@ -64,6 +67,27 @@ DISK_PART="${!#}"
 if [ ! -e "$DISK_PART" ]; then
   printf "\e[31mDisk path is invalid! \e[0m \n"
   exit 2
+fi
+
+# Raspberry Pi 4 install
+if [ $rpi4_install -eq 1 ]; then
+  # Prepare an SD card
+  # Download an SD card image from https://hydra.nixos.org/job/nixos/trunk-combined/nixos.sd_image.aarch64-linux
+  # Unzip it with:
+  # zstd -d nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img.zst
+  # Burn it with Balena Etcher, Caligula or dd
+  printf "\e[32mRaspberry Pi 4 installation... \e[0m \n"
+  # Updating firmware
+  nix-shell -p raspberrypi-eeprom
+  mount /dev/disk/by-label/FIRMWARE /mnt
+  BOOTFS=/mnt FIRMWARE_RELEASE_STATUS=stable rpi-eeprom-update -d -a
+
+  cp ./*.nix /mnt/etc/nixos/
+
+  nixos-rebuild boot
+  printf "\e[32m Done... \e[0m \n"
+  printf "\e[32m You can now reboot. \e[0m \n"
+  exit 1
 fi
 
 if [ $encrypt_disk -eq 1 ]; then
