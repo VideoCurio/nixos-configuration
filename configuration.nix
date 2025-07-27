@@ -163,6 +163,7 @@ in {
     xdg-user-dirs
 
     # 3rd party apps
+    brave
     signal-desktop
     yubioath-flutter
     #remmina
