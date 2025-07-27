@@ -39,6 +39,7 @@ Usage: ./install-system.sh [options] <disk_partition>
     Standard install on a QEMU/KVM virtual disk:
       ./install-system.sh /dev/vda
     Raspberry Pi 4 install:
+      nix-shell -p git raspberrypi-eeprom
       ./install-system.sh --rpi4 /dev/mmcblk1
 EOF
   exit;
@@ -79,12 +80,12 @@ if [ $rpi4_install -eq 1 ]; then
   # zstd -d nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img.zst
   # Burn it with Balena Etcher, Caligula or dd
   # sudo dd if=nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img of=/dev/sdb bs=10MB oflag=dsync status=progress
-  # boot from the SD card, then as root
-  #nix-shell -p git raspberrypi-eeprom
-  #cd /tmp
-  #git clone https://github.com/VideoCurio/nixos-configuration
-  #cd nixos-configuration/
-  #./install-system.sh --rpi4 /dev/mmcblk1
+  # boot from the SD card, then as root:
+  # nix-shell -p git raspberrypi-eeprom
+  # cd /tmp
+  # git clone https://github.com/VideoCurio/nixos-configuration
+  # cd nixos-configuration/
+  # ./install-system.sh --rpi4 /dev/mmcblk1
   printf "\e[32mRaspberry Pi 4 installation... \e[0m \n"
   # Updating firmware
   mount /dev/disk/by-label/FIRMWARE /mnt

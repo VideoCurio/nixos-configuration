@@ -8,7 +8,8 @@
   # Use the systemd-boot EFI boot loader.
   boot = {
     # Ban Intel integrated GPU
-    kernelParams = [ "module_blacklist=i915" ];
+    #kernelParams = [ "module_blacklist=i915" ];
+    blacklistedKernelModules = [ "i915" "nouveau" ];
   };
 
   # NVidia GPU
