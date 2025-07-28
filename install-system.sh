@@ -148,8 +148,6 @@ format () {
     mkfs.ext4 -L home /dev/mapper/lvmroot-home
     mkswap -L swap /dev/mapper/lvmroot-swap
   fi
-
-  exit 2;
 }
 
 # Raspberry Pi 4 install
