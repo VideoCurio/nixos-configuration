@@ -7,6 +7,7 @@
   # Virtualisation
   virtualisation.docker.enable = true;
   # QEMU + KVM + virt-manager
+  # See: https://nixos.wiki/wiki/Libvirt
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
@@ -25,6 +26,9 @@
 
   users.users.david = {
     extraGroups = [ "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ];
+    # Reboot and type this command:
+    # sudo virsh net-start default
+    # sudo virsh net-autostart default
   };
 
   environment.systemPackages = with pkgs; [

@@ -34,6 +34,8 @@ in {
       #./devops.nix
       # Nvidia GPU
       #./nvidia-gpu.nix
+      # OR AMD GPU
+      #./amd-gpu.nix
       # For Raspberry PI 4 platform - REMOVE every other *.nix imports except user-me.nix !
       #./rpi4.nix
     ];
