@@ -9,7 +9,7 @@
   boot = {
     initrd.kernelModules = [ "amdgpu" ];
     # Ban CPU integrated GPU
-    blacklistedKernelModules = [ "i915" ];
+    #blacklistedKernelModules = [ "i915" ];
   };
 
   # AMD GPU
