@@ -193,7 +193,7 @@ done
 
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
-echo "System installation..."
+echo "Mounting system..."
 mount /dev/disk/by-label/nixos /mnt
 mkdir -p /mnt/boot
 mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
@@ -204,6 +204,7 @@ if [ $encrypt_disk -eq 1 ]; then
 fi
 #df -h
 
+echo "Create basic configuration:"
 nixos-generate-config --root /mnt
 
 #parted -l
