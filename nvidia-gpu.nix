@@ -1,4 +1,4 @@
-# Add NVidia GPU configuration
+# Add Nvidia GPU configuration
 # Must be imported by configuration.nix
 # See: https://nixos.wiki/wiki/Nvidia
 
@@ -7,18 +7,18 @@
 {
   # Use the systemd-boot EFI boot loader.
   boot = {
-    # Ban Intel integrated GPU
-    #kernelParams = [ "module_blacklist=i915" ];
+    # Ban CPU integrated GPU
     blacklistedKernelModules = [ "i915" "nouveau" ];
   };
 
-  # NVidia GPU
+  # Nvidia GPU
   # Enable OpenGL
   hardware.graphics = {
-    enable = true;
+    enable = lib.mkDefault true;
   };
 
   # Load nvidia driver for Xorg and Wayland
+  services.xserver.enable = lib.mkDefault true;
   services.xserver.videoDrivers = ["nvidia"];
 
   # Allow unfree packages
@@ -53,9 +53,9 @@
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     # For RTX 50, 40, 30, 20, GTX 16 series and set open to true !
-    #package = config.boot.kernelPackages.nvidiaPackages.production;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
     # For GeForce 800, 900 and 10 series
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_390;
+    #package = config.boot.kernelPackages.nvidiaPackages.legacy_390;
   };
 
 }
