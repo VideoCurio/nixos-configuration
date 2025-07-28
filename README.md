@@ -97,6 +97,13 @@ This configuration is set to auto upgrade every night at 03:40, see `systemctl l
 
 *TBD*
 
+## Developers notes
+Developers should try theirs code against the `testing` branch.
+```bash
+git clone -b testing https://github.com/VideoCurio/nixos-configuration.git
+```
+Pull Request are welcomed.
+
 ## License
 
 Copyright (C) 2025  David BASTIEN
