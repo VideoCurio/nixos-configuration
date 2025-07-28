@@ -32,7 +32,7 @@ in {
       # Me
       ./user-me.nix
       #./devops.nix
-      # NVidia GPU
+      # Nvidia GPU
       #./nvidia-gpu.nix
       # For Raspberry PI 4 platform - REMOVE every other *.nix imports except user-me.nix !
       #./rpi4.nix

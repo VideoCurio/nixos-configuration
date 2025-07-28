@@ -72,6 +72,84 @@ if [ ! -e "$DISK_PART" ]; then
   exit 2
 fi
 
+# Format disk function
+format () {
+  printf "\e[32m Formatting disk %s... \e[0m \n" "$DISK_PART"
+  if [ $encrypt_disk -eq 1 ]; then
+    echo "Disk will be fully encrypted..."
+  fi
+
+  # Check if disk exist
+  if fdisk -l "$DISK_PART"; then
+    DISK_PART1="$DISK_PART"1
+    DISK_PART2="$DISK_PART"2
+    DISK_PART3="$DISK_PART"3
+    if [[ $DISK_PART =~ ^"/dev/nvme" ]]; then
+      DISK_PART1="$DISK_PART"p1
+      DISK_PART2="$DISK_PART"p2
+      DISK_PART3="$DISK_PART"p3
+    fi
+  else
+    printf "\e[31mDisk %s not found! \e[0m \n" "$DISK_PART"
+    exit 2
+  fi
+
+  #parted -l
+  #lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
+
+  printf "\e[32m================================\e[0m \n"
+  printf "\e[32m================================\e[0m \n"
+  echo "UEFI partitionning..."
+  parted "$DISK_PART" -- mklabel gpt
+  parted "$DISK_PART" -- mkpart ESP fat32 1MB 512MB
+  parted "$DISK_PART" -- set 1 esp on
+  if [ $encrypt_disk -eq 0 ]; then
+    parted "$DISK_PART" -- mkpart root ext4 512MB -8GB
+    parted "$DISK_PART" -- mkpart swap linux-swap -8GB 100%
+  else
+    parted "$DISK_PART" -- mkpart system 512MB 100%
+  fi
+
+  printf "\e[32m================================\e[0m \n"
+  printf "\e[32m================================\e[0m \n"
+  echo "Filesystem formatting..."
+  mkfs.fat -F 32 -n boot "$DISK_PART1"
+  if [ $encrypt_disk -eq 0 ]; then
+    mkfs.ext4 -L nixos "$DISK_PART2"
+    mkswap -L swap "$DISK_PART3"
+  fi
+
+  if [ $encrypt_disk -eq 1 ]; then
+    printf "\e[32m================================\e[0m \n"
+    printf "\e[32m================================\e[0m \n"
+    echo "Creating encrypted partition..."
+    cryptsetup luksFormat -q -y --label nixossystem  "$DISK_PART2"
+    # open the encrypted partition and map it to /dev/mapper/cryptroot
+    cryptsetup luksOpen "$DISK_PART2" cryptroot
+
+    printf "\e[32m================================\e[0m \n"
+    printf "\e[32m================================\e[0m \n"
+    echo "Creating LVM volumes..."
+    pvcreate /dev/mapper/cryptroot
+    #pvdisplay
+    # create a volume group inside
+    vgcreate lvmroot /dev/mapper/cryptroot
+    #vgdisplay
+    # create the swap volume
+    lvcreate --size 8G lvmroot --name swap
+    # create the root volume (100Go)
+    lvcreate --size 100G lvmroot --name root
+    # create a home volume (100% of free disk)
+    lvcreate -l 100%FREE lvmroot --name home
+    #lvdisplay
+
+    # Filesystem formatting
+    mkfs.ext4 -L nixos /dev/mapper/lvmroot-root
+    mkfs.ext4 -L home /dev/mapper/lvmroot-home
+    mkswap -L swap /dev/mapper/lvmroot-swap
+  fi
+}
+
 # Raspberry Pi 4 install
 if [ $rpi4_install -eq 1 ]; then
   # Prepare an SD card
@@ -99,15 +177,11 @@ if [ $rpi4_install -eq 1 ]; then
   exit 1
 fi
 
-if [ $encrypt_disk -eq 1 ]; then
-  echo "Disk will be fully encrypted..."
-fi
-
 while true; do
 read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n) " yn
 
 case $yn in
-  [yY] ) echo "Proceeding...";
+  [yY] ) format;
     break;;
   [nN] ) echo "Exiting...";
     exit;;
@@ -115,79 +189,9 @@ case $yn in
 esac
 done
 
-# Check if disk exist
-if fdisk -l "$DISK_PART"; then
-  DISK_PART1="$DISK_PART"1
-  DISK_PART2="$DISK_PART"2
-  DISK_PART3="$DISK_PART"3
-  if [[ $DISK_PART =~ ^"/dev/nvme" ]]; then
-    DISK_PART1="$DISK_PART"p1
-    DISK_PART2="$DISK_PART"p2
-    DISK_PART3="$DISK_PART"p3
-  fi
-else
-  printf "\e[31mDisk %s not found! \e[0m \n" "$DISK_PART"
-  exit 2
-fi
-
-#parted -l
-#lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
-
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
-echo "UEFI partitionning..."
-parted "$DISK_PART" -- mklabel gpt
-parted "$DISK_PART" -- mkpart ESP fat32 1MB 512MB
-parted "$DISK_PART" -- set 1 esp on
-if [ $encrypt_disk -eq 0 ]; then
-  parted "$DISK_PART" -- mkpart root ext4 512MB -8GB
-  parted "$DISK_PART" -- mkpart swap linux-swap -8GB 100%
-else
-  parted "$DISK_PART" -- mkpart system 512MB 100%
-fi
-
-printf "\e[32m================================\e[0m \n"
-printf "\e[32m================================\e[0m \n"
-echo "Filesystem formatting..."
-mkfs.fat -F 32 -n boot "$DISK_PART1"
-if [ $encrypt_disk -eq 0 ]; then
-  mkfs.ext4 -L nixos "$DISK_PART2"
-  mkswap -L swap "$DISK_PART3"
-fi
-
-if [ $encrypt_disk -eq 1 ]; then
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Creating encrypted partition..."
-  cryptsetup luksFormat -q -y --label nixossystem  "$DISK_PART2"
-  # open the encrypted partition and map it to /dev/mapper/cryptroot
-  cryptsetup luksOpen "$DISK_PART2" cryptroot
-
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Creating LVM volumes..."
-  pvcreate /dev/mapper/cryptroot
-  #pvdisplay
-  # create a volume group inside
-  vgcreate lvmroot /dev/mapper/cryptroot
-  #vgdisplay
-  # create the swap volume
-  lvcreate --size 8G lvmroot --name swap
-  # create the root volume (100Go)
-  lvcreate --size 100G lvmroot --name root
-  # create a home volume (100% of free disk)
-  lvcreate -l 100%FREE lvmroot --name home
-  #lvdisplay
-
-  # Filesystem formatting
-  mkfs.ext4 -L nixos /dev/mapper/lvmroot-root
-  mkfs.ext4 -L home /dev/mapper/lvmroot-home
-  mkswap -L swap /dev/mapper/lvmroot-swap
-fi
-
-printf "\e[32m================================\e[0m \n"
-printf "\e[32m================================\e[0m \n"
-echo "System installation..."
+echo "Mounting system..."
 mount /dev/disk/by-label/nixos /mnt
 mkdir -p /mnt/boot
 mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
@@ -198,6 +202,7 @@ if [ $encrypt_disk -eq 1 ]; then
 fi
 #df -h
 
+echo "Create basic configuration:"
 nixos-generate-config --root /mnt
 
 #parted -l

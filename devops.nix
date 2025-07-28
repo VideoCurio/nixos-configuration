@@ -6,7 +6,26 @@
 {
   # Virtualisation
   virtualisation.docker.enable = true;
-  # TODO: QEMU + KVM + virt-manager
+  # QEMU + KVM + virt-manager
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+      swtpm.enable = true;
+      ovmf = {
+        enable = true;
+        packages = [(pkgs.OVMF.override {
+          secureBoot = true;
+          tpmSupport = true;
+        }).fd];
+      };
+    };
+  };
+
+  users.users.david = {
+    extraGroups = [ "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ];
+  };
 
   environment.systemPackages = with pkgs; [
     # Devops
@@ -22,5 +41,8 @@
     nmap
     zenmap
     wireshark # should add user to wireshark group
+
+    # QEMU + KVM + virt-manager
+    virt-manager
   ];
 }
