@@ -51,6 +51,8 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```
 7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an Intel x86 platform with a full encrypted disk (LUKS).
    Change the `imports` section of the file to suit your needs and computer's hardware.
+> [!IMPORTANT]
+> You MUST edit the configuration.nix file to match your hardware and packages need. The script in step 8 does not detect hardware (yet).
    ```bash
    # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
    # Edit all settings marked with 'Change me' comment.

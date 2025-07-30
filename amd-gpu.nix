@@ -22,8 +22,11 @@
   services.xserver.enable = lib.mkDefault true;
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  # GUI AMD GPU controller
-  environment.systemPackages = with pkgs; [ lact ];
+  # GUI AMD GPU controller + RadeonTOP
+  environment.systemPackages = with pkgs; [
+    lact
+    radeontop
+  ];
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = ["multi-user.target"];
 }

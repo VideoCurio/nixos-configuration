@@ -31,7 +31,7 @@ in {
       #./filesystems-mini.nix
       # Me
       ./user-me.nix
-      #./devops.nix
+      #./dev-tools.nix
       # Nvidia GPU
       #./nvidia-gpu.nix
       # OR AMD GPU
