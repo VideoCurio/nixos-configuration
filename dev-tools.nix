@@ -23,9 +23,14 @@
       };
     };
   };
+  # QEMU support of different arch
+  boot.binfmt = {
+    emulatedSystems = [ "aarch64-linux" ];
+    preferStaticEmulators = true; # Make it work with docker
+  };
 
   users.users.david = {
-    extraGroups = [ "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ];
+    extraGroups = [ "docker" "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ];
     # Reboot and type this command:
     # sudo virsh net-start default
     # sudo virsh net-autostart default
@@ -38,15 +43,18 @@
     docker-compose
     gimp3
     protonvpn-gui
+    # Python3
     python313Full
     python313Packages.pip
     python313Packages.docker
     jetbrains.pycharm-community
+    # Networks
     nmap
     zenmap
     wireshark # should add user to wireshark group
 
     # QEMU + KVM + virt-manager
     virt-manager
+    qemu-user
   ];
 }
