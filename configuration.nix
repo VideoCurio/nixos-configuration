@@ -44,6 +44,7 @@ in {
       ./hardened/accounts-daemon.nix
       ./hardened/acipd.nix
       ./hardened/dbus.nix
+      ./hardened/nscd.nix
       ./hardened/sshd.nix
     ];
 
