@@ -23,7 +23,9 @@
       };
     };
   };
-  # QEMU support of different arch
+  # Optional: QEMU support of different arch
+  # Launch this command for docker build multi platform:
+  #docker run --privileged --rm tonistiigi/binfmt --install all
   boot.binfmt = {
     emulatedSystems = [ "aarch64-linux" ];
     preferStaticEmulators = true; # Make it work with docker
@@ -55,6 +57,7 @@
 
     # QEMU + KVM + virt-manager
     virt-manager
+    # Optional: QEMU support of different arch
     qemu-user
   ];
 }
