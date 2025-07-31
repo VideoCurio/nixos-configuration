@@ -43,8 +43,15 @@ in {
       # Check results with: `systemd-analyze security`
       ./hardened/accounts-daemon.nix
       ./hardened/acipd.nix
+      #./hardened/cups.nix
       ./hardened/dbus.nix
+      ./hardened/getty.nix
+      ./hardened/nix-daemon.nix
+      ./hardened/nscd.nix
+      ./hardened/rescue.nix
+      ./hardened/rtkit.nix
       ./hardened/sshd.nix
+      ./hardened/user.nix
     ];
 
   networking = {
