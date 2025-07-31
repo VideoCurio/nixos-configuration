@@ -170,6 +170,7 @@ if [ $rpi4_install -eq 1 ]; then
   BOOTFS=/mnt rpi-eeprom-update -d -a
 
   cp ./*.nix /etc/nixos/
+  cp -r hardened/ /etc/nixos/
 
   nixos-rebuild boot
   printf "\e[32m Done... \e[0m \n"

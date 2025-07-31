@@ -38,6 +38,13 @@ in {
       #./amd-gpu.nix
       # For Raspberry PI 4 platform - REMOVE every other *.nix imports except user-me.nix !
       #./rpi4.nix
+      # Systemd hardening configurations
+      # See: https://github.com/wallago/nix-system-services-hardened
+      # Check results with: `systemd-analyze security`
+      ./hardened/accounts-daemon.nix
+      ./hardened/acipd.nix
+      ./hardened/dbus.nix
+      ./hardened/sshd.nix
     ];
 
   networking = {
@@ -269,8 +276,8 @@ in {
   #system.autoUpgrade.allowReboot = true;
   # Collect garbage
   nix.gc.automatic = true;
-  nix.gc.dates = "weekly";
-  nix.gc.options = "--delete-older-than 15d";
+  nix.gc.dates = "daily";
+  nix.gc.options = "--delete-older-than 7d";
   nix.settings.auto-optimise-store = true;
 
   # Copy the NixOS configuration file and link it from the resulting system

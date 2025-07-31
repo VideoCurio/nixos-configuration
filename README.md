@@ -95,6 +95,9 @@ To find packages or options configuration, see [NixOS packages](https://search.n
 
 This configuration is set to auto upgrade every night at 03:40, see `systemctl list-timers`.
 
+Generations older than 7 days are automatically garbage collected. You can also manually do this with `sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch && sudo nixos-rebuild list-generations`.
+Watch your root directories size with: `sudo du -sh /* 2>/dev/null | sort -rh`
+
 ## Dotfiles
 
 *TBD*
