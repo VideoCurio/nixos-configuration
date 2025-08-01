@@ -245,6 +245,7 @@ in {
   # Enabling Flatpak
   services.flatpak.enable = true;
   # Flatpak user auto update
+  # systemctl --user list-units --type=service
   systemd.user.services.flatpak-update = {
     enable = true;
     description = "Flatpak user update";
@@ -256,6 +257,8 @@ in {
     };
     wantedBy = [ "multi-user.target" ];
   };
+  # systemctl --user list-timers
+  # systemctl --user status flatpak-update.timer
   systemd.user.timers.flatpak-update = {
     enable = true;
     description = "Flatpak user update";
