@@ -52,6 +52,10 @@ in {
       ./hardened/rtkit.nix
       ./hardened/sshd.nix
       #./hardened/user.nix
+      # Network
+      ./hardened/NetworkManager.nix
+      ./hardened/NetworkManager-dispatcher.nix
+      ./hardened/wpa_supplicant.nix
     ];
 
   networking = {
