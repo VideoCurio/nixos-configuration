@@ -155,16 +155,21 @@ in {
     # Basics
     wget
     curl
-    btop
     fastfetch
     killall
     git
     jq # JSON parser
     # For Yazi
-    fd # find alternative
     fzf # fuzzy finder
     # ripgrep
     # chafa # Terminal images preview
+    # Modern terminal tools
+    eza # ls replacement
+    bat # cat replacement
+    btop # top replacement
+    duf # df replacement
+    dust # du replacement
+    fd # find alternative
 
     # Alacritty terminal
     alacritty
