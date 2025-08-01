@@ -244,6 +244,15 @@ in {
 
   # Enabling Flatpak
   services.flatpak.enable = true;
+  # Flatpak system, add repo
+  systemd.services.flatpak-repo = {
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.flatpak ];
+    script = ''
+      /run/current-system/sw/bin/flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      /run/current-system/sw/bin/flatpak remote-add --if-not-exists cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
+    '';
+  };
   # Flatpak user auto update
   # systemctl --user list-units --type=service
   systemd.user.services.flatpak-update = {
@@ -253,9 +262,9 @@ in {
     wants = [ "network-online.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "/usr/bin/env flatpak update --noninteractive --assumeyes";
+      ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
     };
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = [ "default.target" ];
   };
   # systemctl --user list-timers
   # systemctl --user status flatpak-update.timer
