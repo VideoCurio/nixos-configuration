@@ -51,7 +51,7 @@ in {
       ./hardened/rescue.nix
       ./hardened/rtkit.nix
       ./hardened/sshd.nix
-      ./hardened/user.nix
+      #./hardened/user.nix
     ];
 
   networking = {
@@ -241,6 +241,7 @@ in {
       X11Forwarding = false;
     };
   };
+  programs.ssh.startAgent = true;
 
   # Enabling Flatpak
   services.flatpak.enable = true;
