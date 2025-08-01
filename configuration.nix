@@ -51,7 +51,7 @@ in {
       ./hardened/rescue.nix
       ./hardened/rtkit.nix
       ./hardened/sshd.nix
-      ./hardened/user.nix
+      #./hardened/user.nix
     ];
 
   networking = {
@@ -241,10 +241,48 @@ in {
       X11Forwarding = false;
     };
   };
+  programs.ssh.startAgent = true;
 
   # Enabling Flatpak
   services.flatpak.enable = true;
-  # TODO: systemd.service."flatpak-autoupdate"
+  # Flatpak system, add repo
+  #systemd.services.flatpak-repo = {
+  #  wantedBy = [ "multi-user.target" ];
+  #  #path = [ pkgs.flatpak ];
+  #  script = ''
+  #    /run/current-system/sw/bin/flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  #    /run/current-system/sw/bin/flatpak remote-add --if-not-exists cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
+  #  '';
+  #};
+  # Flatpak user auto update
+  # systemctl --user list-units --type=service
+  systemd.user.services.flatpak-update = {
+    enable = true;
+    description = "Flatpak user update";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    #path = [ pkgs.flatpak ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
+    };
+    wantedBy = [ "default.target" ];
+  };
+  # systemctl --user list-timers
+  # systemctl --user status flatpak-update.timer
+  systemd.user.timers.flatpak-update = {
+    enable = true;
+    description = "Flatpak user update";
+    timerConfig = {
+      OnBootSec = "2m";
+      OnActiveSec = "2m";
+      OnUnitInactiveSec = "24h";
+      OnUnitActiveSec = "24h";
+      AccuracySec = "1h";
+      RandomizedDelaySec = "10m";
+    };
+    wantedBy = [ "timers.target" ];
+  };
 
   # Enabling PCSC-lite for Yubikey
   services.pcscd.enable = true;
