@@ -244,7 +244,31 @@ in {
 
   # Enabling Flatpak
   services.flatpak.enable = true;
-  # TODO: systemd.service."flatpak-autoupdate"
+  # Flatpak user auto update
+  systemd.user.services.flatpak-update = {
+    enable = true;
+    description = "Flatpak user update";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/usr/bin/env flatpak update --noninteractive --assumeyes";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.user.timers.flatpak-update = {
+    enable = true;
+    description = "Flatpak user update";
+    timerConfig = {
+      OnBootSec = "2m";
+      OnActiveSec = "2m";
+      OnUnitInactiveSec = "24h";
+      OnUnitActiveSec = "24h";
+      AccuracySec = "1h";
+      RandomizedDelaySec = "10m";
+    };
+    wantedBy = [ "timers.target" ];
+  };
 
   # Enabling PCSC-lite for Yubikey
   services.pcscd.enable = true;
