@@ -32,7 +32,7 @@ in {
       # Me
       ./user-me.nix
       #./dev-tools.nix
-      #/.ai-tools.nix
+      #./ai-tools.nix
       # Nvidia GPU
       #./nvidia-gpu.nix
       # OR AMD GPU
