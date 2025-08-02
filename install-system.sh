@@ -214,7 +214,7 @@ printf "\e[32m================================\e[0m \n"
 echo "Finishing installation..."
 
 cp ./*.nix /mnt/etc/nixos/
-cp -r hardened/ /etc/nixos/
+cp -r hardened/ /mnt/etc/nixos/
 
 while true; do
 read -r -p "Proceed with installation ? (y/n) " yn
