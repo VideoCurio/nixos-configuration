@@ -1,10 +1,10 @@
 # Must be imported by configuration.nix
-# DevOPS packages for work.
+# Developer tools packages for work.
 
 { config, lib, pkgs, ... }:
 
 {
-  # Virtualisation
+  # Virtualization
   virtualisation.docker.enable = true;
   # QEMU + KVM + virt-manager
   # See: https://nixos.wiki/wiki/Libvirt
