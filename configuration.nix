@@ -32,6 +32,7 @@ in {
       # Me
       ./user-me.nix
       #./dev-tools.nix
+      #./ai-tools.nix
       # Nvidia GPU
       #./nvidia-gpu.nix
       # OR AMD GPU
@@ -53,8 +54,8 @@ in {
       ./hardened/sshd.nix
       #./hardened/user.nix
       # Network
-      ./hardened/NetworkManager.nix
-      ./hardened/NetworkManager-dispatcher.nix
+      #./hardened/NetworkManager.nix
+      #./hardened/NetworkManager-dispatcher.nix
       ./hardened/wpa_supplicant.nix
     ];
 
