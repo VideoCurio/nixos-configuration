@@ -52,7 +52,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an Intel x86 platform with a full encrypted disk (LUKS).
    Change the `imports` section of the file to suit your needs and computer's hardware.
 > [!IMPORTANT]
-> You MUST edit the configuration.nix file to match your hardware and packages need. The script in step 8 does not detect hardware (yet).
+> You MUST edit the configuration.nix file to match your hardware and packages need. The script in step 8 does not detect hardware (yet) !
    ```bash
    # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
    # Edit all settings marked with 'Change me' comment.
@@ -64,9 +64,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 > [!WARNING]
 > This script will format your disk !!! Backup your data before.
 
-8. Run the installer, it will:
+8. Run the installer `./install-system.sh`, it will:
    * Format your computer disk.
-   * Copy various nix configuration files in the right directory (/mnt/etc/nixos).
+   * Copy various nix configuration files in the right directory: `/mnt/etc/nixos/`.
    * Run the `nixos-install` command.
    ```bash
    # For a full encrypted disk (LUKS + LVM) on your first SSD:
@@ -75,11 +75,18 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ./install-system.sh /dev/sda
    # See --help option for more details:
    ./install-system.sh -h
+   # See fdisk command to list your disk:
+   fdisk -l
    ```
-9. If everything went according to plan, reboot and enjoy!
+9. If everything went according to plan, reboot.
    ```bash
    reboot now
    ```
+10. **Enjoy!** User temporary default password is "changeme". Do **NOT** set your password in `user-me.nix`, instead log-in with the temporary password and use the command:
+    ```bash
+    passwd
+    ```
+    Or within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password
 
 ## NixOS management
 
@@ -95,8 +102,16 @@ To find packages or options configuration, see [NixOS packages](https://search.n
 
 This configuration is set to auto upgrade every night at 03:40, see `systemctl list-timers`.
 
-Generations older than 7 days are automatically garbage collected. You can also manually do this with `sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch && sudo nixos-rebuild list-generations`.
-Watch your root directories size with: `sudo du -sh /* 2>/dev/null | sort -rh`
+Generations older than 7 days are automatically garbage collected. You can also manually do this with:
+```bash
+sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch && sudo nixos-rebuild list-generations
+```
+Watch your root directories size with:
+```bash
+sudo dust /
+# or
+sudo du -sh /* 2>/dev/null | sort -rh
+```
 
 ## Dotfiles
 
