@@ -62,7 +62,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```
    **_Tip_**: If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
 > [!WARNING]
-> This script will format your disk !!! Backup your data before.
+> This script will **FORMAT** your disk !!! Backup your data before.
 
 8. Run the installer `./install-system.sh`, it will:
    * Format your computer disk.
@@ -141,5 +141,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-## Source
+## Sources
+[Cosmic desktop](https://github.com/pop-os/cosmic-epoch) by system76.
 Hardened configuration files by [wallago](https://github.com/wallago/nix-system-services-hardened).
