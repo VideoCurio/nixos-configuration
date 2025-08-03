@@ -23,7 +23,7 @@ in {
       ./hardware-configuration-intel.nix
       # OR AMD platform
       #./hardware-configuration-amd.nix
-      # OR Qemu/KVM platform, edit it for kvm-intel or kvm-amd.
+      # OR Qemu/KVM platform, change me for kvm-intel or kvm-amd.
       #./hardware-configuration-qemu.nix
       # OR Raspberry PI 4 platform - REMOVE every other *.nix imports EXCEPT user-me.nix !
       #./rpi4.nix
@@ -41,7 +41,7 @@ in {
       #./amd-gpu.nix
       ##################### Step 4: User #####################
       # Me
-      ./user-me.nix # EDIT it !
+      ./user-me.nix # change me !
       #./dev-tools.nix # QEMU/KVM + virt-manager, docker, Python3.13 PyCharm, Nmap
       #./ai-tools.nix # Ollama + Open WebUI
 
@@ -59,7 +59,7 @@ in {
       ./hardened/rescue.nix
       ./hardened/rtkit.nix
       ./hardened/sshd.nix
-      #./hardened/user.nix # flatpak run bug
+      #./hardened/user.nix # 'flatpak run' bug
       # Network
       #./hardened/NetworkManager.nix # proton-vpn bug
       #./hardened/NetworkManager-dispatcher.nix # proton-vpn bug

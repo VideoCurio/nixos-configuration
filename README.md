@@ -96,6 +96,9 @@ See [NixOS manual](https://nixos.org/manual/nixos/stable/) to learn more.
 If you want to modify your current configuration or add packages, edit the 'configuration.nix' file and rebuild it:
 ```bash
 sudo nano /etc/nixos/configuration.nix
+```
+followed by:
+```bash
 sudo nixos-rebuild switch
 ```
 To find packages or options configuration, see [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
@@ -109,6 +112,8 @@ sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch && 
 Watch your root directories size with:
 ```bash
 sudo dust /
+# or
+duf
 # or
 sudo du -sh /* 2>/dev/null | sort -rh
 ```
