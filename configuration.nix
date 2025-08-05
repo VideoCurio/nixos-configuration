@@ -179,6 +179,8 @@ in {
     dust # du replacement
     fd # find alternative
 
+    gnupg
+
     # Alacritty terminal
     alacritty
     # alacritty-theme

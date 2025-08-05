@@ -49,6 +49,7 @@
     python313Full
     python313Packages.pip
     python313Packages.docker
+    python313Packages.cryptography
     jetbrains.pycharm-community
     # Networks
     nmap
