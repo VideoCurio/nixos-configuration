@@ -16,11 +16,12 @@
   # Enable OpenGL
   hardware.graphics = {
     enable = lib.mkDefault true;
+    #enable32Bit = lib.mkDefault true;
   };
 
   # Load driver for Xorg and Wayland
   services.xserver.enable = lib.mkDefault true;
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.videoDrivers = lib.mkDefault [ "amdgpu" ];
 
   # GUI AMD GPU controller + RadeonTOP
   environment.systemPackages = with pkgs; [
