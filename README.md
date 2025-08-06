@@ -7,14 +7,14 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ------
 
-|               | Packages     |
-|---------------|--------------|
-| **Desktop:**  | COSMIC       | 
-| **Shell:**    | zsh          |
-| **Display:**  | Wayland      |
-| **Terminal:** | Alacritty    |
-| **Launcher:** | pop-launcher |
-| **Browser:**  | Brave        |
+|               | Packages     | Shortcut  |
+|---------------|--------------|-----------|
+| **Desktop:**  | COSMIC       |           |
+| **Shell:**    | zsh          |           |
+| **Display:**  | Wayland      |           |
+| **Terminal:** | Alacritty    | Super + T |
+| **Launcher:** | pop-launcher | Super     |
+| **Browser:**  | Brave        | Super + B |
 
 -----
 
@@ -120,7 +120,7 @@ sudo du -sh /* 2>/dev/null | sort -rh
 
 ## Dotfiles
 
-*TBD*
+See [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
 
 ## Developers notes
 Developers should try theirs code against the `testing` branch.
