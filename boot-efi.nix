@@ -13,6 +13,7 @@
       efi.canTouchEfiVariables = true;
       systemd-boot.configurationLimit = 5; # Limit the number of generations to keep
     };
+    tmp.cleanOnBoot = true;
 
     # Plymouth boot splash screen
     plymouth = {

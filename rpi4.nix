@@ -15,6 +15,7 @@
       grub.enable = lib.mkDefault false;
       generic-extlinux-compatible.enable = lib.mkDefault true;
     };
+    tmp.cleanOnBoot = true;
   };
 
   fileSystems = {
