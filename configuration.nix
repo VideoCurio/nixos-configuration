@@ -223,16 +223,23 @@ in {
   };
 
   # Look and feel
-  fonts.packages = with pkgs; [
-     dejavu_fonts
-     fira
-     font-awesome
-     jetbrains-mono
-     noto-fonts
-     noto-fonts-color-emoji
-     open-sans
-  ];
-  fonts.fontDir.enable = true;
+  # Fonts
+  # See command: 'fc-list'
+  fonts = {
+    fontconfig.useEmbeddedBitmaps = true;
+    fontDir.enable = true;
+    packages = with pkgs; [
+      dejavu_fonts
+      fira
+      font-awesome
+      jetbrains-mono
+      nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
+      noto-fonts
+      noto-fonts-color-emoji
+      open-sans
+    ];
+  };
 
   # Cosmic Desktop Env
   services.desktopManager.cosmic.enable = true;
