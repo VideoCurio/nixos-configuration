@@ -1,4 +1,5 @@
 # Hardware config for a QEMU virt on an Intel x86 host platform.
+# See: https://github.com/NixOS/nixos-hardware/tree/master
 
 { config, lib, pkgs, modulesPath, ... }:
 

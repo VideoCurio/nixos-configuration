@@ -1,4 +1,5 @@
 # Hardware config for AMD x86 PC platform.
+# See: https://github.com/NixOS/nixos-hardware/tree/master
 
 { config, lib, pkgs, modulesPath, ... }:
 
