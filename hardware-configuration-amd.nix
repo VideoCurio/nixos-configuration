@@ -1,9 +1,8 @@
 # Hardware config for AMD x86 PC platform.
 
 { config, lib, pkgs, modulesPath, ... }:
-let
-  kver = config.boot.kernelPackages.kernel.version;
-in {
+
+{
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
