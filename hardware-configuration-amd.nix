@@ -8,19 +8,21 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "thunderbolt" ]; # "sr_mod" ?
-  boot.kernelModules = [ "kvm-amd" ];
-  # Enables the AMD cpu scaling https://www.kernel.org/doc/html/latest/admin-guide/pm/amd-pstate.html
-  # On recent AMD CPUs this can be more energy efficient.
-  boot.kernelParams = [
-    "quiet"
-    "splash"
-    "boot.shell_on_fail"
-    "udev.log_priority=3"
-    "rd.systemd.show_status=auto"
-    "amd_pstate=active"
-  ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "thunderbolt" ]; # "sr_mod" ?
+    kernelModules = [ "kvm-amd" ];
+    # Enables the AMD cpu scaling https://www.kernel.org/doc/html/latest/admin-guide/pm/amd-pstate.html
+    # On recent AMD CPUs this can be more energy efficient.
+    kernelParams = [
+      "quiet"
+      "splash"
+      "boot.shell_on_fail"
+      "udev.log_priority=3"
+      "rd.systemd.show_status=auto"
+      "amd_pstate=active"
+    ];
+    extraModulePackages = [ ];
+  };
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
