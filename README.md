@@ -61,22 +61,19 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    nano user-me.nix
    ```
    **_Tip_**: If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
+
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
-
-8. Run the installer `./install-system.sh`, it will:
-   * Format your computer disk.
-   * Copy various nix configuration files in the right directory: `/mnt/etc/nixos/`.
-   * Run the `nixos-install` command.
+8. Run the installer `./install-system.sh`:
    ```bash
+   # See fdisk command to list your disk:
+   fdisk -l
    # For a full encrypted disk (LUKS + LVM) on your first SSD:
    ./install-system.sh --crypt /dev/nvme0n1
    # OR for a simple disk partition on the first HDD:
    ./install-system.sh /dev/sda
    # See --help option for more details:
    ./install-system.sh -h
-   # See fdisk command to list your disk:
-   fdisk -l
    ```
 9. If everything went according to plan, reboot.
    ```bash
@@ -120,7 +117,7 @@ sudo du -sh /* 2>/dev/null | sort -rh
 
 ## Dotfiles
 
-See [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
+Want a nice Terminal with some cool plugins, see [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
 
 ## Developers notes
 Developers should try theirs code against the `testing` branch.
