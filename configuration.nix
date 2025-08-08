@@ -72,7 +72,7 @@ in {
     hostName = "EVAUnit02"; # Change me!!
     #wireless.enable = true;  # Enables wireless support via wpa_supplicant OR
     networkmanager.enable = true;  # Easiest to use and most distros use this by default.
-    nameservers = [ "9.9.9.9" "1.1.1.1" "2620:fe::fe" "2620:fe::9" ];
+    nameservers = [ "9.9.9.9" "1.1.1.1" "2620:fe::fe" "2620:fe::9" ]; # Quad9 and cloudflare DNS servers.
     useDHCP = lib.mkDefault true;
     # Open ports in the firewall.
     #firewall.allowedTCPPorts = [ ... ];
@@ -256,11 +256,11 @@ in {
 
   # Enable the OpenSSH daemon.
   services.openssh = {
-    enable = true;
+    enable = false;
     settings = {
       PermitRootLogin = "no";
       StrictModes = true;
-      PasswordAuthentication = false; # Set users.users.<name>.openssh.authorizedKeys.keys to your ssh pubkey
+      PasswordAuthentication = false; # Set users.users.<name>.openssh.authorizedKeys.keys to your ssh pubkey in user-me.nix
       KbdInteractiveAuthentication = false;
       PrintMotd = true;
       UsePAM = true;
@@ -271,7 +271,7 @@ in {
 
   # Enabling Flatpak
   services.flatpak.enable = true;
-  # Flatpak system, add repo
+  # TODO: Flatpak system, add repo
   #systemd.services.flatpak-repo = {
   #  wantedBy = [ "multi-user.target" ];
   #  #path = [ pkgs.flatpak ];

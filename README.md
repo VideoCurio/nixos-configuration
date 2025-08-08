@@ -85,6 +85,22 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
     ```
     Or within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password
 
+## Features
+
+* Hardware configuration files for AMD, Intel, QEMU/KVM and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
+* Filesystem configuration for full encrypted disk (LUKS+LVM).
+* COSMIC, a wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
+* Pop_launcher, launch or switch every application just with the Super key.
+* Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
+* Alacritty terminal with ZSH and a lot of good modern commands. Finish to set up everything with [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
+* More nice applications in `*-tools.nix` files like Ollama AI, docker, QEMU + virt-manager, python3, etc...
+* Hardened systemd services configurations files. WIP
+* A bunch of nerd fonts...
+
+## Dotfiles
+
+Want a nice Terminal with some cool plugins, see [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
+
 ## NixOS management
 
 NixOS is a Linux distribution based on the Nix package manager and build system. It supports reproducible and declarative system-wide configuration management as well as atomic upgrades and rollbacks, although it can additionally support imperative package and user management. In NixOS, all components of the distribution — including the kernel, installed packages and system configuration files — are built by Nix from pure functions called Nix expressions.
@@ -114,10 +130,6 @@ duf
 # or
 sudo du -sh /* 2>/dev/null | sort -rh
 ```
-
-## Dotfiles
-
-Want a nice Terminal with some cool plugins, see [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
 
 ## Developers notes
 Developers should try theirs code against the `testing` branch.
