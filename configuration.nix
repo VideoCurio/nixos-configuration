@@ -167,19 +167,17 @@ in {
     curl
     fastfetch
     killall
+    # For ZSH:
     git
-    jq # JSON parser
-    # For Yazi
     fzf # fuzzy finder
-    # ripgrep
-    # chafa # Terminal images preview
-    # Modern terminal tools
+    jq # JSON parser
     eza # ls replacement
     bat # cat replacement
     btop # top replacement
     duf # df replacement
     dust # du replacement
     fd # find alternative
+    zoxide # Better cd
 
     gnupg
 
