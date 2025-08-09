@@ -90,7 +90,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * Hardware configuration files for AMD, Intel, QEMU/KVM and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
 * Filesystem configuration for full encrypted disk (LUKS+LVM).
 * COSMIC, a wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
-* Pop_launcher, launch or switch every application just with the Super key.
+* Pop_launcher, launch or switch to every application just with the Super key.
 * Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
 * Alacritty terminal with ZSH and a lot of good modern commands. Finish to set up everything with [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
 * More nice applications in `*-tools.nix` files like Ollama AI, docker, QEMU + virt-manager, python3, etc...
@@ -99,7 +99,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Dotfiles
 
-Want a nice Terminal with some cool plugins, see [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
+Want a nice Terminal with some cool plugins ? See [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
 
 ## NixOS management
 
