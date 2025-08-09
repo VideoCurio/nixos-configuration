@@ -15,7 +15,7 @@ in {
     isNormalUser = true;
     initialPassword = password;
     description = "David B."; # Change me !!
-    extraGroups = [ "networkmanager" "wheel" "audio" "sound" "video" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "networkmanager" "wheel" "audio" "sound" "video" ]; # Enable sudo for the user.
     useDefaultShell = true;
     # User SSH pubkey
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHkcdpx7N45SWb8RokTWnyPsKtMfvAki1TsxH3DhVI7 david@videocurio.com" ]; # Change me !!
