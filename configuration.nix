@@ -44,10 +44,8 @@ in {
       ##################### Step 4: User #####################
       # Me
       ./user-me.nix # change me !
-      #./dev-tools.nix # QEMU/KVM + virt-manager, docker, Python3.13 PyCharm, Nmap
-      #./ai-tools.nix # Ollama + Open WebUI
 
-      ##################### Optional: Hardening #####################
+      ##################### Optional #####################
       # Systemd hardening configurations
       # See: https://github.com/wallago/nix-system-services-hardened
       # Check results with: `systemd-analyze security`
@@ -66,6 +64,12 @@ in {
       #./hardened/NetworkManager.nix # proton-vpn bug
       #./hardened/NetworkManager-dispatcher.nix # proton-vpn bug
       #./hardened/wpa_supplicant.nix
+
+      # DevOPS
+      #./dev-tools.nix # QEMU/KVM + virt-manager, docker, Python3.13 PyCharm, Nmap
+      #./ai-tools.nix # Ollama + Open WebUI
+      # Gaming
+      #./gaming.nix
     ];
 
   networking = {
