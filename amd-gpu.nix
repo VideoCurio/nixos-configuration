@@ -21,11 +21,10 @@
     };
     amdgpu = {
       # Enable Vulkan
-      amdvlk.enable = true;
-      #amdvlk.support32Bit.enable = true;
+      amdvlk.enable = lib.mkDefault true;
+      #amdvlk.support32Bit.enable = lib.mkDefault true;
     };
   };
-  }
 
   # Load driver for Xorg and Wayland
   services.xserver.enable = lib.mkDefault true;
@@ -40,4 +39,3 @@
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = ["multi-user.target"];
 }
-
