@@ -34,7 +34,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    sudo dd if=latest-nixos-minimal-x86_64-linux.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
-3. Boot your machine on the USB stick.
+3. Boot your machine on the USB stick. An internet connection is *REQUIRED* to perform the installation !
 4. You should see a TTY command line as `nixos` user, switch to root user:
    ```bash
    sudo -i
@@ -59,6 +59,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    nano configuration.nix
    # Edit default user, change your name and your SSH pubkey:
    nano user-me.nix
+   # Use Ctrl+s to save and Ctrl+x to exit nano
    ```
    **_Tip_**: If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
 
