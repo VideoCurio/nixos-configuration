@@ -31,11 +31,10 @@
     preferStaticEmulators = true; # Make it work with docker
   };
 
-  users.users.david = {
+  users.users.david = { # Change me !
     extraGroups = [ "docker" "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ];
     # Reboot and type this command:
-    # sudo virsh net-start default
-    # sudo virsh net-autostart default
+    # sudo virsh net-start default && sudo virsh net-autostart default
   };
 
   environment.systemPackages = with pkgs; [
