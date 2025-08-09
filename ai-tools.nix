@@ -13,7 +13,7 @@
     # or use `ollama pull <model-name>`
     #loadModels = [ "mistral-nemo:latest" ];
     # GPU accel
-    acceleration = "false"; # "false": 100% CPU,"cuda": modern Nvidia GPU ,"rocm": modern AMD GPU
+    acceleration = "false"; # Change me! "false": 100% CPU, "cuda": modern Nvidia GPU, "rocm": modern AMD GPU
     # For AMD Ryzen 7 PRO hardware
     # nix-shell -p "rocmPackages.rocminfo" --run "rocminfo" | grep "gfx"
     #environmentVariables = {
