@@ -25,6 +25,10 @@
   nixpkgs.config.allowUnfree = lib.mkDefault true;
   nixpkgs.config.nvidia.acceptLicense = true;
 
+  environment.systemPackages = with pkgs; [
+    #btop-cuda # btop with GPU, REMOVE btop from configuration.nix !
+  ];
+
   hardware.nvidia = {
     # Modesetting is required.
     modesetting.enable = true;

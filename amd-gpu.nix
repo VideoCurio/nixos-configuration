@@ -13,11 +13,19 @@
   };
 
   # AMD GPU
-  # Enable OpenGL
-  hardware.graphics = {
-    enable = lib.mkDefault true;
-    #enable32Bit = lib.mkDefault true;
+  hardware = {
+    graphics = {
+      # Enable OpenGL
+      enable = lib.mkDefault true;
+      #enable32Bit = lib.mkDefault true;
+    };
+    amdgpu = {
+      # Enable Vulkan
+      amdvlk.enable = true;
+      #amdvlk.support32Bit.enable = true;
+    };
   };
+  }
 
   # Load driver for Xorg and Wayland
   services.xserver.enable = lib.mkDefault true;
@@ -27,6 +35,7 @@
   environment.systemPackages = with pkgs; [
     lact
     radeontop
+    #btop-rocm # btop with GPU, REMOVE btop from configuration.nix !
   ];
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = ["multi-user.target"];

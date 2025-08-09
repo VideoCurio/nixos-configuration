@@ -271,15 +271,17 @@ in {
 
   # Enabling Flatpak
   services.flatpak.enable = true;
-  # TODO: Flatpak system, add repo
-  #systemd.services.flatpak-repo = {
-  #  wantedBy = [ "multi-user.target" ];
-  #  #path = [ pkgs.flatpak ];
-  #  script = ''
-  #    /run/current-system/sw/bin/flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  #    /run/current-system/sw/bin/flatpak remote-add --if-not-exists cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
-  #  '';
-  #};
+  # Flatpak system, add repo
+  systemd.services.flatpak-repo = {
+    enable = true;
+    description = "Flatpak add flathub and cosmic repos";
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.flatpak ];
+    script = ''
+      /run/current-system/sw/bin/flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      /run/current-system/sw/bin/flatpak remote-add --if-not-exists cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
+    '';
+  };
   # Flatpak user auto update
   # systemctl --user list-units --type=service
   systemd.user.services.flatpak-update = {
@@ -309,6 +311,10 @@ in {
     };
     wantedBy = [ "timers.target" ];
   };
+
+  # Enabling Linux AppImage
+  #programs.appimage.enable = true;
+  #programs.appimage.binfmt = true;
 
   # Enabling PCSC-lite for Yubikey
   services.pcscd.enable = true;

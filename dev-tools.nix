@@ -52,6 +52,9 @@
     python313Packages.setuptools
     python313Packages.cryptography
     jetbrains.pycharm-community
+    # Rust
+    rustup # provide cargo and rustc
+    jetbrains.rust-rover
     # Networks
     nmap
     zenmap
