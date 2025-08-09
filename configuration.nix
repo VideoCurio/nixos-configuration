@@ -51,21 +51,21 @@ in {
       # Systemd hardening configurations
       # See: https://github.com/wallago/nix-system-services-hardened
       # Check results with: `systemd-analyze security`
-      ./hardened/accounts-daemon.nix
-      ./hardened/acipd.nix
-      #./hardened/cups.nix
-      ./hardened/dbus.nix
-      ./hardened/getty.nix
-      ./hardened/nix-daemon.nix
-      ./hardened/nscd.nix
-      ./hardened/rescue.nix
-      ./hardened/rtkit.nix
-      ./hardened/sshd.nix
+      #./hardened/accounts-daemon.nix
+      #./hardened/acipd.nix
+      #./hardened/cups.nix # Only if cups is enable below
+      #./hardened/dbus.nix
+      #./hardened/getty.nix
+      #./hardened/nix-daemon.nix
+      #./hardened/nscd.nix
+      #./hardened/rescue.nix
+      #./hardened/rtkit.nix
+      #./hardened/sshd.nix
       #./hardened/user.nix # 'flatpak run' bug
       # Network
       #./hardened/NetworkManager.nix # proton-vpn bug
       #./hardened/NetworkManager-dispatcher.nix # proton-vpn bug
-      ./hardened/wpa_supplicant.nix
+      #./hardened/wpa_supplicant.nix
     ];
 
   networking = {

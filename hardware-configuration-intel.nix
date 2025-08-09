@@ -9,7 +9,7 @@
     ];
 
   boot = {
-    initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
+    initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ]; # "sr_mod"
     kernelModules = [ "kvm-intel" ];
     kernelParams = [
       "quiet"
