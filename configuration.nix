@@ -79,18 +79,6 @@ in {
     nameservers = [ "9.9.9.9" "1.1.1.1" "2620:fe::fe" "2620:fe::9" ]; # Quad9 and cloudflare DNS servers.
     # Use DHCP to get an IP address:
     useDHCP = lib.mkDefault true;
-    # OR set a static IPv4 address for eno1 interface
-    #useDHCP = lib.mkDefault false;
-    #interfaces.eno1 = {
-    #  ipv4.addresses = [{
-    #    address = "192.168.71.200";
-    #    prefixLength = 24;
-    #  }];
-    #};
-    #defaultGateway = {
-    #  address = "192.168.71.255";
-    #  interfaces = "eno1";
-    #};
     # Open ports in the firewall.
     #firewall.allowedTCPPorts = [ ... ];
     #firewall.allowedUDPPorts = [ ... ];
