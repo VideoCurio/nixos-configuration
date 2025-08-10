@@ -14,7 +14,7 @@
 # ./install-system.sh --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
 # ./install-system.sh /dev/vda                   - Standard install on a QEMU disk.
 
-set -e
+set -eu
 
 # Print help function
 usage ()
