@@ -43,7 +43,7 @@ in {
       #./amd-gpu.nix
       ##################### Step 4: Extra hardware #####################
       # For laptop only:
-      #./laptop.nix
+      #./laptop.nix # Comment line below: services.power-profiles-daemon.enable = true;
       ##################### Step 5: User #####################
       # Me
       ./user-me.nix # change me !
@@ -347,7 +347,7 @@ in {
   services.accounts-daemon.enable = true;
   services.upower.enable = true;
   security.polkit.enable = true;
-  services.power-profiles-daemon.enable = true;
+  services.power-profiles-daemon.enable = true; # Change this to a comment if importing of laptop.nix
   services.geoclue2.enable = true;
 
   # Allow unfree packages

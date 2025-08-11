@@ -4,13 +4,16 @@
 { config, lib, pkgs, ... }:
 
 {
-  # TLP - Optimize Linux Laptop Battery Life
+  # TLP - Optimize Linux Laptop Battery Life
   # See: https://linrunner.de/tlp/
+  # See: sudo tlp-stat --help
+  # COSMIC use power-profiles-daemon, we have to force it off
+  services.power-profiles-daemon.enable = lib.mkForce false;
   services.tlp = {
     enable = true;
     settings = {
-      CPU_SCALING_GOVERNOR_ON_BAT="performance";
-      CPU_SCALING_GOVERNOR_ON_AC="powersave";
+      CPU_SCALING_GOVERNOR_ON_AC="performance";
+      CPU_SCALING_GOVERNOR_ON_BAT="powersave";
 
       # Battery care - prevent the battery from charging fully to preserve lifetime.
       START_CHARGE_THRESH_BAT0=75;
