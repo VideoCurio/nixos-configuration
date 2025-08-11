@@ -8,6 +8,9 @@
   boot = {
     #kernelPackages = pkgs.linuxPackages_latest;  # Use latest kernel instead of LTS.
     initrd.systemd.enable = true;
+    kernel.sysctl = {
+      "vm.swappiness" = 10; # Reduce the frequency of swapping data from RAM to swap space.
+    };
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

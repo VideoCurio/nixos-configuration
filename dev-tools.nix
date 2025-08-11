@@ -52,7 +52,7 @@
     python313Packages.cryptography
     jetbrains.pycharm-community
     # Rust
-    rustup # provide cargo and rustc
+    rustup # provide cargo, rustc, rust-analyzer and more
     jetbrains.rust-rover
     # Networks
     nmap
