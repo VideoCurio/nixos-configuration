@@ -144,6 +144,25 @@ in {
         "default.clock.max-quantum" = 16384;
       };
     };
+    extraConfig.pipewire-pulse."92-low-latency" = {
+      "context.properties" = [
+        {
+          name = "libpipewire-module-protocol-pulse";
+          args = { };
+        }
+      ];
+      "pulse.properties" = {
+        "pulse.min.req" = "256/48000";
+        "pulse.default.req" = "512/48000";
+        "pulse.max.req" = "512/48000";
+        "pulse.min.quantum" = "256/48000";
+        "pulse.max.quantum" = "32/48000";
+      };
+      "stream.properties" = {
+        "node.latency" = "512/48000";
+        "resample.quality" = 1;
+      };
+    };
   };
   security.rtkit.enable = true; # realtime scheduling priority for pipewire.
 
