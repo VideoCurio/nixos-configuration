@@ -13,6 +13,11 @@
     #localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
+  # OBS
+  programs.obs-studio = {
+    enable = true;
+  };
+
   # Various packages
   services.input-remapper = {
     enable = true;

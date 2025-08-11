@@ -5,7 +5,7 @@
 
 {
   # Ollama, see: https://wiki.nixos.org/wiki/Ollama
-  # For a ZSH integration, see: https://github.com/VideoCurio/MyZSH
+  # For a ZSH integration, see: https://github.com/VideoCurio/nixos-dotfiles
   services.ollama = {
     enable = true;
     #home = "/home/ollama";
