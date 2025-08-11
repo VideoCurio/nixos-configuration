@@ -52,12 +52,14 @@
     python313Packages.cryptography
     jetbrains.pycharm-community
     # Rust
-    rustup # provide cargo and rustc
+    rustup # provide cargo, rustc, rust-analyzer and more
     jetbrains.rust-rover
     # Networks
     nmap
     zenmap
     wireshark # should add user to wireshark group
+    # VNC
+    remmina
 
     # QEMU + KVM + virt-manager
     virt-manager

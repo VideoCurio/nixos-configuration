@@ -41,7 +41,10 @@ in {
       #./nvidia-gpu.nix
       # OR AMD GPU
       #./amd-gpu.nix
-      ##################### Step 4: User #####################
+      ##################### Step 4: Extra hardware #####################
+      # For laptop only:
+      #./laptop.nix # Comment line below: services.power-profiles-daemon.enable = true;
+      ##################### Step 5: User #####################
       # Me
       ./user-me.nix # change me !
 
@@ -133,6 +136,33 @@ in {
     enable = true;
     alsa.enable = true;
     pulse.enable = true;
+    extraConfig.pipewire."92-low-latency" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 512; # Keep increasing the quant value until you get no crackles
+        "default.clock.min-quantum" = 256;
+        "default.clock.max-quantum" = 16384;
+      };
+    };
+    extraConfig.pipewire-pulse."92-low-latency" = {
+      "context.properties" = [
+        {
+          name = "libpipewire-module-protocol-pulse";
+          args = { };
+        }
+      ];
+      "pulse.properties" = {
+        "pulse.min.req" = "256/48000";
+        "pulse.default.req" = "512/48000";
+        "pulse.max.req" = "512/48000";
+        "pulse.min.quantum" = "256/48000";
+        "pulse.max.quantum" = "32/48000";
+      };
+      "stream.properties" = {
+        "node.latency" = "512/48000";
+        "resample.quality" = 1;
+      };
+    };
   };
   security.rtkit.enable = true; # realtime scheduling priority for pipewire.
 
@@ -208,7 +238,6 @@ in {
     brave
     signal-desktop
     yubioath-flutter
-    #remmina
     easyeffects
     caligula
   ];
@@ -345,7 +374,7 @@ in {
   services.accounts-daemon.enable = true;
   services.upower.enable = true;
   security.polkit.enable = true;
-  services.power-profiles-daemon.enable = true;
+  services.power-profiles-daemon.enable = true; # Change this to a comment if importing of laptop.nix
   services.geoclue2.enable = true;
 
   # Allow unfree packages

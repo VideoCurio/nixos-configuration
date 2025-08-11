@@ -26,6 +26,7 @@
     teamspeak6-client
     # Steam, set game property > launch option to "gamemoderun %command%" for Windows only games.
     # See: https://www.protondb.com/ for more launch options.
+    # See: https://github.com/FeralInteractive/gamemode
     gamemode
     steam-run
   ];
