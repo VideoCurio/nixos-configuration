@@ -58,6 +58,8 @@
     nmap
     zenmap
     wireshark # should add user to wireshark group
+    # VNC
+    remmina
 
     # QEMU + KVM + virt-manager
     virt-manager

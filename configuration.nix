@@ -208,7 +208,6 @@ in {
     brave
     signal-desktop
     yubioath-flutter
-    #remmina
     easyeffects
     caligula
   ];
