@@ -41,7 +41,10 @@ in {
       #./nvidia-gpu.nix
       # OR AMD GPU
       #./amd-gpu.nix
-      ##################### Step 4: User #####################
+      ##################### Step 4: Extra hardware #####################
+      # For laptop only:
+      #./laptop.nix
+      ##################### Step 5: User #####################
       # Me
       ./user-me.nix # change me !
 
