@@ -156,7 +156,7 @@ in {
         "pulse.default.req" = "512/48000";
         "pulse.max.req" = "512/48000";
         "pulse.min.quantum" = "256/48000";
-        "pulse.max.quantum" = "32/48000";
+        "pulse.max.quantum" = "16384/48000";
       };
       "stream.properties" = {
         "node.latency" = "512/48000";
