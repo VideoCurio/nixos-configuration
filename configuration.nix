@@ -139,9 +139,9 @@ in {
     extraConfig.pipewire."92-low-latency" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        "default.clock.quantum" = 32; # Keep increasing the quant value until you get no crackles
-        "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 32;
+        "default.clock.quantum" = 512; # Keep increasing the quant value until you get no crackles
+        "default.clock.min-quantum" = 256;
+        "default.clock.max-quantum" = 16384;
       };
     };
   };
