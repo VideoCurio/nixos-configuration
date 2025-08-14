@@ -121,7 +121,7 @@ This configuration is set to auto upgrade every night at 03:40, see `systemctl l
 
 Generations older than 7 days are automatically garbage collected. You can also manually do this with:
 ```bash
-sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch && sudo nixos-rebuild list-generations
+sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch --upgrade && sudo nixos-rebuild list-generations
 ```
 Watch your root directories size with:
 ```bash
