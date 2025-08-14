@@ -61,7 +61,7 @@ in {
   nixcosmic.shell.zsh.enable = lib.mkDefault true;
   nixcosmic.virtualisation.enable = lib.mkDefault false;
 
-  # Test hardened configuration one by one
+  # Test hardened configurations one by one
   nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
   nixcosmic.hardened.acipd.enable = lib.mkDefault false;
   nixcosmic.hardened.cups.enable = lib.mkDefault false;

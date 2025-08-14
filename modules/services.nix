@@ -1,6 +1,6 @@
 # NixcOSmic services base configuration
 
-{ pkgs, config, ... }:
+{ config, lib, pkgs, ... }:
 {
   # Declare options
   options = {
