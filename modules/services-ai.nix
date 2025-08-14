@@ -1,0 +1,46 @@
+# Must be imported by configuration.nix
+# AI tools packages.
+
+{ config, lib, pkgs, ... }:
+
+{
+  # Declare options
+  options = {
+    nixcosmic.services.ai.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable Ollama and open-webui services.";
+    };
+  };
+
+  config = lib.mkIf config.nixcosmic.services.ai.enable {
+    # Ollama, see: https://wiki.nixos.org/wiki/Ollama
+    # For a ZSH integration, see: https://github.com/VideoCurio/nixos-dotfiles
+    services.ollama = {
+      enable = true;
+      #home = "/home/ollama";
+      # Optional: preload models, see https://ollama.com/library
+      # or use `ollama pull <model-name>`
+      loadModels = [ "mistral-nemo:latest" ];
+      # GPU accel
+      acceleration = "false"; # Change me! "false": 100% CPU, "cuda": modern Nvidia GPU, "rocm": modern AMD GPU
+
+      # For AMD Ryzen 7 PRO hardware
+      # nix-shell -p "rocmPackages.rocminfo" --run "rocminfo" | grep "gfx"
+      #environmentVariables = {
+      #  HCC_AMDGPU_TARGET = "gfx1103"; # used to be necessary, but doesn't seem to anymore
+      #};
+      #rocmOverrideGfx = "11.0.2";
+    };
+    # Open WebUI, see: https://docs.openwebui.com/
+    services.open-webui = {
+      enable = true;
+      environment = {
+        HOME = "/var/lib/open-webui";
+        OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
+        # Disable authentication
+        WEBUI_AUTH = "False";
+      };
+    };
+  };
+}

@@ -204,7 +204,7 @@ fi
 #df -h
 
 echo "Create basic configuration:"
-nixos-generate-config --root /mnt
+nixos-generate-config --root /mnt --no-filesystems
 
 #parted -l
 fdisk -l "$DISK_PART"
@@ -214,7 +214,7 @@ printf "\e[32m================================\e[0m \n"
 echo "Finishing installation..."
 
 cp ./*.nix /mnt/etc/nixos/
-cp -r hardened/ /mnt/etc/nixos/
+cp -r modules/ /mnt/etc/nixos/
 
 while true; do
 read -r -p "Proceed with installation ? (y/n) " yn
