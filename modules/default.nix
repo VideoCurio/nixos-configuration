@@ -7,6 +7,7 @@
     ./boot-efi.nix
     ./cosmic.nix
     ./desktop-apps/basics.nix
+    ./desktop-apps/devops.nix
     ./desktop-apps/gaming.nix
     ./desktop-apps/studio.nix
     ./fonts.nix
