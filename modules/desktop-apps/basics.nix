@@ -14,7 +14,7 @@
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.apps.basics.enable {
-    nixpkgs.config.allowUnfree = lib.mkDefault true; # For Discord
+    nixpkgs.config.allowUnfree = lib.mkForce true; # For Discord
     environment.systemPackages = with pkgs; [
       caligula
 
