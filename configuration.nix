@@ -130,7 +130,7 @@ in {
   #programs.appimage.binfmt = true;
 
   # Allow unfree packages, could be overridden by some modules.
-  nixpkgs.config.allowUnfree = false;
+  nixpkgs.config.allowUnfree = lib.mkDefault false;
 
   # Automatic OS updates and cleanup
   system.autoUpgrade.enable = true;
