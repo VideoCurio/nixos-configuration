@@ -30,6 +30,7 @@ Usage: ./install-system.sh [options] <disk_partition>
      -h, --help       Print this message.
      --crypt          Full disk encryption with LVM+LUKS.
      --rpi4           Raspberry PI 4 installation. (exclude --crypt option)
+     -v, --verbose    Print more information
 
   Examples:
     Full encrypted disk install on the first NVMe SSD:
@@ -51,6 +52,7 @@ if [ $# -lt 1 ]; then
 fi;
 encrypt_disk=0;
 rpi4_install=0;
+verbose=0;
 while getopts ":h-:" opt; do
   case "${opt}" in
     -)
@@ -58,9 +60,11 @@ while getopts ":h-:" opt; do
         crypt) encrypt_disk=1; ;;
         help) usage; ;;
         rpi4) rpi4_install=1; encrypt_disk=0; ;;
+        verbose) verbose=1; ;;
         *) usage; ;;
       esac;;
     h) usage; ;;
+    v) verbose=1; ;;
     *) usage; ;;
   esac
 done
@@ -68,6 +72,9 @@ done
 # NVMe SSD: /dev/nvme0n1
 DISK_PART="${!#}"
 if [ ! -e "$DISK_PART" ]; then
+  if [ $verbose -eq 1 ]; then
+    parted -l
+  fi
   printf "\e[31mDisk path is invalid! \e[0m \n"
   exit 2
 fi
@@ -95,7 +102,9 @@ format () {
   fi
 
   #parted -l
-  #lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
+  if [ $verbose -eq 1 ]; then
+    lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
+  fi
 
   printf "\e[32m================================\e[0m \n"
   printf "\e[32m================================\e[0m \n"
@@ -131,17 +140,23 @@ format () {
     printf "\e[32m================================\e[0m \n"
     echo "Creating LVM volumes..."
     pvcreate /dev/mapper/cryptroot
-    #pvdisplay
+    if [ $verbose -eq 1 ]; then
+      pvdisplay
+    fi
     # create a volume group inside
     vgcreate lvmroot /dev/mapper/cryptroot
-    #vgdisplay
+    if [ $verbose -eq 1 ]; then
+      vgdisplay
+    fi
     # create the swap volume
     lvcreate --size 8G lvmroot --name swap
     # create the root volume (100Go)
     lvcreate --size 100G lvmroot --name root
     # create a home volume (100% of free disk)
     lvcreate -l 100%FREE lvmroot --name home
-    #lvdisplay
+    if [ $verbose -eq 1 ]; then
+      lvdisplay
+    fi
 
     # Filesystem formatting
     mkfs.ext4 -L nixos /dev/mapper/lvmroot-root
@@ -184,8 +199,8 @@ read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n) " yn
 case $yn in
   [yY] ) format;
     break;;
-  [nN] ) echo "Exiting...";
-    exit;;
+  [nN] ) echo "Proceeding without disk formatting...";
+    break;;
   * ) echo "Invalid response";;
 esac
 done
@@ -193,22 +208,29 @@ done
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Mounting system..."
-mount /dev/disk/by-label/nixos /mnt
+if [ ! mountpoint -q /mnt ]; then
+  mount /dev/disk/by-label/nixos /mnt
+fi
 mkdir -p /mnt/boot
-mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+if [ ! mountpoint -q /mnt/boot ]; then
+  mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+fi
 swapon /dev/disk/by-label/swap
 if [ $encrypt_disk -eq 1 ]; then
   mkdir -p /mnt/home
-  mount /dev/disk/by-label/home /mnt/home
+  if [ ! mountpoint -q /mnt/home ]; then
+    mount /dev/disk/by-label/home /mnt/home
+  fi
 fi
-#df -h
+
+if [ $verbose -eq 1 ]; then
+  fdisk -l "$DISK_PART"
+  lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
+fi
 
 echo "Create basic configuration:"
 nixos-generate-config --root /mnt --no-filesystems
 
-#parted -l
-fdisk -l "$DISK_PART"
-lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Finishing installation..."
