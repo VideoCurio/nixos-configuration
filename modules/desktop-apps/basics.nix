@@ -14,7 +14,6 @@
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.apps.basics.enable {
-    nixpkgs.config.allowUnfree = lib.mkForce true; # For Discord
     environment.systemPackages = with pkgs; [
       caligula
 
@@ -25,7 +24,6 @@
       # 3rd party apps
       bitwarden-desktop
       brave
-      discord
       easyeffects
       gimp3
       protonvpn-gui
