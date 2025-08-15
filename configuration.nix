@@ -48,7 +48,7 @@ in {
   nixcosmic.desktop.apps.basics.enable = lib.mkDefault true;
   nixcosmic.desktop.apps.devops.enable = lib.mkDefault false;
   nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.devops.python313.enable = lib.mkDefault false;
+  nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false;
   nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false;
   nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false;
   nixcosmic.desktop.apps.studio.enable = lib.mkDefault false;

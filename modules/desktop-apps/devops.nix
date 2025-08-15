@@ -10,10 +10,10 @@
       default = false;
       description = "Desktop apps for developers.";
     };
-    nixcosmic.desktop.apps.devops.python313.enable = lib.mkOption {
+    nixcosmic.desktop.apps.devops.python312.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Python3.13 and JetBrains PyCharm Community.";
+      description = "Python3.12 and JetBrains PyCharm Community.";
     };
     nixcosmic.desktop.apps.devops.rust.enable = lib.mkOption {
       type = lib.types.bool;
@@ -32,22 +32,40 @@
     environment.systemPackages = with pkgs; [
       # Devops
       cloudflared
-      # Python3
-      python313Full
-      python313Packages.pip
-      python313Packages.docker
-      python313Packages.setuptools
-      python313Packages.cryptography
-      jetbrains.pycharm-community
-      # Rust
-      rustup # provide cargo, rustc, rust-analyzer and more
-      jetbrains.rust-rover
-      # Networks
-      nmap
-      zenmap
-      wireshark # should add user to wireshark group
       # VNC
       remmina
-    ];
+    ] ++
+    (
+      if (confg.nixcosmic.desktop.apps.devops.python312.enable == true)
+        then [
+          # Python3
+          python312Full
+          python312Packages.pip
+          python312Packages.setuptools
+          python312Packages.cryptography
+          jetbrains.pycharm-community
+        ]
+      else []
+
+    ) ++
+    (
+      if (confg.nixcosmic.desktop.apps.devops.rust.enable == true)
+        then [
+          # Rust
+          rustup # provide cargo, rustc, rust-analyzer and more
+          jetbrains.rust-rover
+        ]
+      else []
+    ) ++
+    (
+      if (confg.nixcosmic.desktop.apps.devops.networks.enable == true)
+        then [
+          # Networks
+          nmap
+          zenmap
+          wireshark # should add user to wireshark group
+        ]
+      else []
+    );
   };
 }
