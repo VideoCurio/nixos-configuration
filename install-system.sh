@@ -246,7 +246,7 @@ nixos-generate-config --root /mnt --no-filesystems
 
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
-echo "Finishing installation..."
+echo "Copying configurations files..."
 
 cp ./*.nix /mnt/etc/nixos/
 cp -r modules/ /mnt/etc/nixos/
