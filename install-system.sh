@@ -53,7 +53,7 @@ fi;
 encrypt_disk=0;
 rpi4_install=0;
 verbose=0;
-while getopts ":h-:" opt; do
+while getopts ":h:v-:" opt; do
   case "${opt}" in
     -)
       case "${OPTARG}" in
@@ -214,17 +214,17 @@ done
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Mounting system..."
-if [ ! mountpoint -q /mnt ]; then
+if ! mountpoint -q /mnt; then
   mount /dev/disk/by-label/nixos /mnt
 fi
 mkdir -p /mnt/boot
-if [ ! mountpoint -q /mnt/boot ]; then
+if ! mountpoint -q /mnt/boot; then
   mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 fi
 swapon /dev/disk/by-label/swap
 if [ $encrypt_disk -eq 1 ]; then
   mkdir -p /mnt/home
-  if [ ! mountpoint -q /mnt/home ]; then
+  if ! mountpoint -q /mnt/home; then
     mount /dev/disk/by-label/home /mnt/home
   fi
 fi
