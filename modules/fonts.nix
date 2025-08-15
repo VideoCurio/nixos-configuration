@@ -20,13 +20,15 @@
       fontDir.enable = true;
       packages = with pkgs; [
         dejavu_fonts
-        fira
         font-awesome
         jetbrains-mono
         nerd-fonts.fira-code
         nerd-fonts.jetbrains-mono
-        noto-fonts
         noto-fonts-color-emoji
+      ]
+      ++ lib.optionals config.nixcosmic.desktop.cosmic.enable [
+        fira
+        noto-fonts
         open-sans
       ];
     };
