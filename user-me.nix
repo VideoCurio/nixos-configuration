@@ -16,11 +16,13 @@ in {
     initialPassword = password;
     description = "David B."; # Change me !!
     extraGroups =  [
-      "networkmanager"
       "wheel"
       "audio"
       "sound"
       "video"
+    ]
+    ++ lib.optionals config.nixcosmic.networking.enable [
+      "networkmanager"
     ]
     ++ lib.optionals config.nixcosmic.virtualisation.enable [
       "docker"
