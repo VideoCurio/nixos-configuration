@@ -69,6 +69,12 @@ while getopts ":h-:" opt; do
   esac
 done
 
+# This script must be run as root
+if [ "$EUID" -ne 0 ]; then
+  printf "\e[31mThis script MUST be run as root: sudo ./install-system.sh \e[0m \n" >&2
+  exit 1
+fi
+
 # NVMe SSD: /dev/nvme0n1
 DISK_PART="${!#}"
 if [ ! -e "$DISK_PART" ]; then
