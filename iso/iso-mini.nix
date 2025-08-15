@@ -19,6 +19,7 @@
     parted
     git
     gnused
+    pciutils
   ];
 
   networking.hostName = "NixcOSmic";

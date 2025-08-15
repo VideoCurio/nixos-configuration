@@ -211,6 +211,10 @@ case $yn in
 esac
 done
 
+if [ $verbose -eq 1 ]; then
+  lsblk --fs
+fi
+
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Mounting system..."
@@ -219,14 +223,12 @@ if ! mountpoint -q /mnt; then
   mount /dev/disk/by-label/nixos /mnt
 fi
 mkdir -p /mnt/boot
-sleep 2s
 if ! mountpoint -q /mnt/boot; then
-  mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+  mount -o umask=077 /dev/disk/by-partlabel/ESP /mnt/boot
 fi
 if [[ $(swapon -s | wc -l) -eq 1 ]]; then
   swapon /dev/disk/by-label/swap
 fi
-sleep 2s
 if [ $encrypt_disk -eq 1 ]; then
   mkdir -p /mnt/home
   if ! mountpoint -q /mnt/home; then

@@ -115,6 +115,7 @@ in {
     git
     gnupg
     gnused
+    pciutils
   ] ++
   (
     if (config.nixcosmic.hardware.amdGpu.enable == true)
