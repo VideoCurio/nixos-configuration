@@ -43,9 +43,8 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Go to /tmp directory and download this git repository: 
+6. Download this git repository: 
    ```bash
-   cd /tmp
    git clone https://github.com/VideoCurio/nixos-configuration
    cd nixos-configuration/
    ```
