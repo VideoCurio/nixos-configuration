@@ -34,37 +34,25 @@
       cloudflared
       # VNC
       remmina
-    ] ++
-    (
-      if (confg.nixcosmic.desktop.apps.devops.python312.enable == true)
-        then [
-          # Python3
-          python312Full
-          python312Packages.pip
-          python312Packages.setuptools
-          python312Packages.cryptography
-          jetbrains.pycharm-community
-        ]
-      else []
-    ) ++
-    (
-      if (confg.nixcosmic.desktop.apps.devops.rust.enable == true)
-        then [
-          # Rust
-          rustup # provide cargo, rustc, rust-analyzer and more
-          jetbrains.rust-rover
-        ]
-      else []
-    ) ++
-    (
-      if (confg.nixcosmic.desktop.apps.devops.networks.enable == true)
-        then [
-          # Networks
-          nmap
-          zenmap
-          wireshark # TODO: add user to wireshark group
-        ]
-      else []
-    );
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
+      # Python3
+      python312Full
+      python312Packages.pip
+      python312Packages.setuptools
+      python312Packages.cryptography
+      jetbrains.pycharm-community
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.rust.enable [
+      # Rust
+      rustup # provide cargo, rustc, rust-analyzer and more
+      jetbrains.rust-rover
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.networks.enable [
+      # Networks
+      nmap
+      zenmap
+      wireshark # TODO: add user to wireshark group
+    ];
   };
 }
