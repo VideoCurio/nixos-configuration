@@ -45,6 +45,7 @@ in {
 
   nixcosmic.bootefi.enable = lib.mkDefault true;
   nixcosmic.desktop.cosmic.enable = lib.mkDefault true;
+  nixcosmic.desktop.dotfiles.enable = lib.mkDefault true;
   nixcosmic.desktop.apps.basics.enable = lib.mkDefault true;
   nixcosmic.desktop.apps.devops.enable = lib.mkDefault false;
   nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false;
