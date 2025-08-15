@@ -115,7 +115,16 @@ in {
     git
     gnupg
     gnused
-  ];
+  ] ++
+  (
+    if (config.nixcosmic.hardware.amdGpu.enable == true)
+      then [ pkgs.btop-rocm ]
+    else (
+      if (config.nixcosmic.hardware.nvidiaGpu.enable == true)
+        then [ pkgs.btop-cuda ]
+      else [ pkgs.btop ]
+    )
+  );
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
