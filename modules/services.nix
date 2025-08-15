@@ -56,6 +56,8 @@
     systemd.services.flatpak-repo = {
       enable = true;
       description = "Flatpak add default repos";
+      after = [ "network-online.target" ];
+      requires = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.flatpak ];
       script =
