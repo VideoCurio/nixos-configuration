@@ -68,7 +68,7 @@
     services.accounts-daemon.enable = true;
     services.upower.enable = true;
     security.polkit.enable = true;
-    services.power-profiles-daemon.enable = true; # Change this to a comment if importing of laptop.nix
+    services.power-profiles-daemon.enable = true;
     services.geoclue2.enable = true;
 
     # Optional features
