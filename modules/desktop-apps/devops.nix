@@ -46,7 +46,6 @@
           jetbrains.pycharm-community
         ]
       else []
-
     ) ++
     (
       if (confg.nixcosmic.desktop.apps.devops.rust.enable == true)
@@ -63,7 +62,7 @@
           # Networks
           nmap
           zenmap
-          wireshark # should add user to wireshark group
+          wireshark # TODO: add user to wireshark group
         ]
       else []
     );
