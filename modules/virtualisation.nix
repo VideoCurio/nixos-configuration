@@ -47,6 +47,9 @@
       # Docker
       docker-buildx
       docker-compose
+      # Store creds with pass (gnupg required)
+      docker-credential-helpers
+      pass
       # QEMU + KVM + virt-manager
       virt-manager
       # Optional: QEMU support of different arch
