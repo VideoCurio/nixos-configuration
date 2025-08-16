@@ -108,7 +108,7 @@ dotfiles-inst () {
       echo "Cloning dotfiles into: $dir"
       git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
       git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
-      chown -R 1000 "$dir" # Any way to predict OWNER at this stage ?
+      chown -R 1000:100 "$dir" # Any way to predict OWNER at this stage ?
       rm -rf /tmp/dotfiles/
     fi
   done
