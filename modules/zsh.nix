@@ -8,7 +8,7 @@
     nixcosmic.shell.zsh.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "NixcOSmic minimum desktop apps.";
+      description = "NixcOSmic ZSH config.";
     };
   };
 
@@ -35,8 +35,9 @@
     };
     users.defaultUserShell = pkgs.zsh;
     # minimalistic default zshrc
-    environment.etc."skel/.zshrc".text = ''
-      autoload -Uz promptinit && promptinit
-    '';
+    #environment.etc."skel/.zshrc".text = ''
+    #  autoload -Uz promptinit && promptinit
+    #'';
+    # /etc/skel/.zshrc is now write with install-system.sh
   };
 }

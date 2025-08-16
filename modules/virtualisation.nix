@@ -51,6 +51,9 @@
       virt-manager
       # Optional: QEMU support of different arch
       qemu-user
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
+      pkgs.python312Packages.docker
     ];
   };
 }

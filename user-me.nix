@@ -15,11 +15,23 @@ in {
     isNormalUser = true;
     initialPassword = password;
     description = "David B."; # Change me !!
-    extraGroups =
-      if config.nixcosmic.virtualisation.enable then
-        [ "networkmanager" "wheel" "audio" "sound" "video" "docker" "libvirtd" "qemu-libvirtd" "kvm" "input" "disk" ]
-      else
-        [ "networkmanager" "wheel" "audio" "sound" "video" ];
+    extraGroups =  [
+      "wheel"
+      "audio"
+      "sound"
+      "video"
+    ]
+    ++ lib.optionals config.nixcosmic.networking.enable [
+      "networkmanager"
+    ]
+    ++ lib.optionals config.nixcosmic.virtualisation.enable [
+      "docker"
+      "libvirtd"
+      "qemu-libvirtd"
+      "kvm"
+      "input"
+      "disk"
+    ];
     useDefaultShell = true;
     # User SSH pubkey
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHkcdpx7N45SWb8RokTWnyPsKtMfvAki1TsxH3DhVI7 david@videocurio.com" ]; # Change me !!

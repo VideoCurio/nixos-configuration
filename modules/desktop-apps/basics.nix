@@ -25,7 +25,7 @@
       bitwarden-desktop
       brave
       easyeffects
-      gimp3
+      gimp3-with-plugins
       protonvpn-gui
       signal-desktop
       yubioath-flutter

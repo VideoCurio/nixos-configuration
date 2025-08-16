@@ -7,19 +7,43 @@
     nixcosmic.desktop.cosmic.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enable COSMIC desktop environment.";
+      description = "Enable the COSMIC desktop environment.";
     };
   };
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.cosmic.enable {
+    # Cosmic Desktop Env
+    services.desktopManager.cosmic.enable = true;
+    services.displayManager.cosmic-greeter.enable = true;
+    services.desktopManager.cosmic.xwayland.enable = true;
+
     environment.systemPackages = with pkgs; [
       #See: https://github.com/lilyinstarlight/nixos-cosmic/blob/main/nixos/cosmic/module.nix
       adwaita-icon-theme
       alsa-utils
-      cosmic-ext-tweaks
-      fontconfig
-      freetype
+      cosmic-applets
+      cosmic-applibrary
+      cosmic-bg
+      cosmic-comp
+      cosmic-edit
+      cosmic-files
+      config.services.displayManager.cosmic-greeter.package
+      cosmic-icons
+      cosmic-idle
+      cosmic-launcher
+      cosmic-notifications
+      cosmic-osd
+      cosmic-panel
+      cosmic-player
+      cosmic-randr
+      cosmic-screenshot
+      cosmic-session
+      cosmic-settings
+      cosmic-settings-daemon
+      cosmic-term
+      cosmic-wallpapers
+      cosmic-workspaces-epoch
       hicolor-icon-theme
       jq
       lld
@@ -28,7 +52,16 @@
       pop-icon-theme
       pop-launcher
       xdg-user-dirs
+    ]
+    ++ lib.optionals config.services.desktopManager.cosmic.xwayland.enable [
+      xwayland
+    ]
+    ++ lib.optionals config.services.flatpak.enable [
+      cosmic-store
     ];
+
+    # Distro-wide defaults for graphical sessions
+    services.graphical-desktop.enable = true;
 
     # Env packages
     environment.pathsToLink = [
@@ -42,43 +75,55 @@
       NIXOS_OZONE_WL = "1";
     };
 
-    # Enabling xdg desktop integration
-    xdg.portal = {
-      enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-cosmic
-        xdg-desktop-portal-gtk
-      ];
-      configPackages = with pkgs; [
-        xdg-desktop-portal-cosmic
-      ];
+    xdg = {
+      icons.fallbackCursorThemes = lib.mkDefault [ "Cosmic" ];
+      icons.enable = true;
+      mime.enable = true;
+
+      portal = {
+        enable = true;
+        extraPortals = with pkgs; [
+          xdg-desktop-portal-cosmic
+          xdg-desktop-portal-gtk
+        ];
+        configPackages = lib.mkDefault [ pkgs.xdg-desktop-portal-cosmic ];
+      };
     };
 
-    # Cosmic Desktop Env
-    services.desktopManager.cosmic.enable = true;
-    services.displayManager.cosmic-greeter.enable = true;
-    services.desktopManager.cosmic.xwayland.enable = true;
+    systemd = {
+      packages = [ pkgs.cosmic-session ];
+      user.targets = {
+        # TODO: remove when upstream has XDG autostart support
+        cosmic-session = {
+          wants = [ "xdg-desktop-autostart.target" ];
+          before = [ "xdg-desktop-autostart.target" ];
+        };
+      };
+    };
 
-    # Required features
-    #hardware.graphics.enable = true;
-    services.libinput.enable = true;
-    xdg.mime.enable = true;
-    xdg.icons.enable = true;
-    # Required dbus services
-    services.accounts-daemon.enable = true;
-    services.upower.enable = true;
-    security.polkit.enable = true;
-    services.power-profiles-daemon.enable = true; # Change this to a comment if importing of laptop.nix
-    services.geoclue2.enable = true;
-
-    # Optional features
-    #hardware.bluetooth.enable = true;
-    services.acpid.enable = true;
-    services.gnome.gnome-keyring.enable = true;
+    # Required options for the COSMIC DE
+    environment.sessionVariables.X11_BASE_RULES_XML = "${config.services.xserver.xkb.dir}/rules/base.xml";
+    environment.sessionVariables.X11_EXTRA_RULES_XML = "${config.services.xserver.xkb.dir}/rules/base.extras.xml";
     programs.dconf.enable = true;
-    programs.gnome-disks.enable = true;
+    programs.dconf.packages = [ pkgs.cosmic-session ];
+    security.polkit.enable = true;
+    security.rtkit.enable = true;
+    services.accounts-daemon.enable = true;
+    services.displayManager.sessionPackages = [ pkgs.cosmic-session ];
+    services.libinput.enable = true;
+    services.upower.enable = true;
+    # Required for screen locker
+    security.pam.services.cosmic-greeter = { };
 
-    # Enable touchpad support (enabled default in most desktopManager).
-    #services.libinput.enable = true;
+    # Good to have defaults
+    hardware.bluetooth.enable = lib.mkDefault true;
+    networking.networkmanager.enable = lib.mkDefault true;
+    services.acpid.enable = lib.mkDefault true;
+    services.avahi.enable = lib.mkDefault true;
+    services.gnome.gnome-keyring.enable = lib.mkDefault true;
+    services.gvfs.enable = lib.mkDefault true;
+    services.power-profiles-daemon.enable = lib.mkDefault (
+      !config.hardware.system76.power-daemon.enable
+    );
   };
 }

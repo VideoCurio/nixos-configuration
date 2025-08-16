@@ -50,6 +50,7 @@ EOF
 if [ $# -lt 1 ]; then
   usage;
 fi;
+do_dotfiles_install=1;
 encrypt_disk=0;
 rpi4_install=0;
 verbose=0;
@@ -75,6 +76,14 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Check dependencies
+available() { command -v "$1" >/dev/null; }
+
+if ! available git; then
+  printf "\e[31mgit command not found! \e[0m \n"
+  exit 2
+fi
+
 # NVMe SSD: /dev/nvme0n1
 DISK_PART="${!#}"
 if [ ! -e "$DISK_PART" ]; then
@@ -84,6 +93,27 @@ if [ ! -e "$DISK_PART" ]; then
   printf "\e[31mDisk path is invalid! \e[0m \n"
   exit 2
 fi
+
+# dotfiles install function
+dotfiles-inst () {
+  printf "\e[32m================================\e[0m \n"
+  printf "\e[32m================================\e[0m \n"
+  echo "Custom dotfiles installation..."
+  git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
+  git --git-dir=/tmp/dotfiles/ --work-tree=/mnt/etc/skel/ checkout || true
+  rm -rf /tmp/dotfiles/
+  # Iterate over each home user
+  for dir in /mnt/home/*/; do
+    if [[ -d "$dir" && "$dir" != "/mnt/home/lost+found/" ]]; then
+      echo "Cloning dotfiles into: $dir"
+      git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
+      git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
+      chown -R 1000:100 "$dir" # Any way to predict OWNER at this stage ?
+      rm -rf /tmp/dotfiles/
+    fi
+  done
+  printf "\e[32mDotfiles installation done.\e[0m\n"
+}
 
 # Format disk function
 format () {
@@ -211,17 +241,24 @@ case $yn in
 esac
 done
 
+if [ $verbose -eq 1 ]; then
+  lsblk --fs
+fi
+
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Mounting system..."
+sleep 2s
 if ! mountpoint -q /mnt; then
   mount /dev/disk/by-label/nixos /mnt
 fi
 mkdir -p /mnt/boot
 if ! mountpoint -q /mnt/boot; then
-  mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+  mount -o umask=077 /dev/disk/by-partlabel/ESP /mnt/boot
 fi
-swapon /dev/disk/by-label/swap
+if [[ $(swapon -s | wc -l) -eq 1 ]]; then
+  swapon /dev/disk/by-label/swap
+fi
 if [ $encrypt_disk -eq 1 ]; then
   mkdir -p /mnt/home
   if ! mountpoint -q /mnt/home; then
@@ -239,7 +276,7 @@ nixos-generate-config --root /mnt --no-filesystems
 
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
-echo "Finishing installation..."
+echo "Copying configurations files..."
 
 cp ./*.nix /mnt/etc/nixos/
 cp -r modules/ /mnt/etc/nixos/
@@ -250,7 +287,9 @@ read -r -p "Proceed with installation ? (y/n) " yn
 case $yn in
   [yY] ) echo "nixos-install";
     nixos-install --no-root-passwd
-    # Temporary password should be set in configuration.nix
+    if [ $do_dotfiles_install -eq 1 ]; then
+      dotfiles-inst
+    fi
     printf "\e[32m Done... \e[0m \n"
     printf "\e[32m You can now reboot. \e[0m \n"
     break;;

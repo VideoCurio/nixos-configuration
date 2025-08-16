@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.acipd.enable = lib.mkOption {
+    nixcosmic.hardened.acpid.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for acipd.";
+      description = "NixcOSmic hardened systemd configuration for acpid.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.acipd.enable {
+  config = lib.mkIf config.nixcosmic.hardened.acpid.enable {
     systemd.services.acpid.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

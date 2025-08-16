@@ -10,10 +10,10 @@
       default = false;
       description = "Desktop apps for developers.";
     };
-    nixcosmic.desktop.apps.devops.python313.enable = lib.mkOption {
+    nixcosmic.desktop.apps.devops.python312.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Python3.13 and JetBrains PyCharm Community.";
+      description = "Python3.12 and JetBrains PyCharm Community.";
     };
     nixcosmic.desktop.apps.devops.rust.enable = lib.mkOption {
       type = lib.types.bool;
@@ -32,22 +32,27 @@
     environment.systemPackages = with pkgs; [
       # Devops
       cloudflared
+      # VNC
+      remmina
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
       # Python3
-      python313Full
-      python313Packages.pip
-      python313Packages.docker
-      python313Packages.setuptools
-      python313Packages.cryptography
+      python312Full
+      python312Packages.pip
+      python312Packages.setuptools
+      python312Packages.cryptography
       jetbrains.pycharm-community
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.rust.enable [
       # Rust
       rustup # provide cargo, rustc, rust-analyzer and more
       jetbrains.rust-rover
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.networks.enable [
       # Networks
       nmap
       zenmap
-      wireshark # should add user to wireshark group
-      # VNC
-      remmina
+      wireshark # TODO: add user to wireshark group
     ];
   };
 }
