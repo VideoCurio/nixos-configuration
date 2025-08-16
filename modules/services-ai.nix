@@ -20,8 +20,8 @@
       enable = true;
       #home = "/home/ollama";
       # Optional: preload models, see https://ollama.com/library
-      # or use `ollama pull <model-name>`
-      loadModels = [ "mistral-nemo:latest" ];
+      # or use `ollama pull <model-name>` (may be faster)
+      #loadModels = [ "mistral-nemo:latest" ]; # get download status with: 'systemctl status ollama-model-loader.service'
       # GPU accel
       #acceleration = "false"; # "false": 100% CPU, "cuda": modern Nvidia GPU, "rocm": modern AMD GPU
       acceleration =
