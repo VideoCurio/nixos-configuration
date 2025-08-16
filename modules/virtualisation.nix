@@ -47,6 +47,13 @@
       # Docker
       docker-buildx
       docker-compose
+      # Store creds with pass (gnupg required)
+      # echo '{ "credStore": "pass" }' >> $HOME/.docker/config.json
+      # gpg --full-generate-key
+      # pass init dxxxxxxxxxx@xxxxxxxxxx.com
+      # echo $GH_TOKEN | docker login ghcr.io -u dxxxxxxxxxxx@xxxxxxxxx.com --password-stdin
+      docker-credential-helpers
+      pass
       # QEMU + KVM + virt-manager
       virt-manager
       # Optional: QEMU support of different arch

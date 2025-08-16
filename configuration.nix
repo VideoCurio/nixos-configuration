@@ -131,6 +131,7 @@ in {
     killall
     git
     gnupg
+    pinentry-curses
     gnused
     pciutils
   ] ++
@@ -147,10 +148,11 @@ in {
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   #programs.mtr.enable = true;
-  #programs.gnupg.agent = {
-  #  enable = true;
-  #  enableSSHSupport = true;
-  #};
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = false; # Let's SSH start-agent do this job
+    pinentryPackage = pkgs.pinentry-curses;
+  };
 
   # Enabling Linux AppImage
   #programs.appimage.enable = true;
