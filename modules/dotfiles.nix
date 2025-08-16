@@ -56,5 +56,18 @@ in {
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.dotfiles.enable {
     environment.systemPackages = [ dotfiles-installer ];
+    # dotfiles-installer user auto activation
+    # systemctl --user list-units --type=service
+    #systemd.user.services.dotfiles-install = {
+    #  enable = true;
+    #  description = "VideoCurio dotfiles auto install";
+    #  after = [ "graphical-session.target" ];
+    #  wants = [ "network-online.target" ];
+    #  serviceConfig = {
+    #    Type = "oneshot";
+    #    ExecStart = "/run/current-system/sw/bin/dotfiles-installer";
+    #  };
+    #  wantedBy = [ "graphical-session.target" ];
+    #};
   };
 }
