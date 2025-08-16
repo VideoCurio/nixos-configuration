@@ -66,10 +66,23 @@ in {
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
 
   # Test hardened configurations one by one
-  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
-  nixcosmic.hardened.acpid.enable = lib.mkDefault false;
+  # Check results with: `systemd-analyze security`
+  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
+  nixcosmic.hardened.acpid.enable = lib.mkDefault true;
   nixcosmic.hardened.cups.enable = lib.mkDefault false;
-  nixcosmic.hardened.dbus.enable = lib.mkDefault false;
+  nixcosmic.hardened.dbus.enable = lib.mkDefault true;
+  nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
+  nixcosmic.hardened.docker.enable = lib.mkDefault false;
+  nixcosmic.hardened.getty.enable = lib.mkDefault true;
+  nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
+  nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
+  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault true;
+  nixcosmic.hardened.nscd.enable = lib.mkDefault true;
+  nixcosmic.hardened.rescue.enable = lib.mkDefault true;
+  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
+  nixcosmic.hardened.sshd.enable = lib.mkDefault true;
+  nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
+  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
 
   # TODO: Prevent some conflicts between modules:
 
