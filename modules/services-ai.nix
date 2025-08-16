@@ -26,10 +26,10 @@
       #acceleration = "false"; # "false": 100% CPU, "cuda": modern Nvidia GPU, "rocm": modern AMD GPU
       acceleration =
       (
-        if (nixcosmic.hardware.nvidiaGpu.enable == true) then
+        if (config.nixcosmic.hardware.nvidiaGpu.enable == true) then
           "cuda"
         else (
-          if (nixcosmic.hardware.amdGpu.enable == true) then
+          if (config.nixcosmic.hardware.amdGpu.enable == true) then
             "rocm"
           else "false"
         )

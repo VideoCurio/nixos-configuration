@@ -34,7 +34,7 @@ let
 
     if [ ! -d "$HOME"/.dotfiles/ ]; then
       printf "Cloning nixos-dotfiles repo..."
-      $GIT_PATH clone --bare https://github.com/VideoCurio/nixos-dotfiles "$HOME"/.dotfiles/
+      $GIT_PATH clone --bare https://github.com/VideoCurio/nixos-dotfiles.git "$HOME"/.dotfiles/
       $GIT_PATH --git-dir="$HOME"/.dotfiles/ --work-tree="$HOME" checkout || true
       $GIT_PATH --git-dir="$HOME"/.dotfiles/ --work-tree="$HOME" config --local status.showUntrackedFiles no
       $GIT_PATH --git-dir="$HOME"/.dotfiles/ --work-tree="$HOME" reset --hard
