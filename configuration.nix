@@ -150,7 +150,7 @@ in {
   #programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;
-    enableSSHSupport = true;
+    enableSSHSupport = false; # Let's SSH start-agent do this job
     pinentryPackage = pkgs.pinentry-curses;
   };
 

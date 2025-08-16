@@ -40,8 +40,8 @@
         X11Forwarding = false;
       };
     };
-    # SSH start-agent - not compatible with gnupg.agent
-    programs.ssh.startAgent = lib.mkForce false;
+    # SSH start-agent - not compatible with gnupg.agent SSH
+    programs.ssh.startAgent = true;
 
     # Enable CUPS to print documents.
     services.printing.enable =
