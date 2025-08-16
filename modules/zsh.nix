@@ -8,7 +8,7 @@
     nixcosmic.shell.zsh.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "NixcOSmic minimum desktop apps.";
+      description = "NixcOSmic ZSH config.";
     };
   };
 
