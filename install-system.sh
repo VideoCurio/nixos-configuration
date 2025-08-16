@@ -50,6 +50,7 @@ EOF
 if [ $# -lt 1 ]; then
   usage;
 fi;
+do_dotfiles_install=1;
 encrypt_disk=0;
 rpi4_install=0;
 verbose=0;
@@ -75,6 +76,14 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Check dependencies
+available() { command -v "$1" >/dev/null; }
+
+if ! available git; then
+  printf "\e[31mgit command not found! \e[0m \n"
+  exit 2
+fi
+
 # NVMe SSD: /dev/nvme0n1
 DISK_PART="${!#}"
 if [ ! -e "$DISK_PART" ]; then
@@ -84,6 +93,27 @@ if [ ! -e "$DISK_PART" ]; then
   printf "\e[31mDisk path is invalid! \e[0m \n"
   exit 2
 fi
+
+# dotfiles install function
+dotfiles-inst () {
+  printf "\e[32m================================\e[0m \n"
+  printf "\e[32m================================\e[0m \n"
+  echo "Custom dotfiles installation..."
+  git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
+  git --git-dir=/tmp/dotfiles/ --work-tree=/mnt/etc/skel/ checkout || true
+  rm -rf /tmp/dotfiles/
+  # Iterate over each home user
+  for dir in /mnt/home/*/; do
+    if [ -d "$dir" ]; then
+      echo "Cloning dotfiles into: $dir"
+      git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
+      git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
+      chown -R 1000:1000 "$dir"/* # Any way to predict OWNER at this stage ?
+      rm -rf /tmp/dotfiles/
+    fi
+  done
+  printf "\e[32mDotfiles installation done.\e[0m \n"
+}
 
 # Format disk function
 format () {
@@ -257,6 +287,9 @@ read -r -p "Proceed with installation ? (y/n) " yn
 case $yn in
   [yY] ) echo "nixos-install";
     nixos-install --no-root-passwd
+    if [ $do_dotfiles_install -eq 1 ]; then
+      dotfiles-inst
+    fi
     # Temporary password should be set in configuration.nix
     printf "\e[32m Done... \e[0m \n"
     printf "\e[32m You can now reboot. \e[0m \n"
