@@ -15,7 +15,7 @@
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.apps.gaming.enable {
     # Steam
-    nixpkgs.config.allowUnfree = lib.mkDefault true;
+    nixpkgs.config.allowUnfree = lib.mkForce true; # unfree packages required for Steam and Lutris
     programs.steam = {
       enable = true;
       #remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -28,6 +28,9 @@
       enable = true;
     };
     environment.systemPackages = with pkgs; [
+      # Heroic launcher
+      heroic
+      # TS
       teamspeak6-client
       # Steam, set game property > launch option to "gamemoderun %command%" for Windows only games.
       # See: https://www.protondb.com/ for more launch options.

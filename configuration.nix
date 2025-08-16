@@ -21,46 +21,49 @@ in {
       # Include the results of the hardware scan.
       # You could re-generated one with 'sudo nixos-generate-config --no-filesystems'.
       # For hardware related configurations, see: https://github.com/NixOS/nixos-hardware
+      # Do NOT edit
       ./hardware-configuration.nix
       ##################### Step 2: Modules #####################
       # Import all modules, activate or deactivate them below
       ./modules/default.nix
       ##################### Step 3: User #####################
       # Me
-      ./user-me.nix # change me !
+      ./user-me.nix # edit / change me !
     ];
 
   networking.hostName = "NixcOSmic"; # Change me!!
 
   # Enabling or disabling ./modules here:
-  nixcosmic.platform.amd64.enable = lib.mkDefault true;
-  nixcosmic.platform.rpi4.enable = lib.mkDefault false;
+  nixcosmic.platform.amd64.enable = lib.mkDefault true; # x86_64 AMD or Intel platform
+  nixcosmic.platform.rpi4.enable = lib.mkDefault false; # Raspberry Pi 4 platform
 
-  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;
-  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;
-  nixcosmic.hardware.laptop.enable = lib.mkDefault false;
+  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
+  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
+  nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
 
-  nixcosmic.filesystems.luks.enable = lib.mkDefault true;
-  nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
+  nixcosmic.filesystems.luks.enable = lib.mkDefault true; # For full disk encryption, as defined by './install-system.sh --crypt /dev/XXX'
+  nixcosmic.filesystems.minimal.enable = lib.mkDefault false; # Minimal Ext4 disk, NOT recommended. As defined by './install-system.sh /dev/XXX'
 
-  nixcosmic.bootefi.enable = lib.mkDefault true;
-  nixcosmic.desktop.cosmic.enable = lib.mkDefault true;
-  nixcosmic.desktop.dotfiles.enable = lib.mkDefault true;
-  nixcosmic.desktop.apps.basics.enable = lib.mkDefault true;
-  nixcosmic.desktop.apps.devops.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false;
-  nixcosmic.desktop.apps.studio.enable = lib.mkDefault false;
-  nixcosmic.fonts.enable = lib.mkDefault true;
-  nixcosmic.networking.enable = lib.mkDefault true;
-  nixcosmic.services.enable = lib.mkDefault true;
-  nixcosmic.services.printing.enable = lib.mkDefault false;
-  nixcosmic.services.sshd.enable = lib.mkDefault true;
-  nixcosmic.services.ai.enable = lib.mkDefault false;
-  nixcosmic.shell.zsh.enable = lib.mkDefault true;
-  nixcosmic.virtualisation.enable = lib.mkDefault false;
+  nixcosmic.bootefi.enable = lib.mkDefault true; # EFI systemd boot
+  nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
+  nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom Nixos+COSMIC dotfiles by VideoCurio
+
+  nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+  nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required for apps.devops options below. + Cloudlfared
+  nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false; # Nmap, Zenmap, Wireshark
+  nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
+  nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
+  nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
+  nixcosmic.desktop.apps.studio.enable = lib.mkDefault false; # OBS, Audacity, DaVinci Resolve
+
+  nixcosmic.fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
+  nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager, DNS set to Quad9 and cloudflare.
+  nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
+  nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
+  nixcosmic.services.sshd.enable = lib.mkDefault true; # SSH daemon
+  nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
+  nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED for nixcosmic.desktop.dotfiles.enable
+  nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
 
   # Test hardened configurations one by one
   nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
