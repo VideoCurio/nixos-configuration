@@ -67,7 +67,7 @@ in {
 
   # Test hardened configurations one by one
   nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
-  nixcosmic.hardened.acipd.enable = lib.mkDefault false;
+  nixcosmic.hardened.acpid.enable = lib.mkDefault false;
   nixcosmic.hardened.cups.enable = lib.mkDefault false;
   nixcosmic.hardened.dbus.enable = lib.mkDefault false;
 

@@ -4,7 +4,7 @@
 {
   imports = [
     ./accounts-daemon.nix
-    ./acipd.nix
+    ./acpid.nix
     ./cups.nix
     ./dbus.nix
   ];
