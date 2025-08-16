@@ -104,15 +104,15 @@ dotfiles-inst () {
   rm -rf /tmp/dotfiles/
   # Iterate over each home user
   for dir in /mnt/home/*/; do
-    if [ -d "$dir" ]; then
+    if [[ -d "$dir" && "$dir" != "/mnt/home/lost+found/" ]]; then
       echo "Cloning dotfiles into: $dir"
       git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
       git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
-      chown -R 1000:1000 "$dir"/* # Any way to predict OWNER at this stage ?
+      chown -R 1000 "$dir" # Any way to predict OWNER at this stage ?
       rm -rf /tmp/dotfiles/
     fi
   done
-  printf "\e[32mDotfiles installation done.\e[0m \n"
+  printf "\e[32mDotfiles installation done.\e[0m\n"
 }
 
 # Format disk function
@@ -290,7 +290,6 @@ case $yn in
     if [ $do_dotfiles_install -eq 1 ]; then
       dotfiles-inst
     fi
-    # Temporary password should be set in configuration.nix
     printf "\e[32m Done... \e[0m \n"
     printf "\e[32m You can now reboot. \e[0m \n"
     break;;
