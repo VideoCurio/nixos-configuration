@@ -16,19 +16,6 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 | **Launcher:** | pop-launcher | Super / Super + A |
 | **Browser:**  | Brave        | Super + B         |
 
-Useful COSMIC shortcuts:
-
-| **Action**                  | Shortcut                           |
-|-----------------------------|------------------------------------|
-| Application launcher/switch | Super                              |
-| Change application focus    | Super + Up/Down/Left/Right         |
-| Switch desktop              | Ctrl + Super + Up/Down             |
-| Move application (tiles)    | Shift + Super + Up/Down/Left/Right |
-| Launch web browser          | Super + B                          |
-| Launch File manager         | Super + F                          |
-| Launch a terminal           | Super + T                          |
-| Applications menu           | Super + A                          |
-
 -----
 
 > [!IMPORTANT]
@@ -96,6 +83,8 @@ Useful COSMIC shortcuts:
     You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
     Or use the command `passwd` in a terminal.
 
+-----
+
 ## Features
 
 * Hardware configuration files for AMD, Intel and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
@@ -108,9 +97,24 @@ Useful COSMIC shortcuts:
 * Modular hardened systemd services configurations files. WIP
 * A bunch of nerd fonts...
 
-## Dotfiles
+Useful COSMIC shortcuts:
+
+| **Action**                  | Shortcut                           |
+|-----------------------------|------------------------------------|
+| Application launcher/switch | Super                              |
+| Change application focus    | Super + Up/Down/Left/Right         |
+| Switch desktop              | Ctrl + Super + Up/Down             |
+| Move application (tiles)    | Shift + Super + Up/Down/Left/Right |
+| Launch web browser          | Super + B                          |
+| Launch File manager         | Super + F                          |
+| Launch a terminal           | Super + T                          |
+| Applications menu           | Super + A                          |
+
+### Dotfiles
 
 [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+
+-----
 
 ## NixOS management
 
@@ -140,12 +144,16 @@ dufw
 sudo du -sh /* 2>/dev/null | sort -rh
 ```
 
+-----
+
 ## Developers notes
 Developers should try theirs code against the `testing` branch.
 ```bash
 git clone -b testing https://github.com/VideoCurio/nixos-configuration.git
 ```
 Pull Request are welcomed.
+
+-----
 
 ## License
 
