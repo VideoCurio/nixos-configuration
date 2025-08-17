@@ -12,7 +12,8 @@ let
 in {
   users.mutableUsers = true;
   # Define a user account
-  users.users.me = { # Change 'me' to your username !!
+  # <user> name will be updated by ./install-system.sh - no need to change it
+  users.users.nixos = {
     isNormalUser = true;
     initialPassword = password;
     description = "My Name"; # Change me !!

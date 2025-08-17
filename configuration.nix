@@ -7,12 +7,12 @@
 { config, lib, pkgs, ... }:
 
 let
-  # Following variables can be edited:
-  timeZone = "Europe/Paris"; # Change me!!
-  #defaultLocale = "en_US.UTF-8"; # Change me!!
-  defaultLocale = "fr_FR.UTF-8";
-  #defaultConsoleKeymap = "us"; # Change me!
-  defaultConsoleKeymap = "fr";
+  # Following variables will be updated by ./install-system.sh - no need to change it
+  timeZone = "Europe/Paris";
+  defaultLocale = "en_US.UTF-8";
+  # Not edited by ./install-system.sh - ony useful for TTY :
+  defaultConsoleKeymap = "us"; # Change me!
+  #defaultConsoleKeymap = "fr";
 in {
   # Split configurations files, see: https://nixos.wiki/wiki/NixOS_modules
   imports =
@@ -30,20 +30,23 @@ in {
       ./user-me.nix # edit / change me !
     ];
 
-  networking.hostName = "NixCOSMIC"; # Change me!!
+  # updated by ./install-system.sh - no need to change it
+  networking.hostName = "NixCOSMIC";
+
+  # platform updated by ./install-system.sh - do NOT edit.
+  nixcosmic.platform.amd64.enable = lib.mkDefault true;
+  nixcosmic.platform.rpi4.enable = lib.mkDefault false;
 
   # Enabling or disabling ./modules here:
-  nixcosmic.platform.amd64.enable = lib.mkDefault true; # x86_64 AMD or Intel platform
-  nixcosmic.platform.rpi4.enable = lib.mkDefault false; # Raspberry Pi 4 platform
-
   nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
   nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
   nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
 
-  nixcosmic.filesystems.luks.enable = lib.mkDefault true; # For full disk encryption, as defined by './install-system.sh --crypt /dev/XXX'
-  nixcosmic.filesystems.minimal.enable = lib.mkDefault false; # Minimal Ext4 disk, NOT recommended. As defined by './install-system.sh /dev/XXX'
+  # updated by ./install-system.sh - do NOT edit.
+  nixcosmic.filesystems.luks.enable = lib.mkDefault true;
+  nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
 
-  nixcosmic.bootefi.enable = lib.mkDefault true; # EFI systemd boot
+  nixcosmic.bootefi.enable = lib.mkDefault true;
   nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
   nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom Nixos+COSMIC dotfiles by VideoCurio
 

@@ -48,30 +48,40 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    git clone https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
-7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an x86_64 platform (AMD or Intel) with a full encrypted disk (LUKS).
-   Activate or deactivate modules to suit your needs and computer's hardware.
+7. Edit `configuration.nix` now if you think you will need to activate one of the modules during the installation process.
+   Activate or deactivate modules to suit your needs and computer's hardware - most of them could be activated later if necessary.
 
-   Modules configuration start with 'nixcosmic.', for example: to activate an Nvidia GPU set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into 'configuration.nix' file.
+   Modules configuration start with 'nixcosmic.', for example: to activate an Nvidia GPU pilots set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into 'configuration.nix' file.
 > [!IMPORTANT]
-> You MUST edit the 'configuration.nix' file to match your hardware and packages need. The script in step 8 does not detect hardware (yet) !
+> The installation script in step 8 does detect hardware - you probably do not need to edit anything.
    ```bash
-   # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
-   # Edit all settings marked with 'Change me' comment.
+   # Edit only if necessary:
    nano configuration.nix
-   # Edit default user, change your name. Do **NOT** set your real password in this file !
-   nano user-me.nix
    # Use Ctrl+s to save and Ctrl+x to exit nano
    ```
    **_Tip_**: Do not activate all modules during the installation phase. You can later edit the '/etc/nixos/configuration.nix' file.
 
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
-8. Run the installer with the **recommended** options: `./install-system.sh --crypt --root-size:100G /dev/nvme0n1`:
+8. Run the installer with the **recommended** options: `./install-system.sh --crypt /dev/nvme0n1`:
    ```bash
-   # List your disks with:
+   # To find your disk /dev path:
    fdisk -l
-   # For a full encrypted disk (LUKS + LVM) on your first SSD:
+   # For a full encrypted disk (LUKS + LVM) with a root partition of 100Go, on your first SSD:
    ./install-system.sh --crypt --root-size:100G /dev/nvme0n1
+   # Answer questions asked by the script to complete the installation:
+   Choose your language in the list below:
+   1) en_US.UTF8
+   2) fr_FR.UTF8
+   3) es_ES.UTF8
+   4) de_DE.UTF8
+   5) zh_CN.UTF8
+   6) ...
+   Enter your choice (1-20): 2
+   Choose your time zone (Europe/Paris):
+   Choose your username : nixos
+   Choose your machine hostname (NixCOSMIC): EVAUnit02
+   
    # See --help option for more details:
    ./install-system.sh --help
    ```

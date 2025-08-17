@@ -50,9 +50,11 @@ EOF
 
 do_dotfiles_install=1;
 encrypt_disk=0;
-root_size="80G"
+root_size="80G";
 rpi4_install=0;
 verbose=0;
+selected_locale="";
+script_path="$(dirname "$0")"
 
 # Function to validate root size format
 validate_root_size() {
@@ -116,12 +118,144 @@ if [ ! -e "$DISK_PART" ]; then
   exit 2
 fi
 
+# check some .nix files
+if [ ! -f "$script_path"/configuration.nix ]; then
+  printf "\e[31mconfiguration.nix file not found! \e[0m \n"
+  exit 1
+fi
+
+if [ ! -f "$script_path"/user-me.nix ]; then
+  printf "\e[31muser-me.nix file not found! \e[0m \n"
+  exit 1
+fi
+
+if [ ! -d "$script_path"/modules/ ]; then
+  printf "\e[31m modules directory not found! \e[0m \n"
+  exit 1
+fi
+
+########### Choose your language:
+locales=(
+  "en_US.UTF-8"
+  "fr_FR.UTF-8"
+  "es_ES.UTF-8"
+  "de_DE.UTF-8"
+  "zh_CN.UTF-8"
+  "ja_JP.UTF-8"
+  "pt_PT.UTF-8"
+  "ru_RU.UTF-8"
+  "it_IT.UTF-8"
+  "ko_KR.UTF-8"
+  "ar_SA.UTF-8"
+  "nl_NL.UTF-8"
+  "pl_PL.UTF-8"
+  "sv_SE.UTF-8"
+  "tr_TR.UTF-8"
+  "cs_CZ.UTF-8"
+  "da_DK.UTF-8"
+  "hu_HU.UTF-8"
+  "no_NO.UTF-8"
+  "he_IL.UTF-8"
+)
+
+# Print locales
+echo "Choose your language in the list below:"
+for i in "${!locales[@]}"; do
+  echo "$((i+1))) ${locales[i]}"
+done
+
+read -r -p "Enter your choice (1-20): " lang_choice
+if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
+  selected_locale="${locales[$((lang_choice-1))]}"
+  # Update user language in configuration.nix:
+  sed 's/defaultLocale = ".*/defaultLocale = "'${selected_locale}'";/g' -i "$script_path"/configuration.nix
+else
+  echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
+  exit 1
+fi
+# locale -a | grep "$selected_locale" ????
+# echo "LANG=fr_FR.UTF-8" > ~/.config/locale.conf
+
+########### Choose a timezone:
+read -r -p "Choose your time zone (Europe/Paris): " pc_timezone
+
+# hostname check
+if [ -z "$pc_timezone" ]; then
+ pc_timezone="Europe/Paris"
+fi
+if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
+  printf "\e[31m Invalid time zone, it could only contain alphanumerical characters and /, -, + or _, like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
+  exit 1
+fi
+# Update configuration.nix
+sed 's/timeZone = ".*/timeZone = "'${pc_timezone//\//\\\/}'";/g' -i "$script_path"/configuration.nix
+
+########### Choose a username:
+read -r -p "Choose your username : " username
+
+# username check
+if [ -z "$username" ]; then
+  printf "\e[31m username cannot be empty.\e[0m \n"
+  exit 1
+fi
+if ! [[ $username =~ ^[a-zA-Z0-9]+$ ]]; then
+  printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
+  exit 1
+fi
+# Update use-me.nix
+sed 's/users\.users\..*/users.users.'${username}' = {/g' -i "$script_path"/user-me.nix
+
+########### Choose a hostname:
+read -r -p "Choose your machine hostname (NixCOSMIC): " pc_hostname
+
+# hostname check
+if [ -z "$pc_hostname" ]; then
+ pc_hostname="NixCOSMIC"
+fi
+if ! [[ $pc_hostname =~ ^[a-zA-Z0-9]+$ ]]; then
+  printf "\e[31m Invalid hostname, it could only contain alphanumerical characters.\e[0m \n"
+  exit 1
+fi
+# Update configuration.nix
+sed 's/networking\.hostName = ".*/networking.hostName = "'${pc_hostname}'";/g' -i "$script_path"/configuration.nix
+
+########### platform settings:
+if [ $rpi4_install -eq 1 ]; then
+  # Update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+else
+  # Also update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+fi
+
+########### filesystems settings:
+if [ $encrypt_disk -eq 1 ]; then
+  # Update configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+else
+  # Also update configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+fi
+
 # Test - debug parameters
 if [ $verbose -eq 1 ]; then
+  echo "path: $script_path"
   echo "--crypt: $encrypt_disk"
   echo "--rpi4: $rpi4_install"
   echo "--root-size: $root_size"
   echo "<disk_partition>: $DISK_PART"
+  echo "selected_locale: $selected_locale"
+  echo "username: $username"
+  echo "hostname: $pc_hostname"
+  echo "timezone: $pc_timezone"
 fi
 
 # This script must be run as root
@@ -265,8 +399,8 @@ if [ $rpi4_install -eq 1 ]; then
   mount /dev/disk/by-label/FIRMWARE /mnt
   BOOTFS=/mnt rpi-eeprom-update -d -a
 
-  cp ./*.nix /etc/nixos/
-  cp -r hardened/ /etc/nixos/
+  cp "$script_path"/*.nix /etc/nixos/
+  cp -r "$script_path"/modules/ /etc/nixos/
 
   nixos-rebuild boot
   printf "\e[32m Done... \e[0m \n"
@@ -323,8 +457,8 @@ printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Copying configurations files..."
 
-cp ./*.nix /mnt/etc/nixos/
-cp -r modules/ /mnt/etc/nixos/
+cp "$script_path"/*.nix /mnt/etc/nixos/
+cp -r "$script_path"/modules/ /mnt/etc/nixos/
 
 while true; do
 read -r -p "Proceed with installation ? (y/n) " yn
