@@ -22,22 +22,24 @@ usage ()
   echo -e "
 Usage: ./install-system.sh [options] <disk_partition>
   Where,
-    disk_partition: Valid /dev path of a disk to install NixOS on.";
+    disk_partition: Valid /dev path of a disk to install NixOS on.
+    The default root partition size is set to 80G for full disk encryption option, use --root-size to change this.";
 
   cat << EOF
 
   Options:
-     -h, --help       Print this message.
-     --crypt          Full disk encryption with LVM+LUKS.
-     --rpi4           Raspberry PI 4 installation. (exclude --crypt option)
-     -v, --verbose    Print more information
+     -h, --help         Print this message.
+     --crypt            Full disk encryption with LVM+LUKS with separated root and /home partitions.
+     --root-size SIZE   Set root partition size (e.g., 100G or 20%) - ONLY with --crypt option.
+     --rpi4             Raspberry PI 4 installation (exclude --crypt option).
+     -v, --verbose      Print more information.
 
   Examples:
-    Full encrypted disk install on the first NVMe SSD:
-      ./install-system.sh --crypt /dev/nvme0n1
-    Standard install on the second HDD:
+    Full encrypted disk install on the first NVMe SSD (with /home partition):
+      ./install-system.sh --crypt --root-size 120G /dev/nvme0n1
+    Minimal disk install on the second HDD:
       ./install-system.sh /dev/sdb
-    Standard install on a QEMU/KVM virtual disk:
+    Minimal disk install on a QEMU/KVM virtual disk:
       ./install-system.sh /dev/vda
     Raspberry Pi 4 install:
       nix-shell -p git raspberrypi-eeprom
@@ -46,29 +48,81 @@ EOF
   exit;
 }
 
-# Scripts arguments
-if [ $# -lt 1 ]; then
-  usage;
-fi;
 do_dotfiles_install=1;
 encrypt_disk=0;
+root_size="80G"
 rpi4_install=0;
 verbose=0;
-while getopts ":h:v-:" opt; do
-  case "${opt}" in
-    -)
-      case "${OPTARG}" in
-        crypt) encrypt_disk=1; ;;
-        help) usage; ;;
-        rpi4) rpi4_install=1; encrypt_disk=0; ;;
-        verbose) verbose=1; ;;
-        *) usage; ;;
-      esac;;
-    h) usage; ;;
-    v) verbose=1; ;;
-    *) usage; ;;
+
+# Function to validate root size format
+validate_root_size() {
+  local pattern="^[0-9]+([GMm]|%)$"
+  if ! [[ "$1" =~ $pattern ]]; then
+    printf "\e[31mInvalid root size format. Use 'SIZE[G|M|m]' or 'SIZE%%' (e.g., 100G, 15%% or 80m).\e[0m \n"
+    exit 1
+  fi
+}
+
+# Scripts arguments parse options
+ARGS=$(getopt --longoptions="verbose,help,crypt,rpi4,root-size:" --name "$0" --options ":hv" -- "$@")
+if [ $# -lt 1 ]; then
+  usage
+fi;
+
+DISK_PART="${!#}"
+
+eval set -- "$ARGS"
+
+while true; do
+  case "$1" in
+    -v | --verbose)
+      verbose=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      ;;
+    --crypt)
+      encrypt_disk=1
+      shift
+      ;;
+    --rpi4)
+      rpi4_install=1
+      shift
+      ;;
+    --root-size)
+      root_size="$2"
+      validate_root_size "$root_size"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
   esac
 done
+
+if [ $rpi4_install -eq 1 ]; then
+  # disk on RPI4 could not be modified
+  encrypt_disk=0
+fi
+
+# Check disk path
+if [ ! -e "$DISK_PART" ]; then
+  printf "\e[31mDisk path is invalid! \e[0m \n"
+  exit 2
+fi
+
+# Test - debug parameters
+if [ $verbose -eq 1 ]; then
+  echo "--crypt: $encrypt_disk"
+  echo "--rpi4: $rpi4_install"
+  echo "--root-size: $root_size"
+  echo "<disk_partition>: $DISK_PART"
+fi
 
 # This script must be run as root
 if [ "$EUID" -ne 0 ]; then
@@ -81,16 +135,6 @@ available() { command -v "$1" >/dev/null; }
 
 if ! available git; then
   printf "\e[31mgit command not found! \e[0m \n"
-  exit 2
-fi
-
-# NVMe SSD: /dev/nvme0n1
-DISK_PART="${!#}"
-if [ ! -e "$DISK_PART" ]; then
-  if [ $verbose -eq 1 ]; then
-    parted -l
-  fi
-  printf "\e[31mDisk path is invalid! \e[0m \n"
   exit 2
 fi
 
@@ -186,8 +230,8 @@ format () {
     fi
     # create the swap volume
     lvcreate --size 8G lvmroot --name swap
-    # create the root volume (100Go)
-    lvcreate --size 100G lvmroot --name root
+    # create the root volume
+    lvcreate --size "$root_size" lvmroot --name root
     # create a home volume (100% of free disk)
     lvcreate -l 100%FREE lvmroot --name home
     if [ $verbose -eq 1 ]; then
