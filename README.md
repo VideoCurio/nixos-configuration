@@ -7,14 +7,27 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ------
 
-|               | Packages     | Shortcut  |
-|---------------|--------------|-----------|
-| **Desktop:**  | COSMIC       |           |
-| **Shell:**    | zsh          |           |
-| **Display:**  | Wayland      |           |
-| **Terminal:** | Alacritty    | Super + T |
-| **Launcher:** | pop-launcher | Super     |
-| **Browser:**  | Brave        | Super + B |
+|               | Packages     | Shortcut          |
+|---------------|--------------|-------------------|
+| **Desktop:**  | COSMIC       |                   |
+| **Shell:**    | zsh          |                   |
+| **Display:**  | Wayland      |                   |
+| **Terminal:** | Alacritty    | Super + T         |
+| **Launcher:** | pop-launcher | Super / Super + A |
+| **Browser:**  | Brave        | Super + B         |
+
+Useful COSMIC shortcuts:
+
+| **Action**                  | Shortcut                           |
+|-----------------------------|------------------------------------|
+| Application launcher/switch | Super                              |
+| Change application focus    | Super + Up/Down/Left/Right         |
+| Switch desktop              | Ctrl + Super + Up/Down             |
+| Move application (tiles)    | Shift + Super + Up/Down/Left/Right |
+| Launch web browser          | Super + B                          |
+| Launch File manager         | Super + F                          |
+| Launch a terminal           | Super + T                          |
+| Applications menu           | Super + A                          |
 
 -----
 
