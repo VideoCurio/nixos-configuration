@@ -9,7 +9,7 @@
 let
   # Following variables will be updated by ./install-system.sh - no need to change it
   timeZone = "Europe/Paris";
-  defaultLocale = "en_US.UTF8";
+  defaultLocale = "en_US.UTF-8";
   # Not edited by ./install-system.sh - ony useful for TTY :
   defaultConsoleKeymap = "us"; # Change me!
   #defaultConsoleKeymap = "fr";
