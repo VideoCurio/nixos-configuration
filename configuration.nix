@@ -9,10 +9,10 @@
 let
   # Following variables can be edited:
   timeZone = "Europe/Paris"; # Change me!!
-  #defaultLocale = "en_US.UTF-8"; # Change me!!
-  defaultLocale = "fr_FR.UTF-8";
-  #defaultConsoleKeymap = "us"; # Change me!
-  defaultConsoleKeymap = "fr";
+  defaultLocale = "en_US.UTF-8"; # Change me!!
+  #defaultLocale = "fr_FR.UTF-8";
+  defaultConsoleKeymap = "us"; # Change me!
+  #defaultConsoleKeymap = "fr";
 in {
   # Split configurations files, see: https://nixos.wiki/wiki/NixOS_modules
   imports =
