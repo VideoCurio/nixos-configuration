@@ -144,6 +144,7 @@ dotfiles-inst () {
   printf "\e[32m================================\e[0m \n"
   echo "Custom dotfiles installation..."
   git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
+  mkdir -p /mnt/etc/skel/
   git --git-dir=/tmp/dotfiles/ --work-tree=/mnt/etc/skel/ checkout || true
   rm -rf /tmp/dotfiles/
   # Iterate over each home user
