@@ -22,7 +22,6 @@
           "rd.systemd.show_status=auto"
           "amd_pstate=active"
           "nosplit_lock_mitigate"
-          "clearcpuid=514"
         ] else [
           "quiet"
           "splash"
