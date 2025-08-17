@@ -52,7 +52,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    Activate or deactivate modules to suit your needs and computer's hardware - most of them could be activated later if necessary.
 
    Modules configuration start with 'nixcosmic.', for example: to activate an Nvidia GPU pilots set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into 'configuration.nix' file.
-> [!NOTICE]
+> [!IMPORTANT]
 > The installation script in step 8 does detect hardware - you probably do not need to edit anything.
    ```bash
    # Edit only if necessary:
