@@ -12,7 +12,7 @@ let
 in {
   users.mutableUsers = true;
   # Define a user account
-  users.users.nixos = { # Change 'nixos' to your username !!
+  users.users.me = { # Change 'me' to your username !!
     isNormalUser = true;
     initialPassword = password;
     description = "My Name"; # Change me !!
