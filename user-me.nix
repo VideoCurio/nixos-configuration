@@ -5,16 +5,17 @@
 
 let
   # Following variables can be edited.
-  # Default user password, change it after your first boot with COSMIC Parameters > System & Accounts
-  # OR with 'passwd' command line.
-  password = "changeme";
+  # Default user password. Change it later, after your first boot with COSMIC Parameters > System & Accounts
+  # OR with the 'passwd' command line.
+  # Do **NOT** set your real password HERE !
+  password = "changeme"; # change it later
 in {
   users.mutableUsers = true;
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.david = { # Change me !!
+  # Define a user account
+  users.users.nixos = { # Change 'nixos' to your username !!
     isNormalUser = true;
     initialPassword = password;
-    description = "David B."; # Change me !!
+    description = "My Name"; # Change me !!
     extraGroups =  [
       "wheel"
       "audio"
@@ -34,7 +35,7 @@ in {
     ];
     useDefaultShell = true;
     # User SSH pubkey
-    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHkcdpx7N45SWb8RokTWnyPsKtMfvAki1TsxH3DhVI7 david@videocurio.com" ]; # Change me !!
+    #openssh.authorizedKeys.keys = [ "ssh-ed25519 XXXXXXX me@me.com" ]; # Change me !!
   };
 
 }

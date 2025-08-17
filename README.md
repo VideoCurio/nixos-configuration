@@ -1,6 +1,6 @@
 [![NixOS Unstable](https://img.shields.io/badge/NixOS-25.05-blue.svg?style=flat-square&logo=NixOS&logoColor=white)](https://nixos.org)
 
-# NixOS + COSMIC
+# NixOS + COSMIC = NixC*OS*MIC
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
 ![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot6.png?raw=true "NixOS with COSMIC DE")
@@ -39,74 +39,72 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    sudo -i
    ```
-5. (OPTIONAL) Switch keymap on non-us keyboard: 
+5. (**OPTIONAL**) Switch keymap on non-us keyboard: 
    ```bash
    loadkeys fr
    ```
 6. Download this git repository: 
    ```bash
-   git clone https://github.com/VideoCurio/nixos-configuration
+   git clone https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
-7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an Intel x86 platform with a full encrypted disk (LUKS).
-   Change the `imports` section of the file to suit your needs and computer's hardware.
+7. Edit `configuration.nix` and `user-me.nix` files. Default `configuration.nix` file is for an x86_64 platform (AMD or Intel) with a full encrypted disk (LUKS).
+   Activate or deactivate modules to suit your needs and computer's hardware.
+
+   Modules configuration start with 'nixcosmic.', for example: to activate an Nvidia GPU set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into 'configuration.nix' file.
 > [!IMPORTANT]
-> You MUST edit the configuration.nix file to match your hardware and packages need. The script in step 8 does not detect hardware (yet) !
+> You MUST edit the 'configuration.nix' file to match your hardware and packages need. The script in step 8 does not detect hardware (yet) !
    ```bash
    # Edit imports part to match your hardware and environment.systemPackages to add/remove packages.
    # Edit all settings marked with 'Change me' comment.
    nano configuration.nix
-   # Edit default user, change your name and your SSH pubkey:
+   # Edit default user, change your name. Do **NOT** set your real password in this file !
    nano user-me.nix
    # Use Ctrl+s to save and Ctrl+x to exit nano
    ```
-   **_Tip_**: If your hardware is not listed here, try the command `nixos-generate-config --root /mnt` as root, check the '/mnt/etc/nixos/hardware-configuration.nix' generate and remove the 'fileSystems' parts.
+   **_Tip_**: Do not activate all modules during the installation phase. You can later edit the '/etc/nixos/configuration.nix' file.
 
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
-8. Run the installer `./install-system.sh`:
+8. Run the installer with the **recommended** options: `./install-system.sh --crypt --root-size:100G /dev/nvme0n1`:
    ```bash
-   # See fdisk command to list your disk:
+   # List your disks with:
    fdisk -l
    # For a full encrypted disk (LUKS + LVM) on your first SSD:
-   ./install-system.sh --crypt /dev/nvme0n1
-   # OR for a simple disk partition on the first HDD:
-   ./install-system.sh /dev/sda
+   ./install-system.sh --crypt --root-size:100G /dev/nvme0n1
    # See --help option for more details:
-   ./install-system.sh -h
+   ./install-system.sh --help
    ```
 9. If everything went according to plan, reboot.
    ```bash
    reboot now
    ```
-10. **Enjoy!** User temporary default password is "changeme". Do **NOT** set your password in `user-me.nix`, instead log-in with the temporary password and use the command:
-    ```bash
-    passwd
-    ```
-    Or within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password
+10. **Enjoy!** User temporary password is "changeme".
+    You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
+    Or use the command `passwd` in a terminal.
 
 ## Features
 
-* Hardware configuration files for AMD, Intel, QEMU/KVM and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
+* Hardware configuration files for AMD, Intel and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
 * Filesystem configuration for full encrypted disk (LUKS+LVM).
 * COSMIC, a wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
-* Pop_launcher, launch or switch to every application just with the Super key.
+* Pop_launcher, launch or switch to every application just with the Super key. Forget about your mouse, use Super key combinations for everything.
 * Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
-* Alacritty terminal with ZSH and a lot of good modern commands. Finish to set up everything with [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
-* More nice applications in `*-tools.nix` files like Ollama AI, docker, QEMU + virt-manager, python3, Rust and more...
-* Hardened systemd services configurations files. WIP
+* Alacritty terminal with ZSH and a lot of good modern commands. [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) is pre-installed.
+* Modular configuration files for apps like Ollama AI, docker, QEMU + virt-manager, python3, Rust and more...
+* Modular hardened systemd services configurations files. WIP
 * A bunch of nerd fonts...
 
 ## Dotfiles
 
-Want a nice Terminal with some cool plugins ? See [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles).
+[my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
 
 ## NixOS management
 
 NixOS is a Linux distribution based on the Nix package manager and build system. It supports reproducible and declarative system-wide configuration management as well as atomic upgrades and rollbacks, although it can additionally support imperative package and user management. In NixOS, all components of the distribution — including the kernel, installed packages and system configuration files — are built by Nix from pure functions called Nix expressions.
 See [NixOS manual](https://nixos.org/manual/nixos/stable/) to learn more.
 
-If you want to modify your current configuration or add packages, edit the 'configuration.nix' file and rebuild it:
+If you want to modify your current configuration, activate NixCOSMIC modules or add packages, edit the 'configuration.nix' file and rebuild it:
 ```bash
 sudo nano /etc/nixos/configuration.nix
 ```
@@ -116,7 +114,7 @@ sudo nixos-rebuild switch
 ```
 To find packages or options configuration, see [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
-This configuration is set to auto upgrade every night at 03:40, see `systemctl list-timers`.
+This configuration is set to auto upgrade every night at 03:40 or on your first boot of the day, see `systemctl list-timers`.
 
 Generations older than 7 days are automatically garbage collected. You can also manually do this with:
 ```bash
@@ -124,9 +122,7 @@ sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch --u
 ```
 Watch your root directories size with:
 ```bash
-sudo dust /
-# or
-duf
+dufw
 # or
 sudo du -sh /* 2>/dev/null | sort -rh
 ```
