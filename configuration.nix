@@ -33,10 +33,11 @@ in {
   # updated by ./install-system.sh - no need to change it
   networking.hostName = "NixCOSMIC";
 
-  # Enabling or disabling ./modules here:
-  nixcosmic.platform.amd64.enable = lib.mkDefault true; # x86_64 AMD or Intel platform
-  nixcosmic.platform.rpi4.enable = lib.mkDefault false; # Raspberry Pi 4 platform
+  # platform updated by ./install-system.sh - do NOT edit.
+  nixcosmic.platform.amd64.enable = lib.mkDefault true;
+  nixcosmic.platform.rpi4.enable = lib.mkDefault false;
 
+  # Enabling or disabling ./modules here:
   nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
   nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
   nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
@@ -45,7 +46,7 @@ in {
   nixcosmic.filesystems.luks.enable = lib.mkDefault true;
   nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
 
-  nixcosmic.bootefi.enable = lib.mkDefault true; # EFI systemd boot
+  nixcosmic.bootefi.enable = lib.mkDefault true;
   nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
   nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom Nixos+COSMIC dotfiles by VideoCurio
 

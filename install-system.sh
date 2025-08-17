@@ -219,6 +219,21 @@ fi
 # Update configuration.nix
 sed 's/networking\.hostName = ".*/networking.hostName = "'${pc_hostname}'";/g' -i "$script_path"/configuration.nix
 
+########### platform settings:
+if [ $rpi4_install -eq 1 ]; then
+  # Update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+else
+  # Also update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+fi
+
 ########### filesystems settings:
 if [ $encrypt_disk -eq 1 ]; then
   # Update configuration.nix
