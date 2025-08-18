@@ -71,7 +71,11 @@ in {
   # Check results with: `systemd-analyze security`
   nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
   nixcosmic.hardened.acpid.enable = lib.mkDefault true;
-  nixcosmic.hardened.cups.enable = lib.mkDefault false;
+  nixcosmic.hardened.cups.enable =
+    if config.nixcosmic.services.printing.enable then
+      true
+    else
+      false;
   nixcosmic.hardened.dbus.enable = lib.mkDefault true;
   nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
   nixcosmic.hardened.docker.enable = lib.mkDefault false;
