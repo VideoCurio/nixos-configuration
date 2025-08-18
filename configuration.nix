@@ -62,7 +62,7 @@ in {
   nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager, DNS set to Quad9 and cloudflare.
   nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
   nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
-  nixcosmic.services.sshd.enable = lib.mkDefault true; # SSH daemon
+  nixcosmic.services.sshd.enable = lib.mkDefault false; # SSH daemon
   nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
   nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED for nixcosmic.desktop.dotfiles.enable
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
