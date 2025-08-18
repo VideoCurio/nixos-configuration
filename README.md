@@ -48,12 +48,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    git clone https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
-7. Edit `configuration.nix` now if you think you will need to activate one of the modules during the installation process.
-   Activate or deactivate modules to suit your needs and computer's hardware - most of them could be activated later if necessary.
-
-   Modules configuration start with 'nixcosmic.', for example: to activate an Nvidia GPU pilots set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into 'configuration.nix' file.
-> [!IMPORTANT]
-> The installation script in step 8 does detect hardware - you probably do not need to edit anything.
+7. Edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.
    ```bash
    # Edit only if necessary:
    nano configuration.nix
@@ -61,9 +56,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```
    **_Tip_**: Do not activate all modules during the installation phase. You can later edit the '/etc/nixos/configuration.nix' file.
 
-> [!WARNING]
-> This script will **FORMAT** your disk !!! Backup your data before.
 8. Run the installer with the **recommended** options: `./install-system.sh --crypt /dev/nvme0n1`:
+   > [!WARNING]
+   > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
@@ -81,6 +76,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    Choose your time zone (Europe/Paris):
    Choose your username : nixos
    Choose your machine hostname (NixCOSMIC): EVAUnit02
+   ...
    
    # See --help option for more details:
    ./install-system.sh --help
@@ -126,22 +122,29 @@ Useful COSMIC shortcuts:
 
 -----
 
-## NixOS management
+## NixC*OS*MIC management
 
-NixOS is a Linux distribution based on the Nix package manager and build system. It supports reproducible and declarative system-wide configuration management as well as atomic upgrades and rollbacks, although it can additionally support imperative package and user management. In NixOS, all components of the distribution — including the kernel, installed packages and system configuration files — are built by Nix from pure functions called Nix expressions.
-See [NixOS manual](https://nixos.org/manual/nixos/stable/) to learn more.
+Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'nixcosmic.'.
 
-If you want to modify your current configuration, activate NixCOSMIC modules or add packages, edit the 'configuration.nix' file and rebuild it:
+For example: to activate an Nvidia GPU pilots set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into '/etc/nixos/configuration.nix' file.
+Want to game ? Set `nixcosmic.desktop.apps.gaming.enable` to true.
 ```bash
-sudo nano /etc/nixos/configuration.nix
+# Edit only if necessary:
+nano /etc/nixos/configuration.nix
+# Use Ctrl+s to save and Ctrl+x to exit nano
 ```
 followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-To find packages or options configuration, see [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+To find more packages or options configuration, see [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
-This configuration is set to auto upgrade every night at 03:40 or on your first boot of the day, see `systemctl list-timers`.
+## NixOS management
+
+NixOS is a Linux distribution based on the Nix package manager and build system. It supports reproducible and declarative system-wide configuration management as well as atomic upgrades and rollbacks, although it can additionally support imperative package and user management. In NixOS, all components of the distribution — including the kernel, installed packages and system configuration files — are built by Nix from pure functions called Nix expressions.
+See [NixOS manual](https://nixos.org/manual/nixos/stable/) to learn more.
+
+The default 'configuration.nix' is set to auto upgrade every night at 03:40 or on your first boot of the day, see `systemctl list-timers`.
 
 Generations older than 7 days are automatically garbage collected. You can also manually do this with:
 ```bash
