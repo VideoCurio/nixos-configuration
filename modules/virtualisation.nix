@@ -50,9 +50,11 @@
       docker-compose
       # Store creds with pass (gnupg required)
       # echo '{ "credStore": "pass" }' >> $HOME/.docker/config.json
-      # gpg --full-generate-key
+      # gpg --generate-key
       # pass init dxxxxxxxxxx@xxxxxxxxxx.com
+      # pass insert docker-credential-helpers/docker-pass-initialized-check
       # echo $GH_TOKEN | docker login ghcr.io -u dxxxxxxxxxxx@xxxxxxxxx.com --password-stdin
+      # cat ~/.docker/config.json
       docker-credential-helpers
       pass
       # QEMU + KVM + virt-manager
