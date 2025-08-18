@@ -191,7 +191,7 @@ fi
 sed 's/timeZone = ".*/timeZone = "'${pc_timezone//\//\\\/}'";/g' -i "$script_path"/configuration.nix
 
 ########### Choose a username:
-read -r -p "Choose your username : " username
+read -r -p "Choose your username: " username
 
 # username check
 if [ -z "$username" ]; then
@@ -409,7 +409,7 @@ if [ $rpi4_install -eq 1 ]; then
 fi
 
 while true; do
-read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n) " yn
+read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
 
 case $yn in
   [yY] ) format;
@@ -461,7 +461,7 @@ cp "$script_path"/*.nix /mnt/etc/nixos/
 cp -r "$script_path"/modules/ /mnt/etc/nixos/
 
 while true; do
-read -r -p "Proceed with installation ? (y/n) " yn
+read -r -p "Proceed with installation ? (y/n): " yn
 
 case $yn in
   [yY] ) echo "nixos-install";

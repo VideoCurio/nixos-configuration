@@ -36,8 +36,9 @@
       };
     };
     # Optional: QEMU support of different arch
-    # Launch this command for docker build multi platform:
+    # Launch this 2 commands for docker build multi platform:
     #docker run --privileged --rm tonistiigi/binfmt --install all
+    #docker buildx create --name container-builder --driver docker-container --bootstrap --use
     boot.binfmt = {
       emulatedSystems = [ "aarch64-linux" ];
       preferStaticEmulators = true; # Make it work with docker
@@ -49,9 +50,11 @@
       docker-compose
       # Store creds with pass (gnupg required)
       # echo '{ "credStore": "pass" }' >> $HOME/.docker/config.json
-      # gpg --full-generate-key
+      # gpg --generate-key
       # pass init dxxxxxxxxxx@xxxxxxxxxx.com
+      # pass insert docker-credential-helpers/docker-pass-initialized-check
       # echo $GH_TOKEN | docker login ghcr.io -u dxxxxxxxxxxx@xxxxxxxxx.com --password-stdin
+      # cat ~/.docker/config.json
       docker-credential-helpers
       pass
       # QEMU + KVM + virt-manager
