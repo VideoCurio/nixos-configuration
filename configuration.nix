@@ -62,7 +62,7 @@ in {
   nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager, DNS set to Quad9 and cloudflare.
   nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
   nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
-  nixcosmic.services.sshd.enable = lib.mkDefault true; # SSH daemon
+  nixcosmic.services.sshd.enable = lib.mkDefault false; # SSH daemon
   nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
   nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED for nixcosmic.desktop.dotfiles.enable
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
@@ -82,7 +82,11 @@ in {
   nixcosmic.hardened.nscd.enable = lib.mkDefault true;
   nixcosmic.hardened.rescue.enable = lib.mkDefault true;
   nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.sshd.enable = lib.mkDefault true;
+  nixcosmic.hardened.sshd.enable =
+    if config.nixcosmic.services.sshd.enable then
+      true
+    else
+      false;
   nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
   nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
 
@@ -152,7 +156,7 @@ in {
   #programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;
-    enableSSHSupport = false; # Let's SSH start-agent do this job
+    enableSSHSupport = false; # Let's programs.ssh.startAgent do this job
     pinentryPackage = pkgs.pinentry-curses;
   };
 
