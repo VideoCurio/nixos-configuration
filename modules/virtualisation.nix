@@ -36,8 +36,9 @@
       };
     };
     # Optional: QEMU support of different arch
-    # Launch this command for docker build multi platform:
+    # Launch this 2 commands for docker build multi platform:
     #docker run --privileged --rm tonistiigi/binfmt --install all
+    #docker buildx create --name container-builder --driver docker-container --bootstrap --use
     boot.binfmt = {
       emulatedSystems = [ "aarch64-linux" ];
       preferStaticEmulators = true; # Make it work with docker
