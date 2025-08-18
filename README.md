@@ -57,8 +57,8 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    **_Tip_**: Do not activate all modules during the installation phase. You can later edit the '/etc/nixos/configuration.nix' file.
 
 8. Run the installer with the **recommended** options: `./install-system.sh --crypt /dev/nvme0n1`:
-   > [!WARNING]
-   > This script will **FORMAT** your disk !!! Backup your data before.
+> [!WARNING]
+> This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
