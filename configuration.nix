@@ -172,7 +172,15 @@ in {
   #programs.appimage.binfmt = true;
 
   # Allow unfree packages, could be overridden by some modules.
-  nixpkgs.config.allowUnfree = lib.mkDefault false;
+  nixpkgs.config.allowUnfree =
+    if config.nixcosmic.hardware.nvidiaGpu.enable then
+      true
+    else
+      if config.nixcosmic.desktop.apps.gaming.enable then
+        true
+      else
+        false
+  ;
 
   # Automatic OS updates and cleanup
   system.autoUpgrade.enable = true;
