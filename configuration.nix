@@ -10,9 +10,7 @@ let
   # Following variables will be updated by ./install-system.sh - no need to change it
   timeZone = "Europe/Paris";
   defaultLocale = "en_US.UTF-8";
-  # Not edited by ./install-system.sh - ony useful for TTY :
-  defaultConsoleKeymap = "us"; # Change me!
-  #defaultConsoleKeymap = "fr";
+  defaultConsoleKeymap = "us";
 in {
   # Split configurations files, see: https://nixos.wiki/wiki/NixOS_modules
   imports =
