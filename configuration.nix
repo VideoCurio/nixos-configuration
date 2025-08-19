@@ -37,10 +37,13 @@ in {
   nixcosmic.platform.amd64.enable = lib.mkDefault true;
   nixcosmic.platform.rpi4.enable = lib.mkDefault false;
 
-  # Enabling or disabling ./modules here:
-  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
-  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
-  nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
+  ######## Enabling or disabling ./modules here:
+  # Modern AMD GPU
+  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;
+  # Modern Nvidia GPU
+  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;
+  # EXPERIMENTAL - laptop battery saver
+  nixcosmic.hardware.laptop.enable = lib.mkDefault false;
 
   # updated by ./install-system.sh - do NOT edit.
   nixcosmic.filesystems.luks.enable = lib.mkDefault true;

@@ -54,6 +54,8 @@ root_size="80G";
 rpi4_install=0;
 verbose=0;
 selected_locale="";
+gpu_detected="";
+install_gpu=0;
 script_path="$(dirname "$0")"
 
 # Function to validate root size format
@@ -245,6 +247,51 @@ else
   sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
 fi
 
+########### GPU:
+gpu=$(lspci -nn | grep -i vga)
+nb_gpu=$(lspci | grep -ci vga)
+
+if (( nb_gpu >= 1 )); then
+  if echo "$gpu" | grep -qi "amd"; then
+    gpu_detected="amd"
+    while true; do
+      read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
+      case $yn in
+        [yY] ) install_gpu=1;
+          break;;
+        [nN] ) echo "Proceeding without installing GPU pilot...";
+          break;;
+        * ) echo "Invalid response";;
+      esac
+    done
+  fi
+  if echo "$gpu" | grep -qi "nvidia"; then
+    gpu_detected="nvidia"
+    while true; do
+      read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
+      case $yn in
+        [yY] ) install_gpu=1;
+          break;;
+        [nN] ) echo "Proceeding without installing GPU pilot...";
+          break;;
+        * ) echo "Invalid response";;
+      esac
+    done
+  fi
+
+  if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
+    echo "Enabling AMD GPU..."
+    sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
+    echo "Enabling Nvidia GPU..."
+    sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
+  else
+    echo "Disabling GPU..."
+    sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+    sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
+  fi
+fi
+
 # Test - debug parameters
 if [ $verbose -eq 1 ]; then
   echo "path: $script_path"
@@ -256,6 +303,8 @@ if [ $verbose -eq 1 ]; then
   echo "username: $username"
   echo "hostname: $pc_hostname"
   echo "timezone: $pc_timezone"
+  echo "GPU: $gpu_detected"
+  echo "GPU install: $install_gpu"
 fi
 
 # This script must be run as root
