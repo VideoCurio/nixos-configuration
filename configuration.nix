@@ -10,9 +10,7 @@ let
   # Following variables will be updated by ./install-system.sh - no need to change it
   timeZone = "Europe/Paris";
   defaultLocale = "en_US.UTF-8";
-  # Not edited by ./install-system.sh - ony useful for TTY :
-  defaultConsoleKeymap = "us"; # Change me!
-  #defaultConsoleKeymap = "fr";
+  defaultConsoleKeymap = "us";
 in {
   # Split configurations files, see: https://nixos.wiki/wiki/NixOS_modules
   imports =
@@ -172,7 +170,15 @@ in {
   #programs.appimage.binfmt = true;
 
   # Allow unfree packages, could be overridden by some modules.
-  nixpkgs.config.allowUnfree = lib.mkDefault false;
+  nixpkgs.config.allowUnfree =
+    if config.nixcosmic.hardware.nvidiaGpu.enable then
+      true
+    else
+      if config.nixcosmic.desktop.apps.gaming.enable then
+        true
+      else
+        false
+  ;
 
   # Automatic OS updates and cleanup
   system.autoUpgrade.enable = true;

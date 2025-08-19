@@ -48,7 +48,8 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    git clone https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
-7. Edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.
+7. **Advanced user only:** edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.
+   Step 8 install script will detect hardware, there is probably no need to edit the configuration file now.
    ```bash
    # Edit only if necessary:
    nano configuration.nix

@@ -159,6 +159,28 @@ locales=(
   "no_NO.UTF-8"
   "he_IL.UTF-8"
 )
+locales_console=(
+  "us"
+  "fr"
+  "es"
+  "de"
+  "zh"
+  "ja"
+  "pt"
+  "ru"
+  "it"
+  "ko"
+  "ar"
+  "nl"
+  "pl"
+  "sv"
+  "tr"
+  "cs"
+  "da"
+  "hu"
+  "no"
+  "he"
+)
 
 # Print locales
 echo "Choose your language in the list below:"
@@ -171,6 +193,9 @@ if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
   # Update user language in configuration.nix:
   sed 's/defaultLocale = ".*/defaultLocale = "'${selected_locale}'";/g' -i "$script_path"/configuration.nix
+  # Update console key map for cryptroot:
+  selected_locale_console="${locales_console[$((lang_choice-1))]}"
+  sed 's/defaultConsoleKeymap = ".*/defaultConsoleKeymap = "'${selected_locale_console}'";/g' -i "$script_path"/configuration.nix
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
   exit 1
