@@ -23,6 +23,13 @@
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.services.enable {
+    # xserver
+    services.xserver = {
+      # keyboard settings, see: 'localectl status'
+      xkb.layout = "us";
+      xkb.model = "pc104";
+    };
+
     # OpenSSH server.
     services.openssh = {
       enable =

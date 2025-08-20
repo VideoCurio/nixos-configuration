@@ -32,6 +32,7 @@
     environment.systemPackages = with pkgs; [
       # Devops
       cloudflared
+      git-who
       # VNC
       remmina
     ]
