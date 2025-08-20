@@ -72,11 +72,9 @@ in {
   # Check results with: `systemd-analyze security`
   nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
   nixcosmic.hardened.acpid.enable = lib.mkDefault true;
-  nixcosmic.hardened.cups.enable =
-    if config.nixcosmic.services.printing.enable then
-      true
-    else
-      false;
+  nixcosmic.hardened.cups.enable = lib.mkDefault (
+    config.nixcosmic.services.printing.enable
+  );
   nixcosmic.hardened.dbus.enable = lib.mkDefault true;
   nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
   nixcosmic.hardened.docker.enable = lib.mkDefault false;
@@ -87,11 +85,9 @@ in {
   nixcosmic.hardened.nscd.enable = lib.mkDefault true;
   nixcosmic.hardened.rescue.enable = lib.mkDefault true;
   nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.sshd.enable =
-    if config.nixcosmic.services.sshd.enable then
-      true
-    else
-      false;
+  nixcosmic.hardened.sshd.enable = lib.mkDefault (
+    config.nixcosmic.services.sshd.enable
+  );
   nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
   nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
 
@@ -118,13 +114,6 @@ in {
     };
   };
 
-  # Enable the X11 windowing system.
-  #services.xserver = {
-  #  enable = true;
-  #  xkb.layout = defaultConsoleKeymap;
-  #  xkb.options = "eurosign:e,caps:escape";
-  #};
-
   console = {
     #font = "Lat2-Terminus16";
     keyMap = defaultConsoleKeymap;
@@ -145,15 +134,15 @@ in {
     pinentry-curses
     gnused
     pciutils
-  ] ++
-  (
-    if (config.nixcosmic.hardware.amdGpu.enable == true)
-      then [ pkgs.btop-rocm ]
-    else (
-      if (config.nixcosmic.hardware.nvidiaGpu.enable == true)
-        then [ pkgs.btop-cuda ]
-      else [ pkgs.btop ]
-    )
+  ]
+  ++ (
+    if config.nixcosmic.hardware.amdGpu.enable then
+      [ pkgs.btop-rocm ]
+    else
+      if config.nixcosmic.hardware.nvidiaGpu.enable then
+        [ pkgs.btop-cuda ]
+      else
+        [ pkgs.btop ]
   );
 
   # Some programs need SUID wrappers, can be configured further or are
