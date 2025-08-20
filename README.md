@@ -34,7 +34,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    sudo dd if=latest-nixos-minimal-x86_64-linux.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
-3. Boot your machine on the USB stick. An internet connection is *REQUIRED* to perform the installation !
+3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
 4. You should see a TTY command line as `nixos` user, switch to root user:
    ```bash
    sudo -i
@@ -63,7 +63,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    # To find your disk /dev path:
    fdisk -l
-   # For a full encrypted disk (LUKS + LVM) with a root partition of 100Go, on your first SSD:
+   # For a full encrypted disk (LUKS + LVM) with a root partition of 120Go, on your first SSD:
    ./install-system.sh --crypt --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
@@ -75,9 +75,26 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    6) ...
    Enter your choice (1-20): 2
    Choose your time zone (Europe/Paris):
-   Choose your username : nixos
+   Choose your username: nixos
    Choose your machine hostname (NixCOSMIC): EVAUnit02
+   AMD GPU detected, would like to install it ? (y/n): y
+   Enabling AMD GPU...
+   Partitioning disk /dev/nvme0n1 ? All data will be ERASED (y/n): y
    ...
+   ================================
+   ================================
+   Creating encrypted partition...
+   Enter passphrase for /dev/nvme0n1p2:
+   Verify passphrase:
+   Enter passphrase for /dev/nvme0n1p2:
+   ...
+   ================================
+   ================================
+   Copying configurations files...
+   Proceed with installation ? (y/n): y
+   ...
+   Done...
+   You can now reboot.
    
    # See --help option for more details:
    ./install-system.sh --help
@@ -86,7 +103,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    reboot now
    ```
-10. **Enjoy!** User temporary password is "changeme".
+10. **Enjoy!** User temporary password is **"changeme"**.
     You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
     Or use the command `passwd` in a terminal.
 
@@ -101,7 +118,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
 * Alacritty terminal with ZSH and a lot of good modern commands. [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) is pre-installed.
 * Modular configuration files for apps like Ollama AI, docker, QEMU + virt-manager, python3, Rust and more...
-* Modular hardened systemd services configurations files. WIP
+* Modular hardened systemd services configurations files. -WIP-
 * A bunch of nerd fonts...
 
 Useful COSMIC shortcuts:
@@ -127,18 +144,21 @@ Useful COSMIC shortcuts:
 
 Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'nixcosmic.'.
 
-For example: to activate an Nvidia GPU pilots set: `nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;` into '/etc/nixos/configuration.nix' file.
-Want to game ? Set `nixcosmic.desktop.apps.gaming.enable` to true.
+For example: you want to game and install Steam, Heroic launcher, Discord and more, set: `nixcosmic.hardware.nvidiaGpu.enable` to `true;` into '/etc/nixos/configuration.nix' file.
 ```bash
-# Edit only if necessary:
-nano /etc/nixos/configuration.nix
+sudo nano /etc/nixos/configuration.nix
 # Use Ctrl+s to save and Ctrl+x to exit nano
 ```
 followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-To find more packages or options configuration, see [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want package not in one of the modules ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+
+### Flatpak
+You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos).
+![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
+
 
 ## NixOS management
 
@@ -153,7 +173,7 @@ sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch --u
 ```
 Watch your root directories size with:
 ```bash
-dufw
+duf
 # or
 sudo du -sh /* 2>/dev/null | sort -rh
 ```
