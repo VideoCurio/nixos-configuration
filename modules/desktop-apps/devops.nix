@@ -29,6 +29,16 @@
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.desktop.apps.devops.enable {
+    # basic Neovim
+    programs.neovim =  {
+      enable = true;
+      package = pkgs.neovim-unwrapped;
+      defaultEditor = false;
+      viAlias = true;
+      vimAlias = true;
+    };
+    # TODO: neovim plugins like lazyvim
+    # other dev apps
     environment.systemPackages = with pkgs; [
       # Devops
       cloudflared
