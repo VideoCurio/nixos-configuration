@@ -137,12 +137,12 @@ in {
   ]
   ++ (
     if config.nixcosmic.hardware.amdGpu.enable then
-      [ pkgs.btop-rocm ]
+      [ btop-rocm ]
     else
       if config.nixcosmic.hardware.nvidiaGpu.enable then
-        [ pkgs.btop-cuda ]
+        [ btop-cuda ]
       else
-        [ pkgs.btop ]
+        [ btop ]
   );
 
   # Some programs need SUID wrappers, can be configured further or are
