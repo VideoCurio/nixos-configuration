@@ -28,6 +28,7 @@
       enable = true;
     };
     environment.systemPackages = with pkgs; [
+      discord
       # Heroic launcher
       heroic
       # TS

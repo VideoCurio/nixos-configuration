@@ -64,7 +64,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    # To find your disk /dev path:
    fdisk -l
    # For a full encrypted disk (LUKS + LVM) with a root partition of 100Go, on your first SSD:
-   ./install-system.sh --crypt --root-size:100G /dev/nvme0n1
+   ./install-system.sh --crypt --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8

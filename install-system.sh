@@ -203,6 +203,8 @@ fi
 # locale -a | grep "$selected_locale" ????
 # echo "LANG=fr_FR.UTF-8" > ~/.config/locale.conf
 
+########### TODO: keyboard layout
+
 ########### Choose a timezone:
 read -r -p "Choose your time zone (Europe/Paris): " pc_timezone
 
