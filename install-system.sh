@@ -196,6 +196,8 @@ if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   # Update console key map for cryptroot:
   selected_locale_console="${locales_console[$((lang_choice-1))]}"
   sed 's/defaultConsoleKeymap = ".*/defaultConsoleKeymap = "'${selected_locale_console}'";/g' -i "$script_path"/configuration.nix
+  # Update xserver keyboard layout:
+  sed 's/xkb\.layout = ".*/xkb.layout = "'${selected_locale_console}'";/g' -i "$script_path"/modules/services.nix
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
   exit 1
