@@ -30,7 +30,7 @@
       xkb.layout = "us";
       xkb.model = "pc105";
       #xkb.options = "eurosign:e,caps:escape";
-      displayManager.sessionCommands = "setxkbmap -layout us -variant intl";
+      displayManager.sessionCommands = "setxkbmap -layout us";
     };
 
     # OpenSSH server.
