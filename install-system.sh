@@ -139,6 +139,7 @@ fi
 ########### Choose your language:
 locales=(
   "en_US.UTF-8"
+  "en_GB.UTF-8"
   "fr_FR.UTF-8"
   "es_ES.UTF-8"
   "de_DE.UTF-8"
@@ -161,6 +162,7 @@ locales=(
 )
 locales_console=(
   "us"
+  "gb"
   "fr"
   "es"
   "de"
