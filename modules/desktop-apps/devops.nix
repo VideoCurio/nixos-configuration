@@ -53,6 +53,7 @@
       python312Packages.setuptools
       python312Packages.cryptography
       jetbrains.pycharm-community
+      ruff
     ]
     ++ lib.optionals config.nixcosmic.desktop.apps.devops.rust.enable [
       # Rust
