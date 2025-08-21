@@ -133,6 +133,7 @@ Useful COSMIC shortcuts:
 | Launch File manager         | Super + F                          |
 | Launch a terminal           | Super + T                          |
 | Applications menu           | Super + A                          |
+| Maximize application        | Super + M                          |
 
 ### Dotfiles
 
