@@ -198,6 +198,7 @@ if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   sed 's/defaultConsoleKeymap = ".*/defaultConsoleKeymap = "'${selected_locale_console}'";/g' -i "$script_path"/configuration.nix
   # Update xserver keyboard layout:
   sed 's/xkb\.layout = ".*/xkb.layout = "'${selected_locale_console}'";/g' -i "$script_path"/modules/services.nix
+  sed 's/-layout [a-z]+/-layout '${selected_locale_console}'/g' -i "$script_path"/modules/services.nix
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
   exit 1
