@@ -26,9 +26,9 @@
     # xserver X11
     services.xserver = {
       #enable = true;
-      # keyboard settings, see: 'localectl status'
+      # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
       xkb.layout = "us";
-      xkb.model = "pc104";
+      xkb.model = "pc105";
       #xkb.options = "eurosign:e,caps:escape";
     };
 

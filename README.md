@@ -117,7 +117,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * Pop_launcher, launch or switch to every application just with the Super key. Forget about your mouse, use Super key combinations for everything.
 * Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
 * Alacritty terminal with ZSH and a lot of good modern commands. [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) is pre-installed.
-* Modular configuration files for apps like Ollama AI, docker, QEMU + virt-manager, python3, Rust and more...
+* [Modular configuration files](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) for apps like Steam, Discord, OBS, Ollama AI, docker, QEMU + virt-manager, Python3, Rust and more...
 * Modular hardened systemd services configurations files. -WIP-
 * A bunch of nerd fonts...
 
@@ -133,6 +133,7 @@ Useful COSMIC shortcuts:
 | Launch File manager         | Super + F                          |
 | Launch a terminal           | Super + T                          |
 | Applications menu           | Super + A                          |
+| Maximize application        | Super + M                          |
 
 ### Dotfiles
 
@@ -144,7 +145,7 @@ Useful COSMIC shortcuts:
 
 Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'nixcosmic.'.
 
-For example: you want to game and install Steam, Heroic launcher, Discord and more, set: `nixcosmic.hardware.nvidiaGpu.enable` to `true;` into '/etc/nixos/configuration.nix' file.
+For example: you want to game and install Steam, Heroic launcher, Discord and more? Set: `nixcosmic.desktop.apps.gaming.enable` to `true;` into '/etc/nixos/configuration.nix' file.
 ```bash
 sudo nano /etc/nixos/configuration.nix
 # Use Ctrl+s to save and Ctrl+x to exit nano
@@ -153,7 +154,7 @@ followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-You want package not in one of the modules ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
 ### Flatpak
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos).
