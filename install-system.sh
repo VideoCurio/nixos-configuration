@@ -190,17 +190,17 @@ for i in "${!locales[@]}"; do
   echo "$((i+1))) ${locales[i]}"
 done
 
-read -r -p "Enter your choice (1-20): " lang_choice
+read -r -p "Enter your choice (1-21): " lang_choice
 if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
   # Update user language in configuration.nix:
-  sed 's/defaultLocale = ".*/defaultLocale = "'${selected_locale}'";/g' -i "$script_path"/configuration.nix
+  sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$script_path"/configuration.nix
   # Update console key map for cryptroot:
   selected_locale_console="${locales_console[$((lang_choice-1))]}"
-  sed 's/defaultConsoleKeymap = ".*/defaultConsoleKeymap = "'${selected_locale_console}'";/g' -i "$script_path"/configuration.nix
+  sed "s/defaultConsoleKeymap = \".*/defaultConsoleKeymap = \"${selected_locale_console}\";/g" -i "$script_path"/configuration.nix
   # Update xserver keyboard layout:
-  sed 's/xkb\.layout = ".*/xkb.layout = "'${selected_locale_console}'";/g' -i "$script_path"/modules/services.nix
-  sed 's/-layout [a-z]\{2\}/-layout '${selected_locale_console}'/g' -i "$script_path"/modules/services.nix
+  sed "s/xkb\.layout = \".*/xkb.layout = \"${selected_locale_console}\";/g" -i "$script_path"/modules/services.nix
+  sed "s/-layout [a-z]\{2\}/-layout ${selected_locale_console}/g" -i "$script_path"/modules/services.nix
   # TODO: 'loadkeys XX' to the currently selected layout ?
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
@@ -212,33 +212,48 @@ fi
 ########### TODO: keyboard layout
 
 ########### Choose a timezone:
-read -r -p "Choose your time zone (Europe/Paris): " pc_timezone
+read -r -p "Enter your time zone (Europe/Paris): " pc_timezone
 
 # hostname check
 if [ -z "$pc_timezone" ]; then
  pc_timezone="Europe/Paris"
 fi
 if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
-  printf "\e[31m Invalid time zone, it could only contain alphanumerical characters and /, -, + or _, like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
+  printf "\e[31m Invalid time zone, it could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
   exit 1
 fi
 # Update configuration.nix
-sed 's/timeZone = ".*/timeZone = "'${pc_timezone//\//\\\/}'";/g' -i "$script_path"/configuration.nix
+sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$script_path"/configuration.nix
 
 ########### Choose a username:
-read -r -p "Choose your username: " username
+read -r -p "Enter your username: " username
 
 # username check
 if [ -z "$username" ]; then
   printf "\e[31m username cannot be empty.\e[0m \n"
   exit 1
 fi
-if ! [[ $username =~ ^[a-zA-Z0-9]+$ ]]; then
+if ! [[ $username =~ ^[[:alnum:]]+$ ]]; then
   printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
   exit 1
 fi
 # Update use-me.nix
-sed 's/users\.users\..*/users.users.'${username}' = {/g' -i "$script_path"/user-me.nix
+sed "s/users\.users\..*/users.users.${username} = {/g" -i "$script_path"/user-me.nix
+
+########### Choose a full name:
+read -r -p "Enter your full name: " fullname
+
+# fullname check
+if [ -z "$fullname" ]; then
+  fullname="Dwight K. Schrute"
+  printf "You are now known as\e[32m %s\e[0m \n" "$fullname"
+fi
+if ! [[ $fullname =~ ^[[:alnum:][:space:].]+$ ]]; then
+  printf "\e[31m Invalid full name, it could only contain alphanumerical, '.' or space characters.\e[0m \n"
+  exit 1
+fi
+# Update use-me.nix
+sed "s/description = \".*/description = \"${fullname}\";/g" -i "$script_path"/user-me.nix
 
 ########### Choose a hostname:
 read -r -p "Choose your machine hostname (NixCOSMIC): " pc_hostname
@@ -247,12 +262,12 @@ read -r -p "Choose your machine hostname (NixCOSMIC): " pc_hostname
 if [ -z "$pc_hostname" ]; then
  pc_hostname="NixCOSMIC"
 fi
-if ! [[ $pc_hostname =~ ^[a-zA-Z0-9]+$ ]]; then
-  printf "\e[31m Invalid hostname, it could only contain alphanumerical characters.\e[0m \n"
+if ! [[ $pc_hostname =~ ^[[:alnum:].]+$ ]]; then
+  printf "\e[31m Invalid hostname, it could only contain alphanumerical or '.' characters.\e[0m \n"
   exit 1
 fi
 # Update configuration.nix
-sed 's/networking\.hostName = ".*/networking.hostName = "'${pc_hostname}'";/g' -i "$script_path"/configuration.nix
+sed "s/networking\.hostName = \".*/networking.hostName = \"${pc_hostname}\";/g" -i "$script_path"/configuration.nix
 
 ########### platform settings:
 if [ $rpi4_install -eq 1 ]; then

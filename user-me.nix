@@ -16,7 +16,7 @@ in {
   users.users.nixos = {
     isNormalUser = true;
     initialPassword = password;
-    description = "My Name"; # Change me !!
+    description = "Me";
     extraGroups =  [
       "wheel"
       "audio"
