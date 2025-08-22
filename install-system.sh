@@ -139,6 +139,7 @@ fi
 ########### Choose your language:
 locales=(
   "en_US.UTF-8"
+  "en_GB.UTF-8"
   "fr_FR.UTF-8"
   "es_ES.UTF-8"
   "de_DE.UTF-8"
@@ -161,6 +162,7 @@ locales=(
 )
 locales_console=(
   "us"
+  "gb"
   "fr"
   "es"
   "de"
@@ -198,6 +200,7 @@ if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   sed 's/defaultConsoleKeymap = ".*/defaultConsoleKeymap = "'${selected_locale_console}'";/g' -i "$script_path"/configuration.nix
   # Update xserver keyboard layout:
   sed 's/xkb\.layout = ".*/xkb.layout = "'${selected_locale_console}'";/g' -i "$script_path"/modules/services.nix
+  sed 's/-layout [a-z]\{2\}/-layout '${selected_locale_console}'/g' -i "$script_path"/modules/services.nix
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
   exit 1

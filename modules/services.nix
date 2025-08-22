@@ -25,11 +25,12 @@
   config = lib.mkIf config.nixcosmic.services.enable {
     # xserver X11
     services.xserver = {
-      #enable = true;
+      enable = lib.mkDefault true;
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
       xkb.layout = "us";
       xkb.model = "pc105";
       #xkb.options = "eurosign:e,caps:escape";
+      displayManager.sessionCommands = "setxkbmap -layout us";
     };
 
     # OpenSSH server.

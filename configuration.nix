@@ -101,6 +101,7 @@ in {
   # Select internationalisation properties.
   i18n = {
     defaultLocale = defaultLocale;
+    extraLocales = "all"; # Support all glibc locales
     extraLocaleSettings = {
       LC_ADDRESS = defaultLocale;
       LC_IDENTIFICATION = defaultLocale;
@@ -112,6 +113,16 @@ in {
       LC_TELEPHONE = defaultLocale;
       LC_TIME = defaultLocale;
     };
+    #inputMethod = {
+    #  type = "fcitx5";
+    #  enable = true;
+    #  fcitx5.waylandFrontend = true;
+    #  fcitx5.addons = with pkgs; [
+    #    fcitx5-gtk
+    #    fcitx5-chinese-addons  # table input method support
+    #    fcitx5-nord            # a color theme
+    #  ];
+    #};
   };
 
   console = {
