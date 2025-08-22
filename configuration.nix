@@ -78,7 +78,7 @@ in {
   nixcosmic.hardened.dbus.enable = lib.mkDefault true;
   nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
   nixcosmic.hardened.docker.enable = lib.mkDefault false;
-  nixcosmic.hardened.getty.enable = lib.mkDefault true;
+  nixcosmic.hardened.getty.enable = lib.mkDefault false; # WARNING: will prevent TTY console login
   nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
   nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
   nixcosmic.hardened.nix-daemon.enable = lib.mkDefault true;
