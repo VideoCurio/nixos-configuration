@@ -26,8 +26,14 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 1. Get a NixOS 25.05+ Minimal ISO image:
    ```bash
-   wget https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso
+   wget --content-disposition https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso
    ```
+   Download and check iso signature:
+   ```bash
+   wget --content-disposition https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso.sha256
+   sha256sum --check nixos-minimal-25.05.*.iso.sha256
+   ```
+   Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
@@ -45,7 +51,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```
 6. Download this git repository: 
    ```bash
-   git clone https://github.com/VideoCurio/nixos-configuration.git
+   git clone -b release/25.05.0-RC1 https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
 7. **Advanced user only:** edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.

@@ -29,6 +29,7 @@
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
       xkb.layout = "us";
       xkb.model = "pc105";
+      xkb.variant = "";
       #xkb.options = "eurosign:e,caps:escape";
       displayManager.sessionCommands = "setxkbmap -layout us";
     };
