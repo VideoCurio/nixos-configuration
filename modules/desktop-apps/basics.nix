@@ -28,6 +28,7 @@
       gimp3-with-plugins
       protonvpn-gui
       signal-desktop
+      vlc
       yubioath-flutter
     ];
 

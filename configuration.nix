@@ -98,7 +98,7 @@ in {
   # Set your time zone.
   time.timeZone = timeZone;
 
-  # Select internationalisation properties.
+  # Select internationalisation properties. See 'locale' and 'locale -a'
   i18n = {
     defaultLocale = defaultLocale;
     extraLocales = "all"; # Support all glibc locales
