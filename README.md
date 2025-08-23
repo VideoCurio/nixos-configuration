@@ -183,6 +183,8 @@ Watch your root directories size with:
 duf
 # or
 sudo du -sh /* 2>/dev/null | sort -rh
+# From time to time, you can also free some space with:
+sudo nix-store --gc
 ```
 
 -----

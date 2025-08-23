@@ -8,7 +8,12 @@
     nixcosmic.virtualisation.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "enabling virtualisation app: docker, QEMU/KVM, virt-manager.";
+      description = "Enabling virtualisation app: docker, QEMU/KVM, virt-manager.";
+    };
+    nixcosmic.virtualisation.wine.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enabling Wine 32 and 64 bits with Wayland support.";
     };
   };
 
@@ -44,6 +49,19 @@
       preferStaticEmulators = true; # Make it work with docker
     };
 
+    # Samba, provide ntlm_auth, winbind, required by most Windows programs under Wine
+    services.samba = {
+      enable = lib.mkDefault (
+        config.nixcosmic.virtualisation.wine.enable
+      );
+      winbindd.enable = lib.mkDefault (
+        config.nixcosmic.virtualisation.wine.enable
+      );
+      nsswins = lib.mkDefault (
+        config.nixcosmic.virtualisation.wine.enable
+      );
+    };
+
     environment.systemPackages = with pkgs; [
       # Docker
       docker-buildx
@@ -64,6 +82,12 @@
     ]
     ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
       pkgs.python312Packages.docker
+    ]
+    ++ lib.optionals config.nixcosmic.virtualisation.wine.enable [
+      wineWowPackages.waylandFull
+      winetricks
+      wineWowPackages.fonts
+      wineWow64Packages.fonts
     ];
   };
 }
