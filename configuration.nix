@@ -196,6 +196,9 @@ in {
   system.nixos.variantName = "NixCOSMIC";
   system.nixos.variant_id = "25.05.0-rc1";
 
+  # Allowing Flakes
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
