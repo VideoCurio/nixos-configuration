@@ -71,26 +71,26 @@ in {
 
   # Test hardened configurations one by one
   # Check results with: `systemd-analyze security`
-  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.acpid.enable = lib.mkDefault true;
+  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
+  nixcosmic.hardened.acpid.enable = lib.mkDefault false;
   nixcosmic.hardened.cups.enable = lib.mkDefault (
     config.nixcosmic.services.printing.enable
   );
-  nixcosmic.hardened.dbus.enable = lib.mkDefault true;
+  nixcosmic.hardened.dbus.enable = lib.mkDefault false;
   nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
   nixcosmic.hardened.docker.enable = lib.mkDefault false;
   nixcosmic.hardened.getty.enable = lib.mkDefault false; # WARNING: will prevent TTY console login
   nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
   nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.nscd.enable = lib.mkDefault true;
-  nixcosmic.hardened.rescue.enable = lib.mkDefault true;
-  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
+  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault false;
+  nixcosmic.hardened.nscd.enable = lib.mkDefault false;
+  nixcosmic.hardened.rescue.enable = lib.mkDefault false;
+  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault false;
   nixcosmic.hardened.sshd.enable = lib.mkDefault (
     config.nixcosmic.services.sshd.enable
   );
   nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
-  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
+  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault false;
 
   # TODO: Prevent some conflicts between modules:
 
