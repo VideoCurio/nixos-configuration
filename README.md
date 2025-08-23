@@ -51,7 +51,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```
 6. Download this git repository: 
    ```bash
-   git clone -b release/25.05.0-RC1 https://github.com/VideoCurio/nixos-configuration.git
+   git clone https://github.com/VideoCurio/nixos-configuration.git
    cd nixos-configuration/
    ```
 7. **Advanced user only:** edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.
@@ -160,12 +160,11 @@ followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-You want package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want a package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
 ### Flatpak
-You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos).
+You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
 ![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
-
 
 ## NixOS management
 
