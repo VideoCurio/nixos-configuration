@@ -192,6 +192,10 @@ in {
   nix.gc.options = "--delete-older-than 7d";
   nix.settings.auto-optimise-store = true;
 
+  # NixCOSMIC variant version
+  system.nixos.variantName = "NixCOSMIC";
+  system.nixos.variant_id = "25.05.0-rc1";
+
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
