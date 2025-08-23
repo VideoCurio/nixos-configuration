@@ -34,6 +34,7 @@
   nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
   nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED for nixcosmic.desktop.dotfiles.enable
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
+  nixcosmic.virtualisation.wine.enable = lib.mkDefault false; # Wine 32 and 64 bits with Wayland support.
 
   # Test hardened configurations one by one
   # Check results with: `systemd-analyze security`
