@@ -197,6 +197,12 @@ Pull Request are welcomed.
 
 -----
 
+## Version
+
+Current version is `25.05.0-rc1` based on Nixos 25.05 latest build.
+
+-----
+
 ## License
 
 Copyright (C) 2025  David BASTIEN
