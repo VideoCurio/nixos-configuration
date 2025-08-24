@@ -23,11 +23,14 @@ for isofilename in "$script_path"/nixos-minimal-*.iso; do
   echo "$newFilename"
   if [ -f "$newFilename" ]; then
     printf "\e[31m ISO file already exist!\e[0m\n"
-    #rm -f "$script_path"/result/iso/nixos-minimal-*.iso
+    rm -f "$script_path"/result/iso/nixos-minimal-*.iso
     exit 1
   fi
   mv "$isofilename" "$newFilename"
 done
+
+sha256sum "$newFilename" >> "$newFilename".sha256
+chmod 0444 "$newFilename".sha256
 
 printf "\e[32m Done\e[0m\n"
 
