@@ -140,6 +140,7 @@ Useful COSMIC shortcuts:
 | Launch a terminal           | Super + T                          |
 | Applications menu           | Super + A                          |
 | Maximize application        | Super + M                          |
+| Tile mode on/off            | Super + Y                          |
 
 ### Dotfiles
 
@@ -162,7 +163,7 @@ sudo nixos-rebuild switch
 ```
 You want a package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
-### Flatpak
+### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
 ![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
 
