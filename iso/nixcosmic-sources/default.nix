@@ -5,8 +5,8 @@
 # https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
 # https://nix.dev/tutorials/working-with-local-files#
 
-{ lib, stdenv }:
-stdenv.mkDerivation {
+{ lib, stdenvNoCC }:
+stdenvNoCC.mkDerivation {
   pname = "nixcosmic-sources";
   version = "25.05.0-rc1";
 
@@ -16,16 +16,19 @@ stdenv.mkDerivation {
       ../../configuration.nix
       ../../user-me.nix
       ../../modules
+      ../../nixcosmic-install
     ];
   };
-
-  #dontBuild = true;
-
+  dontPatch = true;
+  dontConfigure = true;
+  dontBuild = true;
   installPhase = ''
     runHook preInstall
     mkdir -p $out/share/nixcosmic
+    mkdir -p $out/bin
     cp *.nix $out/share/nixcosmic/
     cp -r modules/ $out/share/nixcosmic/
+    cp nixcosmic-install $out/bin/
     runHook postInstall
   '';
 

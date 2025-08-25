@@ -6,13 +6,6 @@
 
 { pkgs, modulesPath, lib, config, ... }:
 let
-  nixcosmic-install = pkgs.writeShellScriptBin "nixcosmic-install" ''
-    #!/usr/bin/env bash
-
-    set -eu
-
-    printf "Hello world"
-  '';
   nixcosmic-sources = pkgs.callPackage ./nixcosmic-sources {};
 in {
   imports = [
@@ -26,7 +19,6 @@ in {
 
   # Minimum packages for installation
   environment.systemPackages = [
-    nixcosmic-install
     nixcosmic-sources
     pkgs.nano
     pkgs.parted
