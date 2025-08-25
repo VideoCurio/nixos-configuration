@@ -2,6 +2,7 @@
 # Basic installer for the console. Based on NixOS installation-cd-minimal-combined.nix
 # See: https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
+# https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
 
 { pkgs, modulesPath, lib, config, ... }:
 let
@@ -12,6 +13,7 @@ let
 
     printf "Hello world"
   '';
+  nixcosmic-sources = pkgs.callPackage ./nixcosmic-sources {};
 in {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal-combined.nix"
@@ -25,6 +27,7 @@ in {
   # Minimum packages for installation
   environment.systemPackages = [
     nixcosmic-install
+    nixcosmic-sources
     pkgs.nano
     pkgs.parted
     pkgs.git
