@@ -25,6 +25,7 @@ nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.sys
 #### Save and rename ISO file
 #sleep 2s
 cp "$script_path"/result/iso/nixos-minimal-*.iso "$script_path"/
+newFilename=""
 for isofilename in "$script_path"/nixos-minimal-*.iso; do
   newFilename=$(sed -E "s/nixos-minimal-[0-9]{2}\.[0-9]{2}\.(.+)\.iso/nixcosmic-minimal-${currentRelease}.\1.iso/" <<< "$isofilename")
   if [ -f "$newFilename" ]; then
@@ -40,7 +41,28 @@ chmod 0444 "$newFilename".sha256
 
 printf "\e[32m Done\e[0m\n"
 
+# Pushing iso file to Github
+gh auth status
+#gh auth login
+while true; do
+read -r -p "Push ISO file to Github.com ? (y/n): " yn
+case $yn in
+  [yY] ) echo "gh release upload..."
+    #gh auth login
+    gh release create "$currentRelease" --target "$branch" --prerelease --generate-notes
+    gh release upload "$currentRelease" "$newFilename"
+    gh release upload "$currentRelease" "$newFilename".sha256
+    #git tag -a "$currentRelease" -m "Release ${currentRelease}"
+    #git push --tags
+    break;;
+  [nN] ) echo "Proceeding without pushing...";
+    break;;
+  * ) echo "Invalid response";;
+esac
+done
+
 rm "$script_path"/result/
+
 # sudo nix-store --gc
 
 # Test it:
