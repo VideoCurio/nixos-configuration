@@ -24,7 +24,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
-1. Get latest NixC*OS*MIC 25.05.0-RC2 Minimal ISO image:
+1. Get the latest NixC*OS*MIC 25.05 Minimal ISO image:
    ```bash
    wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso
    ```
