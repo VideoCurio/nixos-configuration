@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 
-# Boot on a NixOS minimal ISO file, create a root password
+# NixCOSMIC install script as NixOS package.
+# Meant to be run during an NixOS ISO installation.
 # !IMPORTANT! Run this script as sudo
 # It will create 3 partitions for '/boot', '/' and a 8Go swap
 # OR with --crypt option, it will create a 512Mo boot and a LUKS partition.
 # The encrypted LUKS partition will contain LVM partitions for '/' (100Go), '/home' and a 8Go swap.
 #
 # Usage:
-#       ./install-system.sh [options] <disk_partition>
+#       nixcosmic-install [options] <disk_partition>
 #
 # Examples:
-# ./install-system.sh /dev/nvme0n1               - Standard install on the first NVMe SSD.
-# ./install-system.sh --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
-# ./install-system.sh /dev/vda                   - Standard install on a QEMU disk.
+# nixcosmic-install /dev/nvme0n1               - Standard install on the first NVMe SSD.
+# nixcosmic-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
+# nixcosmic-install /dev/vda                   - Standard install on a QEMU disk.
 
 set -eu
 
@@ -20,7 +21,7 @@ set -eu
 usage ()
 {
   echo -e "
-Usage: ./install-system.sh [options] <disk_partition>
+Usage: nixcosmic-install [options] <disk_partition>
   Where,
     disk_partition: Valid /dev path of a disk to install NixOS on.
     The default root partition size is set to 80G for full disk encryption option, use --root-size to change this.";
@@ -36,14 +37,14 @@ Usage: ./install-system.sh [options] <disk_partition>
 
   Examples:
     Full encrypted disk install on the first NVMe SSD (with /home partition):
-      ./install-system.sh --crypt --root-size 120G /dev/nvme0n1
+      nixcosmic-install --crypt --root-size 120G /dev/nvme0n1
     Minimal disk install on the second HDD:
-      ./install-system.sh /dev/sdb
+      nixcosmic-install /dev/sdb
     Minimal disk install on a QEMU/KVM virtual disk:
-      ./install-system.sh /dev/vda
+      nixcosmic-install /dev/vda
     Raspberry Pi 4 install:
       nix-shell -p git raspberrypi-eeprom
-      ./install-system.sh --rpi4 /dev/mmcblk1
+      nixcosmic-install --rpi4 /dev/mmcblk1
 EOF
   exit;
 }
@@ -54,6 +55,7 @@ root_size="80G";
 rpi4_install=0;
 verbose=0;
 selected_locale="";
+selected_locale_console="";
 gpu_detected="";
 install_gpu=0;
 script_path="$(dirname "$0")"
@@ -120,20 +122,38 @@ if [ ! -e "$DISK_PART" ]; then
   exit 2
 fi
 
-# check some .nix files
-if [ ! -f "$script_path"/configuration.nix ]; then
+if [ $verbose -eq 1 ]; then
+  printf "Script current path: %s\n" "$script_path"
+fi
+
+# Check nixcosmic-sources files
+nixcosmic_sources_path=$(nix-store --query --outputs $(which nixcosmic-install))
+nixcosmic_sources_path=$(realpath "$nixcosmic_sources_path"/share/nixcosmic)
+#nixcosmic_sources_path=$(realpath "$script_path"/../share/nixcosmic)
+if [ $verbose -eq 1 ]; then
+  printf "Package store path: %s\n" "$nixcosmic_sources_path"
+fi
+if [ ! -f "$nixcosmic_sources_path"/configuration.nix ]; then
   printf "\e[31mconfiguration.nix file not found! \e[0m \n"
   exit 1
 fi
 
-if [ ! -f "$script_path"/user-me.nix ]; then
+if [ ! -f "$nixcosmic_sources_path"/user-me.nix ]; then
   printf "\e[31muser-me.nix file not found! \e[0m \n"
   exit 1
 fi
 
-if [ ! -d "$script_path"/modules/ ]; then
+if [ ! -d "$nixcosmic_sources_path"/modules/ ]; then
   printf "\e[31m modules directory not found! \e[0m \n"
   exit 1
+fi
+
+# Check dependencies
+available() { command -v "$1" >/dev/null; }
+
+if ! available git; then
+  printf "\e[31mgit command not found! \e[0m \n"
+  exit 2
 fi
 
 ########### Choose your language:
@@ -193,14 +213,7 @@ done
 read -r -p "Enter your choice (1-21): " lang_choice
 if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
-  # Update user language in configuration.nix:
-  sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$script_path"/configuration.nix
-  # Update console key map for cryptroot:
   selected_locale_console="${locales_console[$((lang_choice-1))]}"
-  sed "s/defaultConsoleKeymap = \".*/defaultConsoleKeymap = \"${selected_locale_console}\";/g" -i "$script_path"/configuration.nix
-  # Update xserver keyboard layout:
-  sed "s/xkb\.layout = \".*/xkb.layout = \"${selected_locale_console}\";/g" -i "$script_path"/modules/services.nix
-  sed "s/-layout [a-z]\{2\}/-layout ${selected_locale_console}/g" -i "$script_path"/modules/services.nix
   # TODO: 'loadkeys XX' to the currently selected layout ?
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
@@ -213,7 +226,6 @@ fi
 
 ########### Choose a timezone:
 read -r -p "Enter your time zone (Europe/Paris): " pc_timezone
-
 # hostname check
 if [ -z "$pc_timezone" ]; then
  pc_timezone="Europe/Paris"
@@ -222,12 +234,9 @@ if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
   printf "\e[31m Invalid time zone, it could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
   exit 1
 fi
-# Update configuration.nix
-sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$script_path"/configuration.nix
 
 ########### Choose a username:
 read -r -p "Enter your username: " username
-
 # username check
 if [ -z "$username" ]; then
   printf "\e[31m username cannot be empty.\e[0m \n"
@@ -237,12 +246,9 @@ if ! [[ $username =~ ^[[:alnum:]]+$ ]]; then
   printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
   exit 1
 fi
-# Update use-me.nix
-sed "s/users\.users\..*/users.users.${username} = {/g" -i "$script_path"/user-me.nix
 
 ########### Choose a full name:
 read -r -p "Enter your full name: " fullname
-
 # fullname check
 if [ -z "$fullname" ]; then
   fullname="Dwight K. Schrute"
@@ -252,12 +258,9 @@ if ! [[ $fullname =~ ^[[:alnum:][:space:].]+$ ]]; then
   printf "\e[31m Invalid full name, it could only contain alphanumerical, '.' or space characters.\e[0m \n"
   exit 1
 fi
-# Update use-me.nix
-sed "s/description = \".*/description = \"${fullname}\";/g" -i "$script_path"/user-me.nix
 
 ########### Choose a hostname:
 read -r -p "Choose your machine hostname (NixCOSMIC): " pc_hostname
-
 # hostname check
 if [ -z "$pc_hostname" ]; then
  pc_hostname="NixCOSMIC"
@@ -265,34 +268,6 @@ fi
 if ! [[ $pc_hostname =~ ^[[:alnum:].]+$ ]]; then
   printf "\e[31m Invalid hostname, it could only contain alphanumerical or '.' characters.\e[0m \n"
   exit 1
-fi
-# Update configuration.nix
-sed "s/networking\.hostName = \".*/networking.hostName = \"${pc_hostname}\";/g" -i "$script_path"/configuration.nix
-
-########### platform settings:
-if [ $rpi4_install -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-fi
-
-########### filesystems settings:
-if [ $encrypt_disk -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
 fi
 
 ########### GPU:
@@ -326,18 +301,6 @@ if (( nb_gpu >= 1 )); then
       esac
     done
   fi
-
-  if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
-    echo "Enabling AMD GPU..."
-    sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-  elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
-    echo "Enabling Nvidia GPU..."
-    sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;/g' -i "$script_path"/configuration.nix
-  else
-    echo "Disabling GPU..."
-    sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-    sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;/g' -i "$script_path"/configuration.nix
-  fi
 fi
 
 # Test - debug parameters
@@ -349,6 +312,7 @@ if [ $verbose -eq 1 ]; then
   echo "<disk_partition>: $DISK_PART"
   echo "selected_locale: $selected_locale"
   echo "username: $username"
+  echo "full name: $fullname"
   echo "hostname: $pc_hostname"
   echo "timezone: $pc_timezone"
   echo "GPU: $gpu_detected"
@@ -357,16 +321,8 @@ fi
 
 # This script must be run as root
 if [ "$EUID" -ne 0 ]; then
-  printf "\e[31mThis script MUST be run as root: sudo ./install-system.sh \e[0m \n" >&2
+  printf "\e[31mThis script MUST be run as root: sudo nixcosmic-install \e[0m \n" >&2
   exit 1
-fi
-
-# Check dependencies
-available() { command -v "$1" >/dev/null; }
-
-if ! available git; then
-  printf "\e[31mgit command not found! \e[0m \n"
-  exit 2
 fi
 
 # dotfiles install function
@@ -375,12 +331,18 @@ dotfiles-inst () {
   printf "\e[32m================================\e[0m \n"
   echo "Custom dotfiles installation..."
   git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
-  mkdir -p /mnt/etc/skel/
-  git --git-dir=/tmp/dotfiles/ --work-tree=/mnt/etc/skel/ checkout || true
+  local skel_dir="/mnt/etc/skel/"
+  local home_dir="/mnt/home/*/"
+  if [ $rpi4_install -eq 1 ]; then
+    skel_dir="/etc/skel/"
+    home_dir="/home/*/"
+  fi
+  mkdir -p "$skel_dir"
+  git --git-dir=/tmp/dotfiles/ --work-tree="$skel_dir" checkout || true
   rm -rf /tmp/dotfiles/
   # Iterate over each home user
-  for dir in /mnt/home/*/; do
-    if [[ -d "$dir" && "$dir" != "/mnt/home/lost+found/" ]]; then
+  for dir in $home_dir; do
+    if [[ -d "$dir" && "$dir" != */lost+found/ ]]; then
       echo "Cloning dotfiles into: $dir"
       git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
       git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
@@ -478,44 +440,31 @@ format () {
 }
 
 # Raspberry Pi 4 install
-if [ $rpi4_install -eq 1 ]; then
-  # Prepare an SD card
-  # Download an SD card image from https://hydra.nixos.org/job/nixos/trunk-combined/nixos.sd_image.aarch64-linux
-  # Unzip it with:
-  # zstd -d nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img.zst
-  # Burn it with Balena Etcher, Caligula or dd
-  # sudo dd if=nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img of=/dev/sdb bs=10MB oflag=dsync status=progress
-  # boot from the SD card, then as root:
-  # nix-shell -p git raspberrypi-eeprom
-  # cd /tmp
-  # git clone https://github.com/VideoCurio/nixos-configuration
-  # cd nixos-configuration/
-  # ./install-system.sh --rpi4 /dev/mmcblk1
-  printf "\e[32mRaspberry Pi 4 installation... \e[0m \n"
-  # Updating firmware
-  mount /dev/disk/by-label/FIRMWARE /mnt
-  BOOTFS=/mnt rpi-eeprom-update -d -a
+# Prepare an SD card
+# Download an SD card image from https://hydra.nixos.org/job/nixos/trunk-combined/nixos.sd_image.aarch64-linux
+# Unzip it with:
+# zstd -d nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img.zst
+# Burn it with Balena Etcher, Caligula or dd
+# sudo dd if=nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img of=/dev/sdb bs=10MB oflag=dsync status=progress
+# boot from the SD card, then as root:
+# nix-shell -p git raspberrypi-eeprom
+# cd /tmp
+# git clone https://github.com/VideoCurio/nixos-configuration
+# cd nixos-configuration/
+# nixcosmic-install --rpi4 /dev/mmcblk1
 
-  cp "$script_path"/*.nix /etc/nixos/
-  cp -r "$script_path"/modules/ /etc/nixos/
-
-  nixos-rebuild boot
-  printf "\e[32m Done... \e[0m \n"
-  printf "\e[32m You can now reboot. \e[0m \n"
-  exit 1
+if [ $rpi4_install -eq 0 ]; then
+  while true; do
+  read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
+  case $yn in
+    [yY] ) format;
+      break;;
+    [nN] ) echo "Proceeding without disk formatting...";
+      break;;
+    * ) echo "Invalid response";;
+  esac
+  done
 fi
-
-while true; do
-read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
-
-case $yn in
-  [yY] ) format;
-    break;;
-  [nN] ) echo "Proceeding without disk formatting...";
-    break;;
-  * ) echo "Invalid response";;
-esac
-done
 
 if [ $verbose -eq 1 ]; then
   lsblk --fs
@@ -525,20 +474,27 @@ printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
 echo "Mounting system..."
 sleep 2s
-if ! mountpoint -q /mnt; then
-  mount /dev/disk/by-label/nixos /mnt
-fi
-mkdir -p /mnt/boot
-if ! mountpoint -q /mnt/boot; then
-  mount -o umask=077 /dev/disk/by-partlabel/ESP /mnt/boot
-fi
-if [[ $(swapon -s | wc -l) -eq 1 ]]; then
-  swapon /dev/disk/by-label/swap
-fi
-if [ $encrypt_disk -eq 1 ]; then
-  mkdir -p /mnt/home
-  if ! mountpoint -q /mnt/home; then
-    mount /dev/disk/by-label/home /mnt/home
+if [ $rpi4_install -eq 1 ]; then
+  printf "\e[32mRaspberry Pi 4 updating firmware... \e[0m \n"
+  # Updating firmware
+  mount /dev/disk/by-label/FIRMWARE /mnt
+  BOOTFS=/mnt rpi-eeprom-update -d -a
+else
+  if ! mountpoint -q /mnt; then
+    mount /dev/disk/by-label/nixos /mnt
+  fi
+  mkdir -p /mnt/boot
+  if ! mountpoint -q /mnt/boot; then
+    mount -o umask=077 /dev/disk/by-partlabel/ESP /mnt/boot
+  fi
+  if [[ $(swapon -s | wc -l) -eq 1 ]]; then
+    swapon /dev/disk/by-label/swap
+  fi
+  if [ $encrypt_disk -eq 1 ]; then
+    mkdir -p /mnt/home
+    if ! mountpoint -q /mnt/home; then
+      mount /dev/disk/by-label/home /mnt/home
+    fi
   fi
 fi
 
@@ -547,22 +503,90 @@ if [ $verbose -eq 1 ]; then
   lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
 fi
 
-echo "Create basic configuration:"
-nixos-generate-config --root /mnt --no-filesystems
+if [ $rpi4_install -eq 0 ]; then
+  printf "\e[32m================================\e[0m \n"
+  printf "\e[32m================================\e[0m \n"
+  echo "Create basic configuration..."
+  nixos-generate-config --root /mnt --no-filesystems
+fi
 
 printf "\e[32m================================\e[0m \n"
 printf "\e[32m================================\e[0m \n"
-echo "Copying configurations files..."
+echo "Preparing configurations files..."
 
-cp "$script_path"/*.nix /mnt/etc/nixos/
-cp -r "$script_path"/modules/ /mnt/etc/nixos/
+nixos_config_dir="/mnt/etc/nixos"
+if [ $rpi4_install -eq 1 ]; then
+  nixos_config_dir="/etc/nixos"
+fi
+install -D -m 644 -t "$nixos_config_dir"/ "$nixcosmic_sources_path"/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/ "$nixcosmic_sources_path"/modules/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/desktop-apps/ "$nixcosmic_sources_path"/modules/desktop-apps/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$nixcosmic_sources_path"/modules/filesystems/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$nixcosmic_sources_path"/modules/hardened/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$nixcosmic_sources_path"/modules/hardware/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_path"/modules/platforms/*.nix
+
+# Update user language:
+sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/configuration.nix
+# Update console key map for cryptroot:
+sed "s/defaultConsoleKeymap = \".*/defaultConsoleKeymap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/configuration.nix
+# Update xserver keyboard layout:
+sed "s/xkb\.layout = \".*/xkb.layout = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/modules/services.nix
+sed "s/-layout [a-z]\{2\}/-layout ${selected_locale_console}/g" -i "$nixos_config_dir"/modules/services.nix
+# Update time zone
+sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/configuration.nix
+# Update user name
+sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/user-me.nix
+sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/user-me.nix
+# Update hostname
+sed "s/networking\.hostName = \".*/networking.hostName = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/configuration.nix
+# platform settings:
+if [ $rpi4_install -eq 1 ]; then
+  # Update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+else
+  # Also update configuration.nix
+  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+fi
+# filesystems settings:
+if [ $encrypt_disk -eq 1 ]; then
+  # Update configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+else
+  # Also update configuration.nix
+  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+fi
+# GPU settings:
+if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
+  echo "Enabling AMD GPU..."
+  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
+  echo "Enabling Nvidia GPU..."
+  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+else
+  echo "Disabling GPU..."
+  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+fi
 
 while true; do
 read -r -p "Proceed with installation ? (y/n): " yn
 
 case $yn in
-  [yY] ) echo "nixos-install";
-    nixos-install --no-root-passwd
+  [yY] ) echo "Launching nixos installer...";
+    if [ $rpi4_install -eq 0 ]; then
+      nixos-install --no-root-passwd
+    else
+      nixos-rebuild boot
+    fi
     if [ $do_dotfiles_install -eq 1 ]; then
       dotfiles-inst
     fi
