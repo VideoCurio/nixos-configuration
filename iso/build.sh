@@ -6,12 +6,16 @@ set -eu
 script_path="$(dirname "$0")"
 
 branch="$(git branch --show-current)"
-if [[ "$branch" != release* ]]; then
-  printf "\e[31m Wrong git branch - not a release!\e[0m\n"
-  #branch="release/25.05.0-RC1" # for debugging ONLY
-  exit 1
+if [[ "$branch" == testing ]]; then
+  currentRelease="unstable"
+else
+  if [[ "$branch" != release* ]]; then
+    printf "\e[31m Wrong git branch - not a release!\e[0m\n"
+    #branch="release/25.05.0-RC1" # for debugging ONLY
+    exit 1
+  fi
+  currentRelease=$(sed -E "s/release\/(.+)/\1/" <<< "$branch")
 fi
-currentRelease=$(sed -E "s/release\/(.+)/\1/" <<< "$branch")
 
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
 
