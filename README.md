@@ -26,18 +26,18 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 1. Get latest NixC*OS*MIC 25.05.0-RC2 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-RC2/nixcosmic-minimal-25.05.0-RC2.808723.b1b329146965-x86_64-linux.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-RC2/nixcosmic-minimal-25.05.0-RC2.808723.b1b329146965-x86_64-linux.iso.sha256
-   sha256sum --check nixcosmic-minimal-25.05.*.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso.sha256
+   sha256sum --check nixcosmic-minimal_*.iso.sha256
    ```
    Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
-   sudo dd if=nixcosmic-minimal-25.05.0-RC2.808723.b1b329146965-x86_64-linux.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -186,7 +186,7 @@ Pull Request are welcomed.
 
 ## Version
 
-Current version is [25.05.0-rc2](https://github.com/VideoCurio/nixos-configuration/tree/25.05.0-RC2) based on Nixos 25.05 latest build.
+Current version is [25.05.0-rc2](https://github.com/VideoCurio/nixos-configuration/tree/25.05.0-rc2) based on Nixos 25.05 latest build.
 
 -----
 

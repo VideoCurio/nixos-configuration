@@ -23,7 +23,7 @@ isoFilePath="${script_path}/${isoFilename}"
 
 printf "\e[32m Building %s file...\e[0m\n" "$isoFilename"
 
-#nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
+nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
 
 #### Save and rename ISO file
 #sleep 2s
