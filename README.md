@@ -184,6 +184,12 @@ Pull Request are welcomed.
 
 -----
 
+## Version
+
+Current version is [25.05.0-rc2](https://github.com/VideoCurio/nixos-configuration/tree/25.05.0-RC2) based on Nixos 25.05 latest build.
+
+-----
+
 ## License
 
 Copyright (C) 2025  David BASTIEN

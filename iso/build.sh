@@ -18,39 +18,32 @@ else
   currentRelease=$(sed -E "s/release\/(.+)/\1/" <<< "$branch")
 fi
 
-printf "\e[32m Building nixcosmic-minimal-%s.iso file...\e[0m\n" "$currentRelease"
+isoFilename="nixcosmic-minimal_${currentRelease}_amd64-intel.iso"
+isoFilePath="${script_path}/${isoFilename}"
 
-nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
+printf "\e[32m Building %s file...\e[0m\n" "$isoFilename"
+
+#nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
 
 #### Save and rename ISO file
 #sleep 2s
-cp "$script_path"/result/iso/nixos-minimal-*.iso "$script_path"/
-newFilename=""
-for isofilename in "$script_path"/nixos-minimal-*.iso; do
-  newFilename=$(sed -E "s/nixos-minimal-[0-9]{2}\.[0-9]{2}\.(.+)\.iso/nixcosmic-minimal-${currentRelease}.\1.iso/" <<< "$isofilename")
-  if [ -f "$newFilename" ]; then
-    printf "\e[31m ISO file already exist!\e[0m\n"
-    rm -f "$script_path"/result/iso/nixos-minimal-*.iso
-    exit 1
-  fi
-  mv "$isofilename" "$newFilename"
-done
+cp "$script_path"/result/iso/nixos-minimal-*.iso "$isoFilePath"
 
-sha256sum "$newFilename" >> "$newFilename".sha256
-chmod 0444 "$newFilename".sha256
+sha256sum "$isoFilePath" >> "$isoFilePath".sha256
+chmod 0444 "$isoFilePath".sha256
 
-printf "\e[32m Done\e[0m\n"
+printf "\e[32m Build done...\e[0m\n"
 
-# Pushing iso file to Github
+# Pushing iso file to GitHub
 gh auth status
 #gh auth login --hostname github.com --git-protocol ssh --web
 while true; do
-read -r -p "Push ISO file to Github.com ? (y/n): " yn
+read -r -p "Push ISO file to GitHub.com ? (y/n): " yn
 case $yn in
   [yY] ) echo "gh release upload..."
     gh release create "$currentRelease" --target "$branch" --title "$currentRelease" --prerelease --generate-notes
-    gh release upload "$currentRelease" "$newFilename"
-    gh release upload "$currentRelease" "$newFilename".sha256
+    gh release upload "$currentRelease" "$isoFilePath"
+    gh release upload "$currentRelease" "$isoFilePath".sha256
     #git tag -a "$currentRelease" -m "Release ${currentRelease}"
     #git push --tags
     break;;
@@ -60,7 +53,9 @@ case $yn in
 esac
 done
 
-rm "$script_path"/result/
+printf "\e[32m All done...\e[0m\n"
+
+#rm "$script_path"/result/
 
 # sudo nix-store --gc
 
