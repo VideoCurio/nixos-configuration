@@ -24,11 +24,16 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/share/nixcosmic
-    mkdir -p $out/bin
-    cp *.nix $out/share/nixcosmic/
-    cp -r modules/ $out/share/nixcosmic/
-    cp nixcosmic-install $out/bin/
+    install -D -m 555 -t $out/bin/ nixcosmic-install
+    install -D -m 644 -t $out/share/nixcosmic/ *.nix
+
+    install -D -m 644 -t $out/share/nixcosmic/modules/ modules/*.nix
+    install -D -m 644 -t $out/share/nixcosmic/modules/desktop-apps/ modules/desktop-apps/*.nix
+    install -D -m 644 -t $out/share/nixcosmic/modules/filesystems/ modules/filesystems/*.nix
+    install -D -m 644 -t $out/share/nixcosmic/modules/hardened/ modules/hardened/*.nix
+    install -D -m 644 -t $out/share/nixcosmic/modules/hardware/ modules/hardware/*.nix
+    install -D -m 644 -t $out/share/nixcosmic/modules/platforms/ modules/platforms/*.nix
+
     runHook postInstall
   '';
 
