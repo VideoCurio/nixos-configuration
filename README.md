@@ -24,20 +24,20 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
-1. Get a NixOS 25.05+ Minimal ISO image:
+1. Get the latest NixC*OS*MIC 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://channels.nixos.org/nixos-25.05/latest-nixos-minimal-x86_64-linux.iso.sha256
-   sha256sum --check nixos-minimal-25.05.*.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso.sha256
+   sha256sum --check nixcosmic-minimal_*.iso.sha256
    ```
    Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
-   sudo dd if=latest-nixos-minimal-x86_64-linux.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -49,28 +49,14 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Download this git repository: 
-   ```bash
-   git clone https://github.com/VideoCurio/nixos-configuration.git
-   cd nixos-configuration/
-   ```
-7. **Advanced user only:** edit `configuration.nix` now if you think you will need to activate one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) during the installation process.
-   Step 8 install script will detect hardware, there is probably no need to edit the configuration file now.
-   ```bash
-   # Edit only if necessary:
-   nano configuration.nix
-   # Use Ctrl+s to save and Ctrl+x to exit nano
-   ```
-   **_Tip_**: Do not activate all modules during the installation phase. You can later edit the '/etc/nixos/configuration.nix' file.
-
-8. Run the installer with the **recommended** options: `./install-system.sh --crypt /dev/nvme0n1`:
+6. Run the installer with the **recommended** options: `nixcosmic-install --crypt /dev/nvme0n1`:
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
-   # For a full encrypted disk (LUKS + LVM) with a root partition of 120Go, on your first SSD:
-   ./install-system.sh --crypt --root-size 120G /dev/nvme0n1
+   # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
+   nixcosmic-install --crypt --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8
@@ -103,13 +89,13 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    You can now reboot.
    
    # See --help option for more details:
-   ./install-system.sh --help
+   nixcosmic-install --help
    ```
-9. If everything went according to plan, reboot.
+7. If everything went according to plan, reboot.
    ```bash
    reboot now
    ```
-10. **Enjoy!** User temporary password is **"changeme"**.
+8. **Enjoy!** User temporary password is **"changeme"**.
     You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
     Or use the command `passwd` in a terminal.
 
@@ -140,6 +126,7 @@ Useful COSMIC shortcuts:
 | Launch a terminal           | Super + T                          |
 | Applications menu           | Super + A                          |
 | Maximize application        | Super + M                          |
+| Tile mode on/off            | Super + Y                          |
 
 ### Dotfiles
 
@@ -162,7 +149,7 @@ sudo nixos-rebuild switch
 ```
 You want a package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
-### Flatpak
+### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
 ![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
 
