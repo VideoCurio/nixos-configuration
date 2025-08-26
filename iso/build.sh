@@ -43,13 +43,12 @@ printf "\e[32m Done\e[0m\n"
 
 # Pushing iso file to Github
 gh auth status
-#gh auth login
+#gh auth login --hostname github.com --git-protocol ssh --web
 while true; do
 read -r -p "Push ISO file to Github.com ? (y/n): " yn
 case $yn in
   [yY] ) echo "gh release upload..."
-    #gh auth login
-    gh release create "$currentRelease" --target "$branch" --prerelease --generate-notes
+    gh release create "$currentRelease" --target "$branch" --title "$currentRelease" --prerelease --generate-notes
     gh release upload "$currentRelease" "$newFilename"
     gh release upload "$currentRelease" "$newFilename".sha256
     #git tag -a "$currentRelease" -m "Release ${currentRelease}"
