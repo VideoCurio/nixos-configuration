@@ -43,6 +43,7 @@
       # Devops
       cloudflared
       git-who
+      gh
       # VNC
       remmina
     ]
