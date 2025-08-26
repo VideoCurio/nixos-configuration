@@ -6,6 +6,7 @@ set -eu
 script_path="$(dirname "$0")"
 
 branch="$(git branch --show-current)"
+currentRelease=""
 if [[ "$branch" == testing ]]; then
   currentRelease="unstable"
 else
@@ -16,6 +17,9 @@ else
   fi
   currentRelease=$(sed -E "s/release\/(.+)/\1/" <<< "$branch")
 fi
+
+printf "\e[32m Building nixcosmic-minimal-%s.iso file...\e[0m\n" "$currentRelease"
+exit 1
 
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
 
