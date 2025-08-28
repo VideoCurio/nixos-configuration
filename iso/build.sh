@@ -38,7 +38,7 @@ while true; do
   fi
 done
 
-nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
+nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
 
 #### Save and rename ISO file
 cp "$script_path"/result/iso/nixos-minimal-*.iso "$isoFilePath"

@@ -10,7 +10,6 @@
     ./desktop-apps/devops.nix
     ./desktop-apps/gaming.nix
     ./desktop-apps/studio.nix
-    ./dotfiles.nix
     ./fonts.nix
     ./hardened/default.nix
     ./hardware/amd-gpu.nix

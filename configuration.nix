@@ -49,7 +49,7 @@ in {
 
   nixcosmic.bootefi.enable = lib.mkDefault true;
   nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
-  nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom Nixos+COSMIC dotfiles by VideoCurio
+  #nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom NixCOSMIC dotfiles by VideoCurio
 
   nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
   nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required for apps.devops options below. + Cloudlfared
