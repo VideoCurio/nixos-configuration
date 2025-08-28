@@ -518,6 +518,7 @@ install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$nixcosmic_source
 install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$nixcosmic_sources_path"/modules/hardened/*.nix
 install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$nixcosmic_sources_path"/modules/hardware/*.nix
 install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_path"/modules/platforms/*.nix
+install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_sources_path"/pkgs/nixcosmic-dotfiles/default.nix
 
 # Update user language:
 sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/configuration.nix

@@ -17,6 +17,7 @@ stdenvNoCC.mkDerivation {
       ../../user-me.nix
       ../../modules
       ../../nixcosmic-install
+      ../../pkgs
     ];
   };
   dontPatch = true;
@@ -33,6 +34,8 @@ stdenvNoCC.mkDerivation {
     install -D -m 644 -t $out/share/nixcosmic/modules/hardened/ modules/hardened/*.nix
     install -D -m 644 -t $out/share/nixcosmic/modules/hardware/ modules/hardware/*.nix
     install -D -m 644 -t $out/share/nixcosmic/modules/platforms/ modules/platforms/*.nix
+
+    install -D -m 644 -t $out/share/nixcosmic/pkgs/nixcosmic-dotfiles/ pkgs/nixcosmic-dotfiles/default.nix
 
     runHook postInstall
   '';
