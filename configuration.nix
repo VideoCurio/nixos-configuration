@@ -191,7 +191,7 @@ in {
 
   # NixCOSMIC variant version
   system.nixos.variantName = "NixCOSMIC";
-  system.nixos.variant_id = "25.05.0-rc3"; # TODO: change version here
+  system.nixos.variant_id = "25.05.0-rc3";
 
   # Allowing Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

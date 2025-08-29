@@ -38,7 +38,9 @@ while true; do
   fi
 done
 
-# TODO: change some version number in nix file to match $currentRelease
+# Change some version number in nix file to match $currentRelease
+sed "s/system\.nixos\.variant_id = \".*/system.nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
+sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic-sources/default.nix
 
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
 
