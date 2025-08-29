@@ -38,6 +38,6 @@
     #environment.etc."skel/.zshrc".text = ''
     #  autoload -Uz promptinit && promptinit
     #'';
-    # /etc/skel/.zshrc is now write with install-system.sh
+    # /etc/skel/.zshrc is now updated by nixcosmic-install during ISO install
   };
 }

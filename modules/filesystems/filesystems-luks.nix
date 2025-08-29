@@ -1,5 +1,5 @@
 # LUKS + LVM filesystems
-# As defined by ./install-system.sh --crypt /dev/XXX
+# As defined by 'nixcosmic-install --crypt /dev/XXX'
 
 { config, lib, pkgs, ... }:
 
@@ -9,7 +9,7 @@
     nixcosmic.filesystems.luks.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Filesystems with LUKS + LVM as defined by install-system.sh --crypt /dev/XXX";
+      description = "Filesystems with LUKS + LVM as defined by 'nixcosmic-install --crypt /dev/XXX'";
     };
   };
 

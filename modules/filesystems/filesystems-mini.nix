@@ -1,5 +1,5 @@
 # Minimal filesystems, partitions for: '/boot', '/' and swap
-# As configured by install-system.sh
+# As configured by 'nixcosmic-install /dev/XXX'
 
 { config, lib, pkgs, ... }:
 
@@ -9,7 +9,7 @@
     nixcosmic.filesystems.minimal.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Minimal filesystems as defined by install-system.sh /dev/XXX";
+      description = "Minimal filesystems as defined by 'nixcosmic-install /dev/XXX'";
     };
   };
 

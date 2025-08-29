@@ -8,11 +8,11 @@ let
   # Default user password. Change it later, after your first boot with COSMIC Parameters > System & Accounts
   # OR with the 'passwd' command line.
   # Do **NOT** set your real password HERE !
-  password = "changeme"; # change it later
+  password = "changeme";
 in {
   users.mutableUsers = true;
   # Define a user account
-  # <user> name will be updated by ./install-system.sh - no need to change it
+  # <user> name will be updated by nixcosmic-install during ISO install
   users.users.nixos = {
     isNormalUser = true;
     initialPassword = password;

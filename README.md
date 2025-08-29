@@ -37,7 +37,10 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
+   # Good old dd:
    sudo dd if=nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   # or shiny caligula:
+   caligula burn -s $(cat ./nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -60,7 +63,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8
-   1) en_GB.UTF8
+   2) en_GB.UTF8
    3) fr_FR.UTF8
    4) es_ES.UTF8
    5) de_DE.UTF8

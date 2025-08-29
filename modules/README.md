@@ -1,16 +1,21 @@
 # NixC*OS*MIC modules
 
 ```bash
-  # Platform
+  # updated by nixcosmic-install during ISO install
   nixcosmic.platform.amd64.enable = lib.mkDefault true;
   nixcosmic.platform.rpi4.enable = lib.mkDefault false;
 
-  # Enabling or disabling ./modules here:
-  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
-  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
-  nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
+  ######## Enabling or disabling ./modules here:
+  # Modern AMD GPU
+  # updated by nixcosmic-install during ISO install
+  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;
+  # Modern Nvidia GPU
+  # updated by nixcosmic-install during ISO install
+  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;
+  # EXPERIMENTAL - laptop battery saver
+  nixcosmic.hardware.laptop.enable = lib.mkDefault false;
 
-  # updated by ./install-system.sh - do NOT edit.
+  # updated by nixcosmic-install during ISO install
   nixcosmic.filesystems.luks.enable = lib.mkDefault true;
   nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
 
@@ -29,7 +34,7 @@
   nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager, DNS set to Quad9 and cloudflare.
   nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
   nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
-  nixcosmic.services.sshd.enable = lib.mkDefault true; # SSH daemon
+  nixcosmic.services.sshd.enable = lib.mkDefault false; # SSH daemon
   nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
   nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
@@ -37,20 +42,24 @@
 
   # Test hardened configurations one by one
   # Check results with: `systemd-analyze security`
-  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.acpid.enable = lib.mkDefault true;
-  nixcosmic.hardened.cups.enable = lib.mkDefault false;
-  nixcosmic.hardened.dbus.enable = lib.mkDefault true;
+  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
+  nixcosmic.hardened.acpid.enable = lib.mkDefault false;
+  nixcosmic.hardened.cups.enable = lib.mkDefault (
+    config.nixcosmic.services.printing.enable
+  );
+  nixcosmic.hardened.dbus.enable = lib.mkDefault false;
   nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
   nixcosmic.hardened.docker.enable = lib.mkDefault false;
-  nixcosmic.hardened.getty.enable = lib.mkDefault true;
+  nixcosmic.hardened.getty.enable = lib.mkDefault false; # WARNING: will prevent TTY console login
   nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
   nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.nscd.enable = lib.mkDefault true;
-  nixcosmic.hardened.rescue.enable = lib.mkDefault true;
-  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.sshd.enable = lib.mkDefault true;
+  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault false;
+  nixcosmic.hardened.nscd.enable = lib.mkDefault false;
+  nixcosmic.hardened.rescue.enable = lib.mkDefault false;
+  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault false;
+  nixcosmic.hardened.sshd.enable = lib.mkDefault (
+    config.nixcosmic.services.sshd.enable
+  );
   nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
-  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
+  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault false;
 ```
