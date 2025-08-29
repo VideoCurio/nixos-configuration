@@ -8,7 +8,7 @@
 { lib, stdenvNoCC }:
 stdenvNoCC.mkDerivation {
   pname = "nixcosmic-sources";
-  version = "25.05.0-rc3";
+  version = "25.05.0-rc3"; # TODO: change version here
 
   src = lib.fileset.toSource {
     root = ../../.;

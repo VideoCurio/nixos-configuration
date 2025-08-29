@@ -38,6 +38,8 @@ while true; do
   fi
 done
 
+# TODO: change some version number in nix file to match $currentRelease
+
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
 
 #### Save and rename ISO file
