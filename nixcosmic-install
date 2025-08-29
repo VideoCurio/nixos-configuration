@@ -51,7 +51,7 @@ EOF
 
 do_dotfiles_install=1;
 encrypt_disk=0;
-root_size="80G";
+root_size="25G";
 rpi4_install=0;
 verbose=0;
 selected_locale="";
