@@ -147,6 +147,9 @@ in {
     gnused
     pciutils
   ]
+  ++ lib.optionals config.services.desktopManager.cosmic.xwayland.enable [
+    wl-clipboard
+  ]
   ++ (
     if config.nixcosmic.hardware.amdGpu.enable then
       [ btop-rocm ]
