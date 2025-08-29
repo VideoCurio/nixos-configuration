@@ -23,7 +23,7 @@
 
   # Declare configuration
   config = lib.mkIf config.nixcosmic.services.enable {
-    # xserver X11
+    # X server
     services.xserver = {
       enable = lib.mkDefault true;
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?

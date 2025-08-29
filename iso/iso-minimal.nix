@@ -4,9 +4,10 @@
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
 # https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
 
-{ pkgs, modulesPath, lib, config, ... }:
+{ pkgs, modulesPath, ... }:
 let
-  nixcosmic-sources = pkgs.callPackage ./nixcosmic-sources {};
+  nixcosmic-sources = pkgs.callPackage ../pkgs/nixcosmic-sources {};
+  nixcosmic-dotfiles = pkgs.callPackage ../pkgs/nixcosmic-dotfiles {};
 in {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal-combined.nix"
@@ -20,6 +21,7 @@ in {
   # Minimum packages for installation
   environment.systemPackages = [
     nixcosmic-sources
+    nixcosmic-dotfiles
     pkgs.nano
     pkgs.parted
     pkgs.git

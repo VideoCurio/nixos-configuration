@@ -26,18 +26,18 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 1. Get the latest NixC*OS*MIC 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc2/nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso.sha256
    sha256sum --check nixcosmic-minimal_*.iso.sha256
    ```
    Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
-   sudo dd if=nixcosmic-minimal_25.05.0-rc2_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -49,7 +49,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `nixcosmic-install --crypt /dev/nvme0n1`:
+6. Run the installer with the **recommended** options: `nixcosmic-install --crypt --root-size 80G /dev/nvme0n1`:
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
@@ -60,12 +60,13 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8
-   2) fr_FR.UTF8
-   3) es_ES.UTF8
-   4) de_DE.UTF8
-   5) zh_CN.UTF8
-   6) ...
-   Enter your choice (1-20): 2
+   1) en_GB.UTF8
+   3) fr_FR.UTF8
+   4) es_ES.UTF8
+   5) de_DE.UTF8
+   6) zh_CN.UTF8
+   7) ...
+   Enter your choice (1-20): 3
    Choose your time zone (Europe/Paris):
    Choose your username: nixos
    Choose your machine hostname (NixCOSMIC): EVAUnit02
@@ -103,14 +104,15 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Features
 
-* Hardware configuration files for AMD, Intel and Raspberry Pi 4 platform. GPU configuration files for AMD and Nvidia hardware.
-* Filesystem configuration for full encrypted disk (LUKS+LVM).
-* COSMIC, a wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
+* Hardware configuration files for AMD and Intel. GPU configuration files for AMD and Nvidia hardware.
+* File system configuration for full encrypted disk (LUKS+LVM).
+* COSMIC, a Wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
 * Pop_launcher, launch or switch to every application just with the Super key. Forget about your mouse, use Super key combinations for everything.
-* Flatpak with auto-update. COSMIC and Flathub repos pre-installed.
-* Alacritty terminal with ZSH and a lot of good modern commands. [my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) is pre-installed.
+* Flatpak with **auto-update**. COSMIC and Flathub repos pre-installed.
+* Alacritty terminal with ZSH and a lot of good modern commands. [My NixOS-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) is pre-installed.
 * [Modular configuration files](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) for apps like Steam, Discord, OBS, Ollama AI, docker, QEMU + virt-manager, Python3, Rust and more...
 * Modular hardened systemd services configurations files. -WIP-
+* NixOS packages **auto-update** every night or at first boot of the day.
 * A bunch of nerd fonts...
 
 Useful COSMIC shortcuts:
@@ -128,9 +130,9 @@ Useful COSMIC shortcuts:
 | Maximize application        | Super + M                          |
 | Tile mode on/off            | Super + Y                          |
 
-### Dotfiles
+### Dot files
 
-[my nixos-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+[My NixOS-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
 
 -----
 
@@ -147,7 +149,7 @@ followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-You want a package not in one of the [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
 
 ### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
@@ -158,9 +160,9 @@ You can also install Linux applications as flatpak. [Flathub](https://flathub.or
 NixOS is a Linux distribution based on the Nix package manager and build system. It supports reproducible and declarative system-wide configuration management as well as atomic upgrades and rollbacks, although it can additionally support imperative package and user management. In NixOS, all components of the distribution — including the kernel, installed packages and system configuration files — are built by Nix from pure functions called Nix expressions.
 See [NixOS manual](https://nixos.org/manual/nixos/stable/) to learn more.
 
-The default 'configuration.nix' is set to auto upgrade every night at 03:40 or on your first boot of the day, see `systemctl list-timers`.
+The default 'configuration.nix' is set to **AUTO UPDATE** every night at 03:40 or on your first boot of the day, see `systemctl list-timers`.
 
-Generations older than 7 days are automatically garbage collected. You can also manually do this with:
+Generations older than 7 days are automatically garbage collected. You can also manually do the equivalent with:
 ```bash
 sudo nix-collect-garbage --delete-older-than 7d && sudo nixos-rebuild switch --upgrade && sudo nixos-rebuild list-generations
 ```
@@ -186,7 +188,7 @@ Pull Request are welcomed.
 
 ## Version
 
-Current version is [25.05.0-rc2](https://github.com/VideoCurio/nixos-configuration/tree/25.05.0-rc2) based on Nixos 25.05 latest build.
+Current version is [25.05.0-rc3](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0-rc3) based on an Nixos 25.05 build.
 
 -----
 

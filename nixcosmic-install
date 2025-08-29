@@ -51,7 +51,7 @@ EOF
 
 do_dotfiles_install=1;
 encrypt_disk=0;
-root_size="80G";
+root_size="25G";
 rpi4_install=0;
 verbose=0;
 selected_locale="";
@@ -325,12 +325,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# dotfiles install function
+# nixcosmic dotfiles install, see: https://github.com/VideoCurio/nixos-dotfiles
 dotfiles-inst () {
   printf "\e[32m================================\e[0m \n"
   printf "\e[32m================================\e[0m \n"
   echo "Custom dotfiles installation..."
-  git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
   local skel_dir="/mnt/etc/skel/"
   local home_dir="/mnt/home/*/"
   if [ $rpi4_install -eq 1 ]; then
@@ -338,19 +337,13 @@ dotfiles-inst () {
     home_dir="/home/*/"
   fi
   mkdir -p "$skel_dir"
-  git --git-dir=/tmp/dotfiles/ --work-tree="$skel_dir" checkout || true
-  rm -rf /tmp/dotfiles/
-  # Iterate over each home user
+  nixcosmic-dotfiles --lang "$selected_locale_console" "$skel_dir"
   for dir in $home_dir; do
     if [[ -d "$dir" && "$dir" != */lost+found/ ]]; then
-      echo "Cloning dotfiles into: $dir"
-      git clone --bare https://github.com/VideoCurio/nixos-dotfiles.git /tmp/dotfiles/
-      git --git-dir=/tmp/dotfiles/ --work-tree="$dir" checkout || true
+      nixcosmic-dotfiles --lang "$selected_locale_console" "$dir"
       chown -R 1000:100 "$dir" # Any way to predict OWNER at this stage ?
-      rm -rf /tmp/dotfiles/
     fi
   done
-  printf "\e[32mDotfiles installation done.\e[0m\n"
 }
 
 # Format disk function
@@ -525,6 +518,7 @@ install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$nixcosmic_source
 install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$nixcosmic_sources_path"/modules/hardened/*.nix
 install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$nixcosmic_sources_path"/modules/hardware/*.nix
 install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_path"/modules/platforms/*.nix
+install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_sources_path"/pkgs/nixcosmic-dotfiles/default.nix
 
 # Update user language:
 sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/configuration.nix

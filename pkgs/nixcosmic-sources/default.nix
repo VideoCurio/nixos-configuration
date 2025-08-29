@@ -1,5 +1,5 @@
 # NixCOSMIC sources packages
-# Copy a release of NixCOSMIC sources from github to $out/share/
+# Copy essential NixCOSMIC configuration files from sources into a NixOS package.
 # See:
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
 # https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
@@ -8,7 +8,7 @@
 { lib, stdenvNoCC }:
 stdenvNoCC.mkDerivation {
   pname = "nixcosmic-sources";
-  version = "25.05.0-rc1";
+  version = "25.05.0-rc3";
 
   src = lib.fileset.toSource {
     root = ../../.;
@@ -17,6 +17,7 @@ stdenvNoCC.mkDerivation {
       ../../user-me.nix
       ../../modules
       ../../nixcosmic-install
+      ../../pkgs
     ];
   };
   dontPatch = true;
@@ -34,11 +35,13 @@ stdenvNoCC.mkDerivation {
     install -D -m 644 -t $out/share/nixcosmic/modules/hardware/ modules/hardware/*.nix
     install -D -m 644 -t $out/share/nixcosmic/modules/platforms/ modules/platforms/*.nix
 
+    install -D -m 644 -t $out/share/nixcosmic/pkgs/nixcosmic-dotfiles/ pkgs/nixcosmic-dotfiles/default.nix
+
     runHook postInstall
   '';
 
   meta = {
-    description = "Configuration files for NixCOSMIC";
+    description = "Configuration nix files for NixCOSMIC";
     homepage = "https://github.com/VideoCurio/nixos-configuration";
     license = lib.licenses.gpl3Only;
     platforms = lib.platforms.linux;

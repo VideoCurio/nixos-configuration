@@ -49,7 +49,6 @@ in {
 
   nixcosmic.bootefi.enable = lib.mkDefault true;
   nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
-  nixcosmic.desktop.dotfiles.enable = lib.mkDefault true; # Custom Nixos+COSMIC dotfiles by VideoCurio
 
   nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
   nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required for apps.devops options below. + Cloudlfared
@@ -65,7 +64,7 @@ in {
   nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
   nixcosmic.services.sshd.enable = lib.mkDefault false; # SSH daemon
   nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
-  nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED for nixcosmic.desktop.dotfiles.enable
+  nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
   nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
   nixcosmic.virtualisation.wine.enable = lib.mkDefault false; # Wine 32 and 64 bits with Wayland support.
 
@@ -91,8 +90,6 @@ in {
   );
   nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
   nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault false;
-
-  # TODO: Prevent some conflicts between modules:
 
   ############# Settings belows this line should not be changed! #############
 
@@ -194,7 +191,7 @@ in {
 
   # NixCOSMIC variant version
   system.nixos.variantName = "NixCOSMIC";
-  system.nixos.variant_id = "25.05.0-rc1";
+  system.nixos.variant_id = "25.05.0-rc3";
 
   # Allowing Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

@@ -22,13 +22,30 @@ isoFilename="nixcosmic-minimal_${currentRelease}_amd64-intel.iso"
 isoFilePath="${script_path}/${isoFilename}"
 
 printf "\e[32m Building %s file...\e[0m\n" "$isoFilename"
+# Check if iso file already exist
+while true; do
+  if [ -f "$isoFilePath" ]; then
+    printf "\e[33m ISO file %s already exist.\e[0m\n" "$isoFilename"
+    read -r -p "Choose a variant number: " add_variant
+    if ! [[ $add_variant =~ ^[0-9]+$ ]]; then
+      printf "\e[31m Invalid variant number, it could only contain numerical characters.\e[0m \n"
+      exit 1
+    fi
+    isoFilename="nixcosmic-minimal_${currentRelease}_amd64-intel-${add_variant}.iso"
+    isoFilePath="${script_path}/${isoFilename}"
+  else
+    break;
+  fi
+done
 
-nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=iso-minimal.nix
+# Change some version number in nix file to match $currentRelease
+sed "s/system\.nixos\.variant_id = \".*/system.nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
+sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic-sources/default.nix
+
+nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
 
 #### Save and rename ISO file
-#sleep 2s
 cp "$script_path"/result/iso/nixos-minimal-*.iso "$isoFilePath"
-
 sha256sum "$isoFilePath" >> "$isoFilePath".sha256
 chmod 0444 "$isoFilePath".sha256
 
