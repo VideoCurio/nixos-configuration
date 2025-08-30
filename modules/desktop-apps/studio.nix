@@ -21,7 +21,6 @@
     environment.systemPackages = with pkgs; [
       audacity
       davinci-resolve
-      ffmpeg_6-full
     ];
   };
 }

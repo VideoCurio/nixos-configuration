@@ -25,6 +25,7 @@
       bitwarden-desktop
       brave
       easyeffects
+      ffmpeg_6-full
       gimp3-with-plugins
       protonvpn-gui
       signal-desktop
