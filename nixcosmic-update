@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# NixCOSMIC update script as NixOS package.
+#
+# Usage:
+#       nixcosmic-update [options]
+#
+# Examples:
+
+set -eu
+
+# Print help function
+usage ()
+{
+  echo -e "
+Usage: nixcosmic-update [options]
+  Where,";
+
+  cat << EOF
+
+  Options:
+     -h, --help         Print this message.
+     --check            Check online if a most recent version of NixCOSMIC exist.
+     -v, --verbose      Print more information.
+
+  Examples:
+    XXXXX
+EOF
+  exit;
+}
+
+# var init state
+verbose=0;
+check_online=0;
+latest_version="";
+script_path="$(dirname "$0")"
+
+# Scripts arguments parse options
+ARGS=$(getopt --longoptions="verbose,help,check" --options ":hv" -- "$@")
+if [ $# -eq 0 ]; then
+  usage
+fi;
+
+eval set -- "$ARGS"
+
+while true; do
+  case "$1" in
+    -v | --verbose)
+      verbose=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      ;;
+    --check)
+      check_online=1
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ $verbose -eq 1 ]; then
+  printf "Script current path: %s\n" "$script_path"
+fi
+
+# check online latest version
+get_latest_version() {
+  if [ $verbose -eq 1 ]; then
+    printf "Checking github...\n"
+  fi
+  latest_version="$(curl -f --silent "https://api.github.com/repos/VideoCurio/nixos-configuration/tags" | jq -r '.[0].name')"
+}
+
+# Get current OS version
+if [ ! -f /etc/os-release ]; then
+  printf "\e[31m /etc/os-release file not found! \e[0m \n"
+  exit 1
+fi
+source /etc/os-release
+
+if [ $check_online -eq 1 ]; then
+  get_latest_version
+  printf "NixCOSMIC latest version is %s\n" "$latest_version"
+  if [ "$latest_version" == "$VARIANT_ID" ]; then
+    printf "\e[32m System is up-to-date.\e[0m \n"
+  fi
+fi
