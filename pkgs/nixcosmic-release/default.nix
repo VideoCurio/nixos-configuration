@@ -5,7 +5,7 @@
 # https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
 # https://nix.dev/tutorials/working-with-local-files#
 
-{ lib, stdenvNoCC }:
+{ lib, stdenvNoCC, fetchFromGitHub }:
 stdenvNoCC.mkDerivation rec {
   pname = "nixcosmic-release";
   version = "25.05.0-rc3";

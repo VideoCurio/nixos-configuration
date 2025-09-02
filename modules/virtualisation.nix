@@ -31,15 +31,11 @@
         package = pkgs.qemu_kvm;
         runAsRoot = true;
         swtpm.enable = true;
-        ovmf = {
-          enable = true;
-          packages = [(pkgs.OVMF.override {
-            secureBoot = true;
-            tpmSupport = true;
-          }).fd];
-        };
       };
     };
+    # VMs created by virt-manager can break after a libvirt update and a nix-collect-garbage, See: https://github.com/NixOS/nixpkgs/pull/421549 https://github.com/NixOS/nixpkgs/issues/378894
+    # Temp fix: in virt-manager, edit the VM's XML configuration file, suppress lines with <loader></loader> and <nvram></nvram>. Apply, virt-manager will re-create correct one.
+
     # Optional: QEMU support of different arch
     # Launch this 2 commands for docker build multi platform:
     #docker run --privileged --rm tonistiigi/binfmt --install all

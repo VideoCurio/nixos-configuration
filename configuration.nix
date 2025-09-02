@@ -187,6 +187,7 @@ in {
   # Automatic OS updates and cleanup
   system.autoUpgrade.enable = true;
   system.autoUpgrade.dates = "03:40";
+  #system.autoUpgrade.randomizedDelaySec = "10min";
   # Reboot on new kernel, initrd or kernel module.
   #system.autoUpgrade.allowReboot = true;
   # Collect garbage
