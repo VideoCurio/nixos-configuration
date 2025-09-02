@@ -521,19 +521,17 @@ install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_
 install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_sources_path"/pkgs/nixcosmic-dotfiles/default.nix
 
 # Update user language:
-sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/configuration.nix
-# Update console key map for cryptroot:
-sed "s/defaultConsoleKeymap = \".*/defaultConsoleKeymap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/configuration.nix
-# Update xserver keyboard layout:
-sed "s/xkb\.layout = \".*/xkb.layout = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/modules/services.nix
-sed "s/-layout [a-z]\{2\}/-layout ${selected_locale_console}/g" -i "$nixos_config_dir"/modules/services.nix
+sed "s/nixcosmic\.system\.i18n\.locale = \".*/nixcosmic.system.i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
+# Update console key map:
+sed "s/nixcosmic\.system\.keyMap = \".*/nixcosmic.system.keyMap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update time zone
-sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/configuration.nix
+sed "s/nixcosmic\.system\.timeZone = \".*/nixcosmic.system.timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update user name
 sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/user-me.nix
-sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/user-me.nix
+sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/settings.nix
+sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update hostname
-sed "s/networking\.hostName = \".*/networking.hostName = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/configuration.nix
+sed "s/nixcosmic\.system\.hostname = \".*/nixcosmic.system.hostname = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/settings.nix
 # platform settings:
 if [ $rpi4_install -eq 1 ]; then
   # Update configuration.nix
@@ -575,7 +573,7 @@ while true; do
 read -r -p "Proceed with installation ? (y/n): " yn
 
 case $yn in
-  [yY] ) echo "Launching nixos installer...";
+  [yY] ) echo "Launching NixOS installer...";
     if [ $rpi4_install -eq 0 ]; then
       nixos-install --no-root-passwd
     else

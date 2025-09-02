@@ -34,13 +34,6 @@
           else "false"
         )
       );
-
-      # For AMD Ryzen 7 PRO hardware
-      # nix-shell -p "rocmPackages.rocminfo" --run "rocminfo" | grep "gfx"
-      #environmentVariables = {
-      #  HCC_AMDGPU_TARGET = "gfx1103"; # used to be necessary, but doesn't seem to anymore
-      #};
-      #rocmOverrideGfx = "11.0.2";
     };
     # Open WebUI, see: https://docs.openwebui.com/
     services.open-webui = {

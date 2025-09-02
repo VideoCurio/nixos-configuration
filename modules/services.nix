@@ -27,11 +27,11 @@
     services.xserver = {
       enable = lib.mkDefault true;
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
-      xkb.layout = "us";
+      xkb.layout = config.nixcosmic.system.keyMap;
       xkb.model = "pc105";
       xkb.variant = "";
       #xkb.options = "eurosign:e,caps:escape";
-      displayManager.sessionCommands = "setxkbmap -layout us";
+      displayManager.sessionCommands = "setxkbmap -layout ${config.nixcosmic.system.keyMap}";
     };
 
     # OpenSSH server.
@@ -122,9 +122,6 @@
       extraConfig.pipewire."92-low-latency" = {
         "context.properties" = {
           "default.clock.rate" = 48000;
-          "default.clock.quantum" = 512; # Keep increasing the quant value until you get no crackles
-          "default.clock.min-quantum" = 256;
-          "default.clock.max-quantum" = 16384;
         };
       };
       extraConfig.pipewire-pulse."92-low-latency" = {

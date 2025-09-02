@@ -8,12 +8,13 @@
 { lib, stdenvNoCC }:
 stdenvNoCC.mkDerivation {
   pname = "nixcosmic-sources";
-  version = "25.05.0-rc3";
+  version = "unstable";
 
   src = lib.fileset.toSource {
     root = ../../.;
     fileset = lib.fileset.unions [
       ../../configuration.nix
+      ../../settings.nix
       ../../user-me.nix
       ../../modules
       ../../nixcosmic-install

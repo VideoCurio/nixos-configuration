@@ -18,6 +18,7 @@
     ./filesystems/filesystems-luks.nix
     ./filesystems/filesystems-mini.nix
     ./networking.nix
+    ./nixcosmic-options.nix
     ./nixcosmic-pkgs.nix
     ./platforms/amd64.nix
     ./platforms/rpi4.nix
