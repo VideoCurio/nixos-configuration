@@ -44,36 +44,38 @@ sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic
 
 # Check lint
 printf "Lint bash script files...\n"
-shellcheck --color=always -f tty -x "$script_path"/../nixcosmic-install
-shellcheck --color=always -f tty -x "$script_path"/../nixcosmic-update
+shellcheck --color=always -f tty -x ./../nixcosmic-install
+shellcheck --color=always -f tty -x ./../nixcosmic-update
 printf "Lint pkgs/ nix files...\n"
-for file in "$script_path"/../pkgs/*/*.nix; do
+for file in ./../pkgs/*/*.nix; do
   if [ -f "$file" ]; then
     statix check "$file"
   fi
 done
 printf "Lint modules/ nix files...\n"
-for file in "$script_path"/../modules/*/*.nix; do
+for file in ./../modules/*/*.nix; do
   if [ -f "$file" ]; then
     statix check "$file"
   fi
 done
 printf "Lint main nix files...\n"
-for file in "$script_path"/../*.nix; do
+for file in ./../*.nix; do
   if [ -f "$file" ]; then
     statix check "$file"
   fi
 done
 
 # Build packages
+#printf "Build custom pkgs...\n"
 # nix-build && nix-env -i -f default.nix
 #nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-sources {}'
 #nix-shell -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-dotfiles {}'
 
-nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
+printf "Launch nix-build...\n"
+nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=./iso-minimal.nix
 
 #### Save and rename ISO file
-cp "$script_path"/result/iso/nixos-minimal-*.iso "$isoFilePath"
+cp ./result/iso/nixos-minimal-*.iso "$isoFilePath"
 sha256sum "$isoFilePath" >> "$isoFilePath".sha256
 chmod 0444 "$isoFilePath".sha256
 

@@ -13,8 +13,8 @@
     system = {
       hostname = "NixCOSMIC";
       i18n.locale = "en_US.UTF-8";
-      keyMap = "us";
-      timeZone = "Europe/Paris";
+      keyboard = "us";
+      timeZone = "Etc/GMT";
     };
     ### Activate or deactivate NixCOSMIC modules/ from here:
     # Hardware platform settings updated by nixcosmic-install during ISO install

@@ -532,8 +532,8 @@ install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_so
 
 # Update user language:
 sed "s/i18n\.locale = \".*/i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
-# Update console key map:
-sed "s/keyMap = \".*/keyMap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
+# Update console keyboard map:
+sed "s/keyboard = \".*/keyboard = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update time zone
 sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update user name

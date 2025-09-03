@@ -58,9 +58,9 @@
   };
 
   console = {
-    keyMap = lib.mkOption config.nixcosmic.system.keyMap;
     earlySetup = true; # initrd setup
     useXkbConfig = false; # use xkb.options in tty.
+    keyMap = config.nixcosmic.system.keyboard;
   };
 
   # List packages installed in system profile.

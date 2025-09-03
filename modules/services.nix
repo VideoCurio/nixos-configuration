@@ -27,11 +27,11 @@
     services.xserver = {
       enable = lib.mkDefault true;
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
-      xkb.layout = config.nixcosmic.system.keyMap;
+      xkb.layout = config.nixcosmic.system.keyboard;
       xkb.model = "pc105";
       xkb.variant = "";
       #xkb.options = "eurosign:e,caps:escape";
-      displayManager.sessionCommands = "setxkbmap -layout ${config.nixcosmic.system.keyMap}";
+      displayManager.sessionCommands = "setxkbmap -layout ${config.nixcosmic.system.keyboard}";
     };
 
     # OpenSSH server.
