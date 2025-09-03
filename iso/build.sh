@@ -64,7 +64,6 @@ for file in "$script_path"/../*.nix; do
     statix check "$file"
   fi
 done
-exit 2
 
 # Build packages
 # nix-build && nix-env -i -f default.nix
