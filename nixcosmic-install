@@ -127,7 +127,7 @@ if [ $verbose -eq 1 ]; then
 fi
 
 # Check nixcosmic-sources files
-nixcosmic_sources_path=$(nix-store --query --outputs $(which nixcosmic-install))
+nixcosmic_sources_path=$(nix-store --query --outputs "$(which nixcosmic-install)")
 nixcosmic_sources_path=$(realpath "$nixcosmic_sources_path"/share/nixcosmic)
 #nixcosmic_sources_path=$(realpath "$script_path"/../share/nixcosmic)
 if [ $verbose -eq 1 ]; then

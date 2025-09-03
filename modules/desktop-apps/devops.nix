@@ -49,11 +49,14 @@
       cloudflared
       git-who
       gh
+      shellcheck
+      #lefthook
       # VNC
       remmina
     ]
     ++ lib.optionals config.nixcosmic.desktop.apps.devops.go.enable [
       go
+      golangci-lint
       jetbrains.goland
     ]
     ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
