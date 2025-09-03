@@ -58,7 +58,7 @@
   };
 
   console = {
-    keyMap = config.nixcosmic.system.keyMap;
+    keyMap = lib.mkOption config.nixcosmic.system.keyMap;
     earlySetup = true; # initrd setup
     useXkbConfig = false; # use xkb.options in tty.
   };
