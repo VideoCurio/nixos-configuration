@@ -10,10 +10,15 @@
       default = false;
       description = "Desktop apps for developers.";
     };
+    nixcosmic.desktop.apps.devops.go.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Go, gofmt and JetBrains GoLand.";
+    };
     nixcosmic.desktop.apps.devops.python312.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Python3.12 and JetBrains PyCharm Community.";
+      description = "Python3.12, pip3 and JetBrains PyCharm Community.";
     };
     nixcosmic.desktop.apps.devops.rust.enable = lib.mkOption {
       type = lib.types.bool;
@@ -46,6 +51,10 @@
       gh
       # VNC
       remmina
+    ]
+    ++ lib.optionals config.nixcosmic.desktop.apps.devops.go.enable [
+      go
+      jetbrains.goland
     ]
     ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
       # Python3
