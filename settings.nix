@@ -17,8 +17,30 @@
       timeZone = "Europe/Paris";
     };
     ### Activate or deactivate NixCOSMIC modules/ from here:
+    # Hardware platform settings updated by nixcosmic-install during ISO install
+    platform.amd64.enable = lib.mkDefault true;
+    platform.rpi4.enable = lib.mkDefault false;
+    # Hardware related modules - updated by nixcosmic-install during ISO install
+    hardware = {
+      # Modern AMD GPU
+      amdGpu.enable = lib.mkDefault false;
+      # Modern Nvidia GPU
+      nvidiaGpu.enable = lib.mkDefault false;
+      # EXPERIMENTAL - laptop battery saver
+      laptop.enable = false;
+    };
+    # Required modules:
+    bootefi.enable = lib.mkDefault true;
+    desktop.cosmic.enable = lib.mkDefault true;
+    fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
+    networking.enable = lib.mkDefault true; # NetworkManager (required by COSMIC).
+    shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
+    # File system - updated by nixcosmic-install during ISO install
+    filesystems.luks.enable = lib.mkDefault true;
+    filesystems.minimal.enable = lib.mkDefault false;
+    ### Modules below SHOULD be activated on user needs:
     desktop.apps = {
-      basics.enable = true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+      basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
       devops = {
         enable = false; # Required by desktop.apps.devops options below. + Cloudlfared
         networks.enable = false; # Nmap, Zenmap, Wireshark
@@ -29,8 +51,6 @@
       gaming.enable = false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
       studio.enable = false; # OBS, Audacity, DaVinci Resolve
     };
-    hardware.laptop.enable = false; # EXPERIMENTAL - laptop battery saver
-    networking.enable = true; # NetworkManager (required by COSMIC).
     services = {
       enable = true; # Flatpak + flathub/cosmic repos, pipewire
       printing.enable = false; # CUPS

@@ -25,26 +25,6 @@
   # updated by nixcosmic-install
   networking.hostName = config.nixcosmic.system.hostname;
 
-  ######## Enabling or disabling NixCOSMIC ./modules here:
-  nixcosmic = {
-    # platform settings updated by nixcosmic-install during ISO install
-    platform.amd64.enable = lib.mkDefault true;
-    platform.rpi4.enable = lib.mkDefault false;
-    # Modern AMD GPU - updated by nixcosmic-install during ISO install
-    hardware.amdGpu.enable = lib.mkDefault false;
-    # Modern Nvidia GPU - updated by nixcosmic-install during ISO install
-    hardware.nvidiaGpu.enable = lib.mkDefault false;
-
-    bootefi.enable = lib.mkDefault true;
-    desktop.cosmic.enable = lib.mkDefault true;
-    fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
-    shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
-
-    # updated by nixcosmic-install during ISO install
-    filesystems.luks.enable = lib.mkDefault true;
-    filesystems.minimal.enable = lib.mkDefault false;
-  };
-
   ############# Settings belows this line should not be changed! #############
 
   # Set time zone.
@@ -78,7 +58,6 @@
   };
 
   console = {
-    #font = "Lat2-Terminus16";
     keyMap = config.nixcosmic.system.keyMap;
     earlySetup = true; # initrd setup
     useXkbConfig = false; # use xkb.options in tty.

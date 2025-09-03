@@ -138,6 +138,11 @@ if [ ! -f "$nixcosmic_sources_path"/configuration.nix ]; then
   exit 1
 fi
 
+if [ ! -f "$nixcosmic_sources_path"/settings.nix ]; then
+  printf "\e[31m settings.nix file not found! \e[0m \n"
+  exit 1
+fi
+
 if [ ! -f "$nixcosmic_sources_path"/user-me.nix ]; then
   printf "\e[31muser-me.nix file not found! \e[0m \n"
   exit 1
@@ -145,6 +150,11 @@ fi
 
 if [ ! -d "$nixcosmic_sources_path"/modules/ ]; then
   printf "\e[31m modules directory not found! \e[0m \n"
+  exit 1
+fi
+
+if [ ! -d "$nixcosmic_sources_path"/pkgs/ ]; then
+  printf "\e[31m pkgs directory not found! \e[0m \n"
   exit 1
 fi
 
@@ -521,52 +531,52 @@ install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_
 install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_sources_path"/pkgs/nixcosmic-dotfiles/default.nix
 
 # Update user language:
-sed "s/nixcosmic\.system\.i18n\.locale = \".*/nixcosmic.system.i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
+sed "s/i18n\.locale = \".*/i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update console key map:
-sed "s/nixcosmic\.system\.keyMap = \".*/nixcosmic.system.keyMap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
+sed "s/keyMap = \".*/keyMap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update time zone
-sed "s/nixcosmic\.system\.timeZone = \".*/nixcosmic.system.timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
+sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update user name
 sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/user-me.nix
 sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/settings.nix
 sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update hostname
-sed "s/nixcosmic\.system\.hostname = \".*/nixcosmic.system.hostname = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/settings.nix
+sed "s/hostname = \".*/hostname = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/settings.nix
 # platform settings:
 if [ $rpi4_install -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  # Update settings.nix
+  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  # Also update settings.nix
+  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 fi
 # filesystems settings:
 if [ $encrypt_disk -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  # Update settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  # Also update settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 fi
 # GPU settings:
 if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
   echo "Enabling AMD GPU..."
-  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
   echo "Enabling Nvidia GPU..."
-  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 else
   echo "Disabling GPU..."
-  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 fi
 
 while true; do
