@@ -18,6 +18,7 @@
   nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
   nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required by apps.devops options below. + Cloudlfared
   nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false; # Nmap, Zenmap, Wireshark
+  nixcosmic.desktop.apps.devops.go.enable = lib.mkDefault false; # Go, gofmt, JetBrains GoLand
   nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
   nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
   nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client

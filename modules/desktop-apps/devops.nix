@@ -49,7 +49,10 @@
       cloudflared
       git-who
       gh
+      # Bash linter
       shellcheck
+      # Nix linter
+      statix
       #lefthook
       # VNC
       remmina
