@@ -5,30 +5,32 @@
 {
   # Declare options
   options = {
-    nixcosmic.desktop.apps.devops.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Desktop apps for developers.";
-    };
-    nixcosmic.desktop.apps.devops.go.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Go, gofmt and JetBrains GoLand.";
-    };
-    nixcosmic.desktop.apps.devops.python312.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Python3.12, pip3 and JetBrains PyCharm Community.";
-    };
-    nixcosmic.desktop.apps.devops.rust.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Rust with cargo and JetBrains RustRover.";
-    };
-    nixcosmic.desktop.apps.devops.networks.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Nmap, Zenmap, wireshark, remina.";
+    nixcosmic.desktop.apps.devops = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Desktop apps for developers.";
+      };
+      go.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Go, gofmt and JetBrains GoLand.";
+      };
+      python312.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Python3.12, pip3 and JetBrains PyCharm Community.";
+      };
+      rust.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Rust with cargo and JetBrains RustRover.";
+      };
+      networks.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Nmap, Zenmap, wireshark, remina.";
+      };
     };
   };
 

@@ -42,6 +42,30 @@ done
 sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
 sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic-sources/default.nix
 
+# Check lint
+printf "Lint bash script files...\n"
+shellcheck --color=always -f tty -x "$script_path"/../nixcosmic-install
+shellcheck --color=always -f tty -x "$script_path"/../nixcosmic-update
+printf "Lint pkgs/ nix files...\n"
+for file in "$script_path"/../pkgs/*/*.nix; do
+  if [ -f "$file" ]; then
+    statix check "$file"
+  fi
+done
+printf "Lint modules/ nix files...\n"
+for file in "$script_path"/../modules/*/*.nix; do
+  if [ -f "$file" ]; then
+    statix check "$file"
+  fi
+done
+printf "Lint main nix files...\n"
+for file in "$script_path"/../*.nix; do
+  if [ -f "$file" ]; then
+    statix check "$file"
+  fi
+done
+exit 2
+
 # Build packages
 # nix-build && nix-env -i -f default.nix
 #nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-sources {}'
