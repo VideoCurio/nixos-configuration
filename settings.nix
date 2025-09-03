@@ -9,49 +9,60 @@
 { config, lib, pkgs, ... }:
 {
   ### NixCOSMIC options settings goes here:
-  nixcosmic.system.hostname = "NixCOSMIC";
-  nixcosmic.system.i18n.locale = "en_US.UTF-8";
-  nixcosmic.system.keyMap = "us";
-  nixcosmic.system.timeZone = "Europe/Paris";
-
-  ### Activate or deactivate NixCOSMIC modules/ from here:
-  nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
-  nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required by apps.devops options below. + Cloudlfared
-  nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false; # Nmap, Zenmap, Wireshark
-  nixcosmic.desktop.apps.devops.go.enable = lib.mkDefault false; # Go, gofmt, JetBrains GoLand
-  nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
-  nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
-  nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
-  nixcosmic.desktop.apps.studio.enable = lib.mkDefault false; # OBS, Audacity, DaVinci Resolve
-
-  nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
-  nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager (required by COSMIC).
-  nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
-  nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
-  nixcosmic.services.sshd.enable = lib.mkDefault false; # SSH daemon
-  nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
-  nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
-  nixcosmic.virtualisation.wine.enable = lib.mkDefault false; # Wine 32 and 64 bits with Wayland support.
-
-  # Hardened configurations -WIP-
-  # Activate and test one by one - may break some programs
-  # Check results with: `systemd-analyze security`
-  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault false;
-  nixcosmic.hardened.acpid.enable = lib.mkDefault false;
-  nixcosmic.hardened.cups.enable = lib.mkDefault false;
-  nixcosmic.hardened.dbus.enable = lib.mkDefault false;
-  nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
-  nixcosmic.hardened.docker.enable = lib.mkDefault false;
-  nixcosmic.hardened.getty.enable = lib.mkDefault false; # WARNING: will prevent TTY console login
-  nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault false;
-  nixcosmic.hardened.nscd.enable = lib.mkDefault false;
-  nixcosmic.hardened.rescue.enable = lib.mkDefault false;
-  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault false;
-  nixcosmic.hardened.sshd.enable = lib.mkDefault false;
-  nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
-  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault false;
+  nixcosmic = {
+    system = {
+      hostname = "NixCOSMIC";
+      i18n.locale = "en_US.UTF-8";
+      keyMap = "us";
+      timeZone = "Europe/Paris";
+    };
+    ### Activate or deactivate NixCOSMIC modules/ from here:
+    desktop.apps = {
+      basics.enable = true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+      devops = {
+        enable = false; # Required by desktop.apps.devops options below. + Cloudlfared
+        networks.enable = false; # Nmap, Zenmap, Wireshark
+        go.enable = false; # Go, gofmt, JetBrains GoLand
+        python312.enable = false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
+        rust.enable = false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
+      };
+      gaming.enable = false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
+      studio.enable = false; # OBS, Audacity, DaVinci Resolve
+    };
+    hardware.laptop.enable = false; # EXPERIMENTAL - laptop battery saver
+    networking.enable = true; # NetworkManager (required by COSMIC).
+    services = {
+      enable = true; # Flatpak + flathub/cosmic repos, pipewire
+      printing.enable = false; # CUPS
+      sshd.enable = false; # SSH daemon
+      ai.enable = false; # Ollama with mistral-nemo, open-webui
+    };
+    virtualisation = {
+      enable = false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
+      wine.enable = false; # Wine 32 and 64 bits with Wayland support.
+    };
+    hardened = {
+      # Hardened configurations -WIP-
+      # Activate and test one by one - may break some programs
+      # Check results with: `systemd-analyze security`
+      accountsDaemon.enable = false;
+      acpid.enable = false;
+      cups.enable = false;
+      dbus.enable = false;
+      display-manager.enable = false;
+      docker.enable = false;
+      getty.enable = false; # WARNING: will prevent TTY console login
+      networkManager.enable = false; # TODO: proton-vpn bug if set to true
+      networkManager-dispatcher.enable = false; # TODO: proton-vpn bug if set to true
+      nix-daemon.enable = false;
+      nscd.enable = false;
+      rescue.enable = false;
+      rtkit-daemon.enable = false;
+      sshd.enable = false;
+      user.enable = false; # TODO: 'Flatpak run' bug if set to true
+      wpa_supplicant.enable = false;
+    };
+  };
 
   ### NixOS packages
   environment.systemPackages = with pkgs; [

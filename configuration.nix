@@ -25,24 +25,25 @@
   # updated by nixcosmic-install
   networking.hostName = config.nixcosmic.system.hostname;
 
-  ######## Enabling or disabling ./modules here:
-  # platform settings updated by nixcosmic-install during ISO install
-  nixcosmic.platform.amd64.enable = lib.mkDefault true;
-  nixcosmic.platform.rpi4.enable = lib.mkDefault false;
-  # Modern AMD GPU - updated by nixcosmic-install during ISO install
-  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;
-  # Modern Nvidia GPU - updated by nixcosmic-install during ISO install
-  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;
+  ######## Enabling or disabling NixCOSMIC ./modules here:
+  nixcosmic = {
+    # platform settings updated by nixcosmic-install during ISO install
+    platform.amd64.enable = lib.mkDefault true;
+    platform.rpi4.enable = lib.mkDefault false;
+    # Modern AMD GPU - updated by nixcosmic-install during ISO install
+    hardware.amdGpu.enable = lib.mkDefault false;
+    # Modern Nvidia GPU - updated by nixcosmic-install during ISO install
+    hardware.nvidiaGpu.enable = lib.mkDefault false;
 
-  nixcosmic.bootefi.enable = lib.mkDefault true;
-  nixcosmic.desktop.cosmic.enable = lib.mkDefault true;
-  nixcosmic.fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
+    bootefi.enable = lib.mkDefault true;
+    desktop.cosmic.enable = lib.mkDefault true;
+    fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
+    shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
 
-  # updated by nixcosmic-install during ISO install
-  nixcosmic.filesystems.luks.enable = lib.mkDefault true;
-  nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
-
-  nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
+    # updated by nixcosmic-install during ISO install
+    filesystems.luks.enable = lib.mkDefault true;
+    filesystems.minimal.enable = lib.mkDefault false;
+  };
 
   ############# Settings belows this line should not be changed! #############
 
@@ -134,24 +135,32 @@
         false
   ;
 
-  # Automatic OS updates and cleanup
-  system.autoUpgrade.enable = true;
-  system.autoUpgrade.dates = "03:40";
-  #system.autoUpgrade.randomizedDelaySec = "10min";
-  # Reboot on new kernel, initrd or kernel module.
-  #system.autoUpgrade.allowReboot = true;
+  system = {
+    # Automatic OS updates and cleanup
+    autoUpgrade = {
+      enable = true;
+      dates = "03:40";
+      randomizedDelaySec = "10min";
+      #allowReboot = true; # Reboot on new kernel, initrd or kernel module.
+    };
+    # NixCOSMIC variant version
+    nixos.variantName = "NixCOSMIC";
+    nixos.variant_id = "unstable";
+  };
+
   # Collect garbage
-  nix.gc.automatic = true;
-  nix.gc.dates = "daily";
-  nix.gc.options = "--delete-older-than 7d";
-  nix.settings.auto-optimise-store = true;
-
-  # NixCOSMIC variant version
-  system.nixos.variantName = "NixCOSMIC";
-  system.nixos.variant_id = "unstable";
-
-  # Allowing Flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 7d";
+    };
+    settings = {
+      auto-optimise-store = true;
+      # Allowing Flakes
+      experimental-features = [ "nix-command" "flakes" ];
+    };
+  };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you

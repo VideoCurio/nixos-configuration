@@ -39,7 +39,7 @@ while true; do
 done
 
 # Change some version number in nix file to match $currentRelease
-sed "s/system\.nixos\.variant_id = \".*/system.nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
+sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
 sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic-sources/default.nix
 
 # Build packages
