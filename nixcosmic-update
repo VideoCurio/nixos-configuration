@@ -22,6 +22,7 @@ Usage: nixcosmic-update [options]
      -h, --help         Print this message.
      --check            Check online if a most recent version of NixCOSMIC exist.
      -v, --verbose      Print more information.
+     --version          Print version number and exit.
 
   Examples:
     XXXXX
@@ -30,13 +31,14 @@ EOF
 }
 
 # var init state
+version="0.2";
 verbose=0;
 check_online=0;
 latest_version="";
 script_path="$(dirname "$0")"
 
 # Scripts arguments parse options
-ARGS=$(getopt --longoptions="verbose,help,check" --options ":hv" -- "$@")
+ARGS=$(getopt --longoptions="verbose,version,help,check" --options ":hv" -- "$@")
 if [ $# -eq 0 ]; then
   usage
 fi;
@@ -55,6 +57,10 @@ while true; do
     --check)
       check_online=1
       shift
+      ;;
+    --version)
+      echo "$version"
+      exit 0
       ;;
     --)
       shift

@@ -45,8 +45,7 @@ sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic
 # Build packages
 # nix-build && nix-env -i -f default.nix
 #nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-sources {}'
-#nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-release {}'
-#nix-shell -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-release {}'
+#nix-shell -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-dotfiles {}'
 
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config="$script_path"/iso-minimal.nix
 
