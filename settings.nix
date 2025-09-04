@@ -8,19 +8,19 @@
 
 { config, lib, pkgs, ... }:
 {
-  ### NixCOSMIC options settings goes here:
-  nixcosmic = {
+  ### CuriOS options settings goes here:
+  curios = {
     system = {
-      hostname = "NixCOSMIC";
+      hostname = "CuriOS";
       i18n.locale = "en_US.UTF-8";
       keyboard = "us";
       timeZone = "Etc/GMT";
     };
-    ### Activate or deactivate NixCOSMIC modules/ from here:
-    # Hardware platform settings updated by nixcosmic-install during ISO install
+    ### Activate or deactivate CuriOS modules/ from here:
+    # Hardware platform settings updated by curios-install during ISO install
     platform.amd64.enable = lib.mkDefault true;
     platform.rpi4.enable = lib.mkDefault false;
-    # Hardware related modules - updated by nixcosmic-install during ISO install
+    # Hardware related modules - updated by curios-install during ISO install
     hardware = {
       # Modern AMD GPU
       amdGpu.enable = lib.mkDefault false;
@@ -35,7 +35,7 @@
     fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
     networking.enable = lib.mkDefault true; # NetworkManager (required by COSMIC).
     shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
-    # File system - updated by nixcosmic-install during ISO install
+    # File system - updated by curios-install during ISO install
     filesystems.luks.enable = lib.mkDefault true;
     filesystems.minimal.enable = lib.mkDefault false;
     ### Modules below SHOULD be activated on user needs:

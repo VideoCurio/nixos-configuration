@@ -6,6 +6,8 @@
   imports = [
     ./boot-efi.nix
     ./cosmic.nix
+    ./curios-options.nix
+    ./curios-pkgs.nix
     ./desktop-apps/basics.nix
     ./desktop-apps/devops.nix
     ./desktop-apps/gaming.nix
@@ -18,8 +20,6 @@
     ./filesystems/filesystems-luks.nix
     ./filesystems/filesystems-mini.nix
     ./networking.nix
-    ./nixcosmic-options.nix
-    ./nixcosmic-pkgs.nix
     ./platforms/amd64.nix
     ./platforms/rpi4.nix
     ./services.nix

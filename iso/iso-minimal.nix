@@ -1,4 +1,4 @@
-# NixCOSMIC-minimal ISO configuration file
+# CuriOS-minimal ISO configuration file
 # Basic installer for the console. Based on NixOS installation-cd-minimal-combined.nix
 # See: https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
@@ -6,8 +6,8 @@
 
 { pkgs, modulesPath, ... }:
 let
-  nixcosmic-sources = pkgs.callPackage ../pkgs/nixcosmic-sources {};
-  nixcosmic-dotfiles = pkgs.callPackage ../pkgs/nixcosmic-dotfiles {};
+  curios-sources = pkgs.callPackage ../pkgs/curios-sources {};
+  curios-dotfiles = pkgs.callPackage ../pkgs/curios-dotfiles {};
 in {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal-combined.nix"
@@ -20,8 +20,8 @@ in {
 
   # Minimum packages for installation
   environment.systemPackages = [
-    nixcosmic-sources
-    nixcosmic-dotfiles
+    curios-sources
+    curios-dotfiles
     pkgs.nano
     pkgs.parted
     pkgs.git
@@ -29,6 +29,6 @@ in {
     pkgs.pciutils
   ];
 
-  networking.hostName = "NixCOSMIC";
+  networking.hostName = "CuriOS";
 }
 

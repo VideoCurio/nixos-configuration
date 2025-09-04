@@ -4,7 +4,7 @@
 {
   # Declare options
   options = {
-    nixcosmic.fonts.enable = lib.mkOption {
+    curios.fonts.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "Add essentials fonts.";
@@ -12,7 +12,7 @@
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.fonts.enable {
+  config = lib.mkIf config.curios.fonts.enable {
     # See command: 'fc-list'
     fonts = {
       fontconfig.enable = true;
@@ -26,7 +26,7 @@
         nerd-fonts.jetbrains-mono
         noto-fonts-color-emoji
       ]
-      ++ lib.optionals config.nixcosmic.desktop.cosmic.enable [
+      ++ lib.optionals config.curios.desktop.cosmic.enable [
         fira
         noto-fonts
         open-sans

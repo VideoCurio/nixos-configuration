@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.docker.enable = lib.mkOption {
+    curios.hardened.docker.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for docker.";
+      description = "CuriOS hardened systemd configuration for docker.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.docker.enable {
+  config = lib.mkIf config.curios.hardened.docker.enable {
     systemd.services.docker.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "full";

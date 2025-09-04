@@ -5,12 +5,12 @@
 {
   # Declare options
   options = {
-    nixcosmic.virtualisation.enable = lib.mkOption {
+    curios.virtualisation.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enabling virtualisation app: docker, QEMU/KVM, virt-manager.";
     };
-    nixcosmic.virtualisation.wine.enable = lib.mkOption {
+    curios.virtualisation.wine.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enabling Wine 32 and 64 bits with Wayland support.";
@@ -18,7 +18,7 @@
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.virtualisation.enable {
+  config = lib.mkIf config.curios.virtualisation.enable {
     # Docker
     virtualisation.docker.enable = true;
     # QEMU + KVM + virt-manager
@@ -48,13 +48,13 @@
     # Samba, provide ntlm_auth, winbind, required by most Windows programs under Wine
     services.samba = {
       enable = lib.mkDefault (
-        config.nixcosmic.virtualisation.wine.enable
+        config.curios.virtualisation.wine.enable
       );
       winbindd.enable = lib.mkDefault (
-        config.nixcosmic.virtualisation.wine.enable
+        config.curios.virtualisation.wine.enable
       );
       nsswins = lib.mkDefault (
-        config.nixcosmic.virtualisation.wine.enable
+        config.curios.virtualisation.wine.enable
       );
     };
 
@@ -76,10 +76,10 @@
       # Optional: QEMU support of different arch
       qemu-user
     ]
-    ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
+    ++ lib.optionals config.curios.desktop.apps.devops.python312.enable [
       pkgs.python312Packages.docker
     ]
-    ++ lib.optionals config.nixcosmic.virtualisation.wine.enable [
+    ++ lib.optionals config.curios.virtualisation.wine.enable [
       wineWowPackages.waylandFull
       winetricks
       wineWowPackages.fonts

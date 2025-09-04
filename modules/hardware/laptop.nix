@@ -5,14 +5,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardware.laptop.enable = lib.mkOption {
+    curios.hardware.laptop.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Laptop battery optimizer configuration - conflict with power-profiles-daemon";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.hardware.laptop.enable {
+  config = lib.mkIf config.curios.hardware.laptop.enable {
     # TLP - Optimize Linux Laptop Battery Life
     # See: https://linrunner.de/tlp/
     # See: sudo tlp-stat --help

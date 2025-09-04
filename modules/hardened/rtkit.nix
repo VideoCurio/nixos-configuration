@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.rtkit-daemon.enable = lib.mkOption {
+    curios.hardened.rtkit-daemon.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for rtkit-daemon.";
+      description = "CuriOS hardened systemd configuration for rtkit-daemon.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.rtkit-daemon.enable {
+  config = lib.mkIf config.curios.hardened.rtkit-daemon.enable {
     systemd.services.rtkit-daemon.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

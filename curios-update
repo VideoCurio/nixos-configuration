@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# NixCOSMIC update script as NixOS package.
+# CuriOS update script as NixOS package.
 #
 # Usage:
-#       nixcosmic-update [options]
+#       curios-update [options]
 #
 # Examples:
 
@@ -13,14 +13,14 @@ set -eu
 usage ()
 {
   echo -e "
-Usage: nixcosmic-update [options]
+Usage: curios-update [options]
   Where,";
 
   cat << EOF
 
   Options:
      -h, --help         Print this message.
-     --check            Check online if a most recent version of NixCOSMIC exist.
+     --check            Check online if a most recent version of CuriOS exist.
      -v, --verbose      Print more information.
      --version          Print version number and exit.
 
@@ -93,7 +93,7 @@ source /etc/os-release
 
 if [ $check_online -eq 1 ]; then
   get_latest_version
-  printf "NixCOSMIC latest version is %s\n" "$latest_version"
+  printf "CuriOS latest version is %s\n" "$latest_version"
   if [ "$latest_version" == "$VARIANT_ID" ]; then
     printf "\e[32m System is up-to-date.\e[0m \n"
   fi

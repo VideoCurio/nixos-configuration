@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkOption {
+    curios.hardened.networkManager-dispatcher.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for networkManager-dispatcher.";
+      description = "CuriOS hardened systemd configuration for networkManager-dispatcher.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.networkManager-dispatcher.enable {
+  config = lib.mkIf config.curios.hardened.networkManager-dispatcher.enable {
     systemd.services.NetworkManager-dispatcher.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Build the NixCOSMIC ISO file
+# Build the CuriOS ISO file
 
 set -eu
 script_path="$(dirname "$0")"
@@ -18,7 +18,7 @@ else
   currentRelease=$(sed -E "s/release\/(.+)/\1/" <<< "$branch")
 fi
 
-isoFilename="nixcosmic-minimal_${currentRelease}_amd64-intel.iso"
+isoFilename="curios-minimal_${currentRelease}_amd64-intel.iso"
 isoFilePath="${script_path}/${isoFilename}"
 
 printf "\e[32m Building %s file...\e[0m\n" "$isoFilename"
@@ -31,7 +31,7 @@ while true; do
       printf "\e[31m Invalid variant number, it could only contain numerical characters.\e[0m \n"
       exit 1
     fi
-    isoFilename="nixcosmic-minimal_${currentRelease}_amd64-intel-${add_variant}.iso"
+    isoFilename="curios-minimal_${currentRelease}_amd64-intel-${add_variant}.iso"
     isoFilePath="${script_path}/${isoFilename}"
   else
     break;
@@ -40,12 +40,12 @@ done
 
 # Change some version number in nix file to match $currentRelease
 sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
-sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/nixcosmic-sources/default.nix
+sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/curios-sources/default.nix
 
 # Check lint
 printf "Lint bash script files...\n"
-shellcheck --color=always -f tty -x ./../nixcosmic-install
-shellcheck --color=always -f tty -x ./../nixcosmic-update
+shellcheck --color=always -f tty -x ./../curios-install
+shellcheck --color=always -f tty -x ./../curios-update
 printf "Lint pkgs/ nix files...\n"
 for file in ./../pkgs/*/*.nix; do
   if [ -f "$file" ]; then
@@ -68,8 +68,8 @@ done
 # Build packages
 #printf "Build custom pkgs...\n"
 # nix-build && nix-env -i -f default.nix
-#nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-sources {}'
-#nix-shell -E 'with import <nixpkgs> {}; callPackage ./pkgs/nixcosmic-dotfiles {}'
+#nix-build -E 'with import <nixpkgs> {}; callPackage ./pkgs/curios-sources {}'
+#nix-shell -E 'with import <nixpkgs> {}; callPackage ./pkgs/curios-dotfiles {}'
 
 printf "Launch nix-build...\n"
 nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=./iso-minimal.nix
@@ -107,4 +107,4 @@ printf "\e[32m All done...\e[0m\n"
 # sudo nix-store --gc
 
 # Test it:
-#qemu-system-x86_64 -enable-kvm -m 4096 -cdrom "$script_path"/nixcosmic-minimal-*.iso
+#qemu-system-x86_64 -enable-kvm -m 4096 -cdrom "$script_path"/curios-minimal-*.iso

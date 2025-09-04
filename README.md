@@ -1,6 +1,6 @@
 [![NixOS Unstable](https://img.shields.io/badge/NixOS-25.05-blue.svg?style=flat-square&logo=NixOS&logoColor=white)](https://nixos.org)
 
-# NixOS + COSMIC = NixC*OS*MIC
+# NixOS + COSMIC = Curi*OS*
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
 ![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot6.png?raw=true "NixOS with COSMIC DE")
@@ -24,23 +24,23 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
-1. Get the latest NixC*OS*MIC 25.05 Minimal ISO image:
+1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/curios-minimal_25.05.0-rc3_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso.sha256
-   sha256sum --check nixcosmic-minimal_*.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/curios-minimal_25.05.0-rc3_amd64-intel.iso.sha256
+   sha256sum --check curios-minimal_*.iso.sha256
    ```
    Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
    # Good old dd:
-   sudo dd if=nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=curios-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    # or shiny caligula:
-   caligula burn -s $(cat ./nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso.sha256)
+   caligula burn -s $(cat ./curios-minimal_25.05.0-rc3_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -52,14 +52,14 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `nixcosmic-install --crypt --root-size 80G /dev/nvme0n1`:
+6. Run the installer with the **recommended** options: `curios-install --crypt --root-size 80G /dev/nvme0n1`:
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
    # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
-   nixcosmic-install --crypt --root-size 120G /dev/nvme0n1
+   curios-install --crypt --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8
@@ -72,7 +72,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    Enter your choice (1-20): 3
    Choose your time zone (Europe/Paris):
    Choose your username: nixos
-   Choose your machine hostname (NixCOSMIC): EVAUnit02
+   Choose your machine hostname (curios): EVAUnit02
    AMD GPU detected, would like to install it ? (y/n): y
    Enabling AMD GPU...
    Partitioning disk /dev/nvme0n1 ? All data will be ERASED (y/n): y
@@ -93,7 +93,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    You can now reboot.
    
    # See --help option for more details:
-   nixcosmic-install --help
+   curios-install --help
    ```
 7. If everything went according to plan, reboot.
    ```bash
@@ -139,13 +139,13 @@ Useful COSMIC shortcuts:
 
 -----
 
-## NixC*OS*MIC management
+## Curi*OS* management
 
-Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'nixcosmic.'.
+Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'curios.'.
 
-For example: you want to game and install Steam, Heroic launcher, Discord and more? Set: `nixcosmic.desktop.apps.gaming.enable` to `true;` into '/etc/nixos/configuration.nix' file.
+For example: you want to game and install Steam, Heroic launcher, Discord and more? Set: `curios.desktop.apps.gaming.enable` to `true;` into '/etc/nixos/settings.nix' file.
 ```bash
-sudo nano /etc/nixos/configuration.nix
+sudo nano /etc/nixos/settings.nix
 # Use Ctrl+s to save and Ctrl+x to exit nano
 ```
 followed by:
@@ -197,7 +197,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## Version
 
-Current version is [25.05.0-rc3](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0-rc3) based on an Nixos 25.05 build.
+Current version is [25.05.0-rc3](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0-rc3) based on a Nixos 25.05 build.
 
 -----
 

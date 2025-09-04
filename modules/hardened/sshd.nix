@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.sshd.enable = lib.mkOption {
+    curios.hardened.sshd.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for sshd.";
+      description = "CuriOS hardened systemd configuration for sshd.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.sshd.enable {
+  config = lib.mkIf config.curios.hardened.sshd.enable {
     systemd.services.sshd.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

@@ -1,19 +1,19 @@
 # LUKS + LVM filesystems
-# As defined by 'nixcosmic-install --crypt /dev/XXX'
+# As defined by 'curios-install --crypt /dev/XXX'
 
 { config, lib, pkgs, ... }:
 
 {
   # Declare options
   options = {
-    nixcosmic.filesystems.luks.enable = lib.mkOption {
+    curios.filesystems.luks.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Filesystems with LUKS + LVM as defined by 'nixcosmic-install --crypt /dev/XXX'";
+      description = "Filesystems with LUKS + LVM as defined by 'curios-install --crypt /dev/XXX'";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.filesystems.luks.enable {
+  config = lib.mkIf config.curios.filesystems.luks.enable {
     boot.initrd.kernelModules = [ "dm-snapshot" "cryptd" ];
     boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-label/nixossystem";
 

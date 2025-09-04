@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.getty.enable = lib.mkOption {
+    curios.hardened.getty.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for getty.";
+      description = "CuriOS hardened systemd configuration for getty.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.getty.enable {
+  config = lib.mkIf config.curios.hardened.getty.enable {
     systemd.services."getty@".serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

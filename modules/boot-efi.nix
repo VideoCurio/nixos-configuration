@@ -4,14 +4,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.bootefi.enable = lib.mkOption {
+    curios.bootefi.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "Enable systemd EFI boot loader";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.bootefi.enable {
+  config = lib.mkIf config.curios.bootefi.enable {
     # Use the systemd-boot EFI boot loader.
     boot = {
       #kernelPackages = pkgs.linuxPackages_latest;  # Use latest kernel instead of LTS.

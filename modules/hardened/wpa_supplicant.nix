@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.wpa_supplicant.enable = lib.mkOption {
+    curios.hardened.wpa_supplicant.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for wpa_supplicant.";
+      description = "CuriOS hardened systemd configuration for wpa_supplicant.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.wpa_supplicant.enable {
+  config = lib.mkIf config.curios.hardened.wpa_supplicant.enable {
     systemd.services.wpa_supplicant.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

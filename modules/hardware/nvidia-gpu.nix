@@ -7,14 +7,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardware.nvidiaGpu.enable = lib.mkOption {
+    curios.hardware.nvidiaGpu.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enabling Nvidia GPU configuration";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.hardware.nvidiaGpu.enable {
+  config = lib.mkIf config.curios.hardware.nvidiaGpu.enable {
     # Use the systemd-boot EFI boot loader.
     boot = {
       # Ban CPU integrated GPU

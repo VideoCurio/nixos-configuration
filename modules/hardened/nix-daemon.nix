@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.nix-daemon.enable = lib.mkOption {
+    curios.hardened.nix-daemon.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for nix-daemon.";
+      description = "CuriOS hardened systemd configuration for nix-daemon.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.nix-daemon.enable {
+  config = lib.mkIf config.curios.hardened.nix-daemon.enable {
     systemd.services.nix-daemon.serviceConfig = {
       NoNewPrivileges = true;
       ProtectControlGroups = true;

@@ -1,4 +1,4 @@
-# NixcOSmic ISO configuration file
+# CuriOS ISO configuration file
 # See: https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
 
@@ -20,6 +20,6 @@
     git
   ];
 
-  networking.hostName = "NixcOSmic";
+  networking.hostName = "CuriOS";
 }
 
