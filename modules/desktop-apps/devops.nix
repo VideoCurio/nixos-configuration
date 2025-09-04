@@ -51,6 +51,7 @@
       cloudflared
       git-who
       gh
+      whois
       # Bash linter
       shellcheck
       # Nix linter
