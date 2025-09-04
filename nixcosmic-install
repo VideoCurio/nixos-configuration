@@ -56,6 +56,7 @@ rpi4_install=0;
 verbose=0;
 selected_locale="";
 selected_locale_console="";
+selected_timezone="";
 gpu_detected="";
 install_gpu=0;
 script_path="$(dirname "$0")"
@@ -127,8 +128,10 @@ if [ $verbose -eq 1 ]; then
 fi
 
 # Check nixcosmic-sources files
-nixcosmic_sources_path=$(nix-store --query --outputs "$(which nixcosmic-install)")
-nixcosmic_sources_path=$(realpath "$nixcosmic_sources_path"/share/nixcosmic)
+nixcosmic_install_path=$(dirname "$(realpath "$(which nixcosmic-install)")")
+nixcosmic_sources_path=$(realpath "$nixcosmic_install_path"/../share/nixcosmic)
+#nixcosmic_sources_path=$(nix-store --query --outputs "$(which nixcosmic-install)")
+#nixcosmic_sources_path=$(realpath "$nixcosmic_sources_path"/share/nixcosmic)
 #nixcosmic_sources_path=$(realpath "$script_path"/../share/nixcosmic)
 if [ $verbose -eq 1 ]; then
   printf "Package store path: %s\n" "$nixcosmic_sources_path"
@@ -189,6 +192,7 @@ locales=(
   "hu_HU.UTF-8"
   "no_NO.UTF-8"
   "he_IL.UTF-8"
+  "uk_UA.UTF-8"
 )
 locales_console=(
   "us"
@@ -212,6 +216,31 @@ locales_console=(
   "hu"
   "no"
   "he"
+  "uk"
+)
+locales_timezone=(
+  "America/New_York"
+  "Europe/London"
+  "Europe/Paris"
+  "Europe/Madrid"
+  "Europe/Berlin"
+  "Asia/Shanghai"
+  "Asia/Tokyo"
+  "Europe/Lisbon"
+  "Europe/Moscow"
+  "Europe/Rome"
+  "Asia/Seoul"
+  "Asia/Riyadh"
+  "Europe/Amsterdam"
+  "Europe/Warsaw"
+  "Europe/Stockholm"
+  "Europe/Istanbul"
+  "Europe/Prague"
+  "Europe/Berlin"
+  "Europe/Budapest"
+  "Europe/Oslo"
+  "Asia/Jerusalem"
+  "Europe/Kyiv"
 )
 
 # Print locales
@@ -224,6 +253,7 @@ read -r -p "Enter your choice (1-21): " lang_choice
 if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
   selected_locale_console="${locales_console[$((lang_choice-1))]}"
+  selected_timezone="${locales_timezone[$((lang_choice-1))]}"
   # TODO: 'loadkeys XX' to the currently selected layout ?
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
@@ -235,10 +265,10 @@ fi
 ########### TODO: keyboard layout
 
 ########### Choose a timezone:
-read -r -p "Enter your time zone (Europe/Paris): " pc_timezone
+read -r -p "Enter your time zone (${selected_timezone}): " pc_timezone
 # hostname check
 if [ -z "$pc_timezone" ]; then
- pc_timezone="Europe/Paris"
+ pc_timezone="${selected_timezone}"
 fi
 if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
   printf "\e[31m Invalid time zone, it could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
@@ -315,7 +345,7 @@ fi
 
 # Test - debug parameters
 if [ $verbose -eq 1 ]; then
-  echo "path: $script_path"
+  echo "bin path: $nixcosmic_install_path"
   echo "--crypt: $encrypt_disk"
   echo "--rpi4: $rpi4_install"
   echo "--root-size: $root_size"
