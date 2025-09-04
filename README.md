@@ -135,7 +135,7 @@ Useful COSMIC shortcuts:
 
 ### Dot files
 
-[My NixOS-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+[curios-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
 
 -----
 
