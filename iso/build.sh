@@ -38,10 +38,6 @@ while true; do
   fi
 done
 
-# Change some version number in nix file to match $currentRelease
-sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
-sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/curios-sources/default.nix
-
 # Check lint
 printf "Lint bash script files...\n"
 shellcheck --color=always -f tty -x ./../curios-install
@@ -64,6 +60,13 @@ for file in ./../*.nix; do
     statix check "$file"
   fi
 done
+
+# Change some version number in nix file to match $currentRelease
+sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
+sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/curios-sources/default.nix
+if [[ "$branch" == release* ]]; then
+  git commit -a -m "Release ${currentRelease}"
+fi
 
 # Build packages
 #printf "Build custom pkgs...\n"
