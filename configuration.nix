@@ -80,15 +80,15 @@
   ++ lib.optionals config.services.desktopManager.cosmic.xwayland.enable [
     wl-clipboard
   ]
-  ++ (
-    if config.curios.hardware.amdGpu.enable then
-      [ btop-rocm ]
-    else
-      if config.curios.hardware.nvidiaGpu.enable then
-        [ btop-cuda ]
-      else
-        [ btop ]
-  );
+  ++ lib.optionals config.curios.hardware.amdGpu.enable [
+    btop-rocm
+  ]
+  ++ lib.optionals config.curios.hardware.nvidiaGpu.enable [
+    btop-cuda
+  ]
+  ++ lib.optionals (!config.curios.hardware.nvidiaGpu.enable && !config.curios.hardware.amdGpu.enable) [
+    btop
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

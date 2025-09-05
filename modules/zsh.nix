@@ -20,7 +20,6 @@
       jq # JSON parser
       eza # ls replacement
       bat # cat replacement
-      btop # top replacement
       duf # df replacement
       dust # du replacement
       fd # find alternative
