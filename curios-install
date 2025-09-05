@@ -249,7 +249,7 @@ for i in "${!locales[@]}"; do
   echo "$((i+1))) ${locales[i]}"
 done
 
-read -r -p "Enter your choice (1-21): " lang_choice
+read -r -p "Enter your choice (1-22): " lang_choice
 if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
   selected_locale_console="${locales_console[$((lang_choice-1))]}"

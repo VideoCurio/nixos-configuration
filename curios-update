@@ -79,7 +79,7 @@ fi
 # check online latest version
 get_latest_version() {
   if [ $verbose -eq 1 ]; then
-    printf "Checking github...\n"
+    printf "Checking github sources...\n"
   fi
   latest_version="$(curl -f --silent "https://api.github.com/repos/VideoCurio/nixos-configuration/tags" | jq -r '.[0].name')"
 }
@@ -90,11 +90,13 @@ if [ ! -f /etc/os-release ]; then
   exit 1
 fi
 source /etc/os-release
+printf "CuriOS current version is \e[32m%s\e[0m\n" "$VARIANT_ID"
 
 if [ $check_online -eq 1 ]; then
   get_latest_version
   printf "CuriOS latest version is %s\n" "$latest_version"
   if [ "$latest_version" == "$VARIANT_ID" ]; then
     printf "\e[32m System is up-to-date.\e[0m \n"
+    exit 0
   fi
 fi
