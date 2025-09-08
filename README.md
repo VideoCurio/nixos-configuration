@@ -26,11 +26,11 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/curios-minimal_25.05.0-rc3_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/curios-minimal_25.05.0-rc3_amd64-intel.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso.sha256
    sha256sum --check curios-minimal_*.iso.sha256
    ```
    Must respond "Success".
@@ -38,9 +38,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
    # Good old dd:
-   sudo dd if=curios-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=curios-minimal_25.05.0_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    # or shiny caligula:
-   caligula burn -s $(cat ./curios-minimal_25.05.0-rc3_amd64-intel.iso.sha256)
+   caligula burn -s $(cat ./curios-minimal_25.05.0_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -116,6 +116,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * [Modular configuration files](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) for apps like Steam, Discord, OBS, Ollama AI, docker, QEMU + virt-manager, Python3, Rust and more...
 * Modular hardened systemd services configurations files. -WIP-
 * NixOS packages **auto-update** every night or at first boot of the day.
+* Curi*OS* updater. Check this GitHub repo for new system version.
 * A bunch of nerd fonts...
 
 Useful COSMIC shortcuts:
@@ -152,7 +153,15 @@ followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages) and add it to `/etc/nixos/settings.nix`.
+
+### System upgrade
+When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop.
+![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.0/img/Updater.png?raw=true "CuriOS updater")
+To start the system upgrade, launch a terminal (Super + T) and type:
+```bash
+sudo curios-update --upgrade
+```
 
 ### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
@@ -197,7 +206,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## Version
 
-Current version is [25.05.0-rc3](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0-rc3) based on a Nixos 25.05 build.
+Current version is [25.05.0](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0) based on a Nixos 25.05 build.
 
 -----
 
