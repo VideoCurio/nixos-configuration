@@ -173,7 +173,7 @@ if [ $check_online -eq 1 ]; then
       upgradable=1;
       printf "\e[33m System should be upgraded.\e[0m \n"
       if [ "$EUID" -ge 900 ]; then
-        notify-send -a "CuriOS Updater" --urgency=critical "CuriOS ${latest_version} is available." "In a terminal type: sudo curios-update --upgrade"
+        /run/current-system/sw/bin/notify-send -a "CuriOS Updater" --urgency=critical "CuriOS ${latest_version} is available." "In a terminal type: sudo curios-update --upgrade"
       fi
     else
       upgradable=0;
