@@ -156,8 +156,9 @@ sudo nixos-rebuild switch
 You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages) and add it to `/etc/nixos/settings.nix`.
 
 ### System upgrade
-When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop.
+When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop:
 ![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.0/img/Updater.png?raw=true "CuriOS updater")
+
 To start the system upgrade, launch a terminal (Super + T) and type:
 ```bash
 sudo curios-update --upgrade
