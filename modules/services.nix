@@ -84,32 +84,30 @@
     };
     # Flatpak user auto update
     # systemctl --user list-units --type=service
-    systemd.user.services.flatpak-update = {
-      enable = true;
-      description = "Flatpak user update";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      #path = [ pkgs.flatpak ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
-      };
-      wantedBy = [ "default.target" ];
-    };
     # systemctl --user list-timers
     # systemctl --user status flatpak-update.timer
-    systemd.user.timers.flatpak-update = {
-      enable = true;
-      description = "Flatpak user update";
-      timerConfig = {
-        OnBootSec = "2m";
-        OnActiveSec = "2m";
-        OnUnitInactiveSec = "24h";
-        OnUnitActiveSec = "24h";
-        AccuracySec = "1h";
-        RandomizedDelaySec = "10m";
+    systemd.user = {
+      services.flatpak-update = {
+        enable = true;
+        description = "Flatpak user update";
+        #path = [ pkgs.flatpak ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
+        };
+        wantedBy = [ ];
       };
-      wantedBy = [ "timers.target" ];
+      timers.flatpak-update = {
+        enable = true;
+        description = "Flatpak user update";
+        timerConfig = {
+          OnStartupSec = "30s";
+          OnUnitInactiveSec = "24h";
+          OnUnitActiveSec = "24h";
+          RandomizedDelaySec = "3m";
+        };
+        wantedBy = [ "timers.target" ];
+      };
     };
 
     # Enable sound.

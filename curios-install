@@ -15,6 +15,8 @@
 # curios-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
 # curios-install /dev/vda                   - Standard install on a QEMU disk.
 
+# TODO: --assumeyes option
+
 set -eu
 
 # Print help function
@@ -559,6 +561,8 @@ install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$curios_sources_path
 install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$curios_sources_path"/modules/hardware/*.nix
 install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$curios_sources_path"/modules/platforms/*.nix
 install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-dotfiles/ "$curios_sources_path"/pkgs/curios-dotfiles/default.nix
+install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-update/ "$curios_sources_path"/pkgs/curios-update/default.nix
+install -D -m 555 -t "$nixos_config_dir"/pkgs/curios-update/bin/ "$curios_sources_path"/pkgs/curios-update/bin/curios-update
 
 # Update user language:
 sed "s/i18n\.locale = \".*/i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix

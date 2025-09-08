@@ -37,6 +37,8 @@ stdenvNoCC.mkDerivation {
     install -D -m 644 -t $out/share/curios/modules/platforms/ modules/platforms/*.nix
 
     install -D -m 644 -t $out/share/curios/pkgs/curios-dotfiles/ pkgs/curios-dotfiles/default.nix
+    install -D -m 644 -t $out/share/curios/pkgs/curios-update/ pkgs/curios-update/default.nix
+    install -D -m 555 -t $out/share/curios/pkgs/curios-update/bin/ pkgs/curios-update/bin/curios-update
 
     runHook postInstall
   '';

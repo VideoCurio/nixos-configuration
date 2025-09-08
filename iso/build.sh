@@ -41,7 +41,7 @@ done
 # Check lint
 printf "Lint bash script files...\n"
 shellcheck --color=always -f tty -x ./../curios-install
-shellcheck --color=always -f tty -x ./../curios-update
+shellcheck --color=always -f tty -x ./../pkgs/curios-update/bin/curios-update
 printf "Lint pkgs/ nix files...\n"
 for file in ./../pkgs/*/*.nix; do
   if [ -f "$file" ]; then
