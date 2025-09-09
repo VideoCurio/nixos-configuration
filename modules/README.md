@@ -24,7 +24,10 @@ curios = {
       laptop.enable = false;
     };
     # Required modules:
-    bootefi.enable = lib.mkDefault true;
+    bootefi = {
+      enable = lib.mkDefault true;
+      kernel.latest = lib.mkDefault true; # Use latest stable kernel available if true, otherwise use LTS kernel.
+    };
     desktop.cosmic.enable = lib.mkDefault true;
     fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
     networking.enable = lib.mkDefault true; # NetworkManager (required by COSMIC).
