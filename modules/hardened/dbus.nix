@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.dbus.enable = lib.mkOption {
+    curios.hardened.dbus.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for dbus.";
+      description = "CuriOS hardened systemd configuration for dbus.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.dbus.enable {
+  config = lib.mkIf config.curios.hardened.dbus.enable {
     systemd.services.dbus.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

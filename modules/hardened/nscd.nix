@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.nscd.enable = lib.mkOption {
+    curios.hardened.nscd.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for nscd.";
+      description = "CuriOS hardened systemd configuration for nscd.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.nscd.enable {
+  config = lib.mkIf config.curios.hardened.nscd.enable {
     systemd.services.nscd.serviceConfig = {
       ProtectClock = true;
       ProtectHostname = true;

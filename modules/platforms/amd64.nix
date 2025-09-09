@@ -4,14 +4,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.platform.amd64.enable = lib.mkOption {
+    curios.platform.amd64.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "x86_64 AMD/Intel CPUs configurations";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.platform.amd64.enable {
+  config = lib.mkIf config.curios.platform.amd64.enable {
     boot = {
       kernelParams =
         if builtins.elem "kvm-amd" config.boot.kernelModules then [

@@ -5,7 +5,7 @@
 {
   # Declare options
   options = {
-    nixcosmic.desktop.apps.gaming.enable = lib.mkOption {
+    curios.desktop.apps.gaming.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enable desktop apps for gaming: Steam, gamemoderun, Teamspeak6, input-remapper.";
@@ -13,7 +13,7 @@
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.desktop.apps.gaming.enable {
+  config = lib.mkIf config.curios.desktop.apps.gaming.enable {
     # Steam
     nixpkgs.config.allowUnfree = lib.mkForce true; # unfree packages required for Steam and Lutris
     programs.steam = {

@@ -1,56 +1,80 @@
-# NixC*OS*MIC modules
+# Curi*OS* modules
+
+Activate or deactivate modules by modifying `settings.nix` file: `sudo nano /etc/nixos/settings.nix` and then rebuild nixos: `sudo nixos-rebuild switch`
 
 ```bash
-  # Platform
-  nixcosmic.platform.amd64.enable = lib.mkDefault true;
-  nixcosmic.platform.rpi4.enable = lib.mkDefault false;
-
-  # Enabling or disabling ./modules here:
-  nixcosmic.hardware.amdGpu.enable = lib.mkDefault false; # Modern AMD GPU
-  nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false; # Modern Nvidia GPU
-  nixcosmic.hardware.laptop.enable = lib.mkDefault false; # EXPERIMENTAL - laptop battery saver
-
-  # updated by ./install-system.sh - do NOT edit.
-  nixcosmic.filesystems.luks.enable = lib.mkDefault true;
-  nixcosmic.filesystems.minimal.enable = lib.mkDefault false;
-
-  nixcosmic.bootefi.enable = lib.mkDefault true;
-  nixcosmic.desktop.cosmic.enable = lib.mkDefault true; # COSMIC desktop environment
-
-  nixcosmic.desktop.apps.basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
-  nixcosmic.desktop.apps.devops.enable = lib.mkDefault false; # Required for apps.devops options below. + Cloudlfared
-  nixcosmic.desktop.apps.devops.networks.enable = lib.mkDefault false; # Nmap, Zenmap, Wireshark
-  nixcosmic.desktop.apps.devops.python312.enable = lib.mkDefault false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
-  nixcosmic.desktop.apps.devops.rust.enable = lib.mkDefault false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
-  nixcosmic.desktop.apps.gaming.enable = lib.mkDefault false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
-  nixcosmic.desktop.apps.studio.enable = lib.mkDefault false; # OBS, Audacity, DaVinci Resolve
-
-  nixcosmic.fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
-  nixcosmic.networking.enable = lib.mkDefault true; # NetworkManager, DNS set to Quad9 and cloudflare.
-  nixcosmic.services.enable = lib.mkDefault true; # Flatpak + flathub/cosmic repos, pipewire
-  nixcosmic.services.printing.enable = lib.mkDefault false; # CUPS
-  nixcosmic.services.sshd.enable = lib.mkDefault true; # SSH daemon
-  nixcosmic.services.ai.enable = lib.mkDefault false; # Ollama with mistral-nemo, open-webui
-  nixcosmic.shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
-  nixcosmic.virtualisation.enable = lib.mkDefault false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
-  nixcosmic.virtualisation.wine.enable = lib.mkDefault false; # Wine 32 and 64 bits with Wayland support.
-
-  # Test hardened configurations one by one
-  # Check results with: `systemd-analyze security`
-  nixcosmic.hardened.accountsDaemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.acpid.enable = lib.mkDefault true;
-  nixcosmic.hardened.cups.enable = lib.mkDefault false;
-  nixcosmic.hardened.dbus.enable = lib.mkDefault true;
-  nixcosmic.hardened.display-manager.enable = lib.mkDefault false;
-  nixcosmic.hardened.docker.enable = lib.mkDefault false;
-  nixcosmic.hardened.getty.enable = lib.mkDefault true;
-  nixcosmic.hardened.networkManager.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.networkManager-dispatcher.enable = lib.mkDefault false; # TODO: proton-vpn bug if set to true
-  nixcosmic.hardened.nix-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.nscd.enable = lib.mkDefault true;
-  nixcosmic.hardened.rescue.enable = lib.mkDefault true;
-  nixcosmic.hardened.rtkit-daemon.enable = lib.mkDefault true;
-  nixcosmic.hardened.sshd.enable = lib.mkDefault true;
-  nixcosmic.hardened.user.enable = lib.mkDefault false; # TODO: 'Flatpak run' bug if set to true
-  nixcosmic.hardened.wpa_supplicant.enable = lib.mkDefault true;
+curios = {
+    system = {
+      hostname = "CuriOS";
+      i18n.locale = "en_US.UTF-8";
+      keyboard = "us";
+      timeZone = "Etc/GMT";
+    };
+    ### Activate or deactivate CuriOS modules/ from here:
+    # Hardware platform settings updated by curios-install during ISO install
+    platform.amd64.enable = lib.mkDefault true;
+    platform.rpi4.enable = lib.mkDefault false;
+    # Hardware related modules - updated by curios-install during ISO install
+    hardware = {
+      # Modern AMD GPU
+      amdGpu.enable = lib.mkDefault false;
+      # Modern Nvidia GPU
+      nvidiaGpu.enable = lib.mkDefault false;
+      # EXPERIMENTAL - laptop battery saver
+      laptop.enable = false;
+    };
+    # Required modules:
+    bootefi.enable = lib.mkDefault true;
+    desktop.cosmic.enable = lib.mkDefault true;
+    fonts.enable = lib.mkDefault true; # Fira, Noto, some Nerds fonts, JetBrains Mono
+    networking.enable = lib.mkDefault true; # NetworkManager (required by COSMIC).
+    shell.zsh.enable = lib.mkDefault true; # ZSH shell, REQUIRED
+    # File system - updated by curios-install during ISO install
+    filesystems.luks.enable = lib.mkDefault true;
+    filesystems.minimal.enable = lib.mkDefault false;
+    ### Modules below SHOULD be activated on user needs:
+    desktop.apps = {
+      basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+      devops = {
+        enable = false; # Required by desktop.apps.devops options below. + Cloudlfared
+        networks.enable = false; # Nmap, Zenmap, Wireshark
+        go.enable = false; # Go, gofmt, JetBrains GoLand
+        python312.enable = false; # Python3.12, pip, setuptools, JetBrains PyCharm-Community
+        rust.enable = false; # Rustc, cargo, rust-analyzer, clippy + more, JetBrains RustRover
+      };
+      gaming.enable = false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
+      studio.enable = false; # OBS, Audacity, DaVinci Resolve
+    };
+    services = {
+      enable = true; # Flatpak + flathub/cosmic repos, pipewire
+      printing.enable = false; # CUPS
+      sshd.enable = false; # SSH daemon
+      ai.enable = false; # Ollama with mistral-nemo, open-webui
+    };
+    virtualisation = {
+      enable = false; # docker, docker buildx, docker-compose, QEMU/KVM, libvirt, virt-manager
+      wine.enable = false; # Wine 32 and 64 bits with Wayland support.
+    };
+    hardened = {
+      # Hardened configurations -WIP-
+      # Activate and test one by one - may break some programs
+      # Check results with: `systemd-analyze security`
+      accountsDaemon.enable = false;
+      acpid.enable = false;
+      cups.enable = false;
+      dbus.enable = false;
+      display-manager.enable = false;
+      docker.enable = false;
+      getty.enable = false; # WARNING: will prevent TTY console login
+      networkManager.enable = false; # TODO: proton-vpn bug if set to true
+      networkManager-dispatcher.enable = false; # TODO: proton-vpn bug if set to true
+      nix-daemon.enable = false;
+      nscd.enable = false;
+      rescue.enable = false;
+      rtkit-daemon.enable = false;
+      sshd.enable = false;
+      user.enable = false; # TODO: 'Flatpak run' bug if set to true
+      wpa_supplicant.enable = false;
+    };
+  };
 ```

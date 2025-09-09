@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.display-manager.enable = lib.mkOption {
+    curios.hardened.display-manager.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for display-manager.";
+      description = "CuriOS hardened systemd configuration for display-manager.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.display-manager.enable {
+  config = lib.mkIf config.curios.hardened.display-manager.enable {
     systemd.services.display-manager.serviceConfig = {
       ProtectSystem = "full";
       ProtectControlGroups = true;

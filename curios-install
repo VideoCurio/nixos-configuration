@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# NixCOSMIC install script as NixOS package.
+# CuriOS install script as NixOS package.
 # Meant to be run during an NixOS ISO installation.
 # !IMPORTANT! Run this script as sudo
 # It will create 3 partitions for '/boot', '/' and a 8Go swap
@@ -8,12 +8,14 @@
 # The encrypted LUKS partition will contain LVM partitions for '/' (100Go), '/home' and a 8Go swap.
 #
 # Usage:
-#       nixcosmic-install [options] <disk_partition>
+#       curios-install [options] <disk_partition>
 #
 # Examples:
-# nixcosmic-install /dev/nvme0n1               - Standard install on the first NVMe SSD.
-# nixcosmic-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
-# nixcosmic-install /dev/vda                   - Standard install on a QEMU disk.
+# curios-install /dev/nvme0n1               - Standard install on the first NVMe SSD.
+# curios-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
+# curios-install /dev/vda                   - Standard install on a QEMU disk.
+
+# TODO: --assumeyes option
 
 set -eu
 
@@ -21,7 +23,7 @@ set -eu
 usage ()
 {
   echo -e "
-Usage: nixcosmic-install [options] <disk_partition>
+Usage: curios-install [options] <disk_partition>
   Where,
     disk_partition: Valid /dev path of a disk to install NixOS on.
     The default root partition size is set to 80G for full disk encryption option, use --root-size to change this.";
@@ -37,14 +39,14 @@ Usage: nixcosmic-install [options] <disk_partition>
 
   Examples:
     Full encrypted disk install on the first NVMe SSD (with /home partition):
-      nixcosmic-install --crypt --root-size 120G /dev/nvme0n1
+      curios-install --crypt --root-size 120G /dev/nvme0n1
     Minimal disk install on the second HDD:
-      nixcosmic-install /dev/sdb
+      curios-install /dev/sdb
     Minimal disk install on a QEMU/KVM virtual disk:
-      nixcosmic-install /dev/vda
+      curios-install /dev/vda
     Raspberry Pi 4 install:
       nix-shell -p git raspberrypi-eeprom
-      nixcosmic-install --rpi4 /dev/mmcblk1
+      curios-install --rpi4 /dev/mmcblk1
 EOF
   exit;
 }
@@ -56,6 +58,7 @@ rpi4_install=0;
 verbose=0;
 selected_locale="";
 selected_locale_console="";
+selected_timezone="";
 gpu_detected="";
 install_gpu=0;
 script_path="$(dirname "$0")"
@@ -126,25 +129,37 @@ if [ $verbose -eq 1 ]; then
   printf "Script current path: %s\n" "$script_path"
 fi
 
-# Check nixcosmic-sources files
-nixcosmic_sources_path=$(nix-store --query --outputs $(which nixcosmic-install))
-nixcosmic_sources_path=$(realpath "$nixcosmic_sources_path"/share/nixcosmic)
-#nixcosmic_sources_path=$(realpath "$script_path"/../share/nixcosmic)
+# Check curios-sources files
+curios_install_path=$(dirname "$(realpath "$(which curios-install)")")
+curios_sources_path=$(realpath "$curios_install_path"/../share/curios)
+#curios_sources_path=$(nix-store --query --outputs "$(which curios-install)")
+#curios_sources_path=$(realpath "$curios_sources_path"/share/curios)
+#curios_sources_path=$(realpath "$script_path"/../share/curios)
 if [ $verbose -eq 1 ]; then
-  printf "Package store path: %s\n" "$nixcosmic_sources_path"
+  printf "Package store path: %s\n" "$curios_sources_path"
 fi
-if [ ! -f "$nixcosmic_sources_path"/configuration.nix ]; then
+if [ ! -f "$curios_sources_path"/configuration.nix ]; then
   printf "\e[31mconfiguration.nix file not found! \e[0m \n"
   exit 1
 fi
 
-if [ ! -f "$nixcosmic_sources_path"/user-me.nix ]; then
+if [ ! -f "$curios_sources_path"/settings.nix ]; then
+  printf "\e[31m settings.nix file not found! \e[0m \n"
+  exit 1
+fi
+
+if [ ! -f "$curios_sources_path"/user-me.nix ]; then
   printf "\e[31muser-me.nix file not found! \e[0m \n"
   exit 1
 fi
 
-if [ ! -d "$nixcosmic_sources_path"/modules/ ]; then
+if [ ! -d "$curios_sources_path"/modules/ ]; then
   printf "\e[31m modules directory not found! \e[0m \n"
+  exit 1
+fi
+
+if [ ! -d "$curios_sources_path"/pkgs/ ]; then
+  printf "\e[31m pkgs directory not found! \e[0m \n"
   exit 1
 fi
 
@@ -179,6 +194,7 @@ locales=(
   "hu_HU.UTF-8"
   "no_NO.UTF-8"
   "he_IL.UTF-8"
+  "uk_UA.UTF-8"
 )
 locales_console=(
   "us"
@@ -202,6 +218,31 @@ locales_console=(
   "hu"
   "no"
   "he"
+  "uk"
+)
+locales_timezone=(
+  "America/New_York"
+  "Europe/London"
+  "Europe/Paris"
+  "Europe/Madrid"
+  "Europe/Berlin"
+  "Asia/Shanghai"
+  "Asia/Tokyo"
+  "Europe/Lisbon"
+  "Europe/Moscow"
+  "Europe/Rome"
+  "Asia/Seoul"
+  "Asia/Riyadh"
+  "Europe/Amsterdam"
+  "Europe/Warsaw"
+  "Europe/Stockholm"
+  "Europe/Istanbul"
+  "Europe/Prague"
+  "Europe/Berlin"
+  "Europe/Budapest"
+  "Europe/Oslo"
+  "Asia/Jerusalem"
+  "Europe/Kyiv"
 )
 
 # Print locales
@@ -210,10 +251,11 @@ for i in "${!locales[@]}"; do
   echo "$((i+1))) ${locales[i]}"
 done
 
-read -r -p "Enter your choice (1-21): " lang_choice
+read -r -p "Enter your choice (1-22): " lang_choice
 if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
   selected_locale="${locales[$((lang_choice-1))]}"
   selected_locale_console="${locales_console[$((lang_choice-1))]}"
+  selected_timezone="${locales_timezone[$((lang_choice-1))]}"
   # TODO: 'loadkeys XX' to the currently selected layout ?
 else
   echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
@@ -225,10 +267,10 @@ fi
 ########### TODO: keyboard layout
 
 ########### Choose a timezone:
-read -r -p "Enter your time zone (Europe/Paris): " pc_timezone
+read -r -p "Enter your time zone (${selected_timezone}): " pc_timezone
 # hostname check
 if [ -z "$pc_timezone" ]; then
- pc_timezone="Europe/Paris"
+ pc_timezone="${selected_timezone}"
 fi
 if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
   printf "\e[31m Invalid time zone, it could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
@@ -260,10 +302,10 @@ if ! [[ $fullname =~ ^[[:alnum:][:space:].]+$ ]]; then
 fi
 
 ########### Choose a hostname:
-read -r -p "Choose your machine hostname (NixCOSMIC): " pc_hostname
+read -r -p "Choose your machine hostname (CuriOS): " pc_hostname
 # hostname check
 if [ -z "$pc_hostname" ]; then
- pc_hostname="NixCOSMIC"
+ pc_hostname="CuriOS"
 fi
 if ! [[ $pc_hostname =~ ^[[:alnum:].]+$ ]]; then
   printf "\e[31m Invalid hostname, it could only contain alphanumerical or '.' characters.\e[0m \n"
@@ -305,7 +347,7 @@ fi
 
 # Test - debug parameters
 if [ $verbose -eq 1 ]; then
-  echo "path: $script_path"
+  echo "bin path: $curios_install_path"
   echo "--crypt: $encrypt_disk"
   echo "--rpi4: $rpi4_install"
   echo "--root-size: $root_size"
@@ -321,11 +363,11 @@ fi
 
 # This script must be run as root
 if [ "$EUID" -ne 0 ]; then
-  printf "\e[31mThis script MUST be run as root: sudo nixcosmic-install \e[0m \n" >&2
+  printf "\e[31mThis script MUST be run as root: sudo curios-install \e[0m \n" >&2
   exit 1
 fi
 
-# nixcosmic dotfiles install, see: https://github.com/VideoCurio/nixos-dotfiles
+# curios dotfiles install, see: https://github.com/VideoCurio/nixos-dotfiles
 dotfiles-inst () {
   printf "\e[32m================================\e[0m \n"
   printf "\e[32m================================\e[0m \n"
@@ -337,10 +379,10 @@ dotfiles-inst () {
     home_dir="/home/*/"
   fi
   mkdir -p "$skel_dir"
-  nixcosmic-dotfiles --lang "$selected_locale_console" "$skel_dir"
+  curios-dotfiles --lang "$selected_locale_console" "$skel_dir"
   for dir in $home_dir; do
     if [[ -d "$dir" && "$dir" != */lost+found/ ]]; then
-      nixcosmic-dotfiles --lang "$selected_locale_console" "$dir"
+      curios-dotfiles --lang "$selected_locale_console" "$dir"
       chown -R 1000:100 "$dir" # Any way to predict OWNER at this stage ?
     fi
   done
@@ -444,7 +486,7 @@ format () {
 # cd /tmp
 # git clone https://github.com/VideoCurio/nixos-configuration
 # cd nixos-configuration/
-# nixcosmic-install --rpi4 /dev/mmcblk1
+# curios-install --rpi4 /dev/mmcblk1
 
 if [ $rpi4_install -eq 0 ]; then
   while true; do
@@ -511,71 +553,71 @@ nixos_config_dir="/mnt/etc/nixos"
 if [ $rpi4_install -eq 1 ]; then
   nixos_config_dir="/etc/nixos"
 fi
-install -D -m 644 -t "$nixos_config_dir"/ "$nixcosmic_sources_path"/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/ "$nixcosmic_sources_path"/modules/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/desktop-apps/ "$nixcosmic_sources_path"/modules/desktop-apps/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$nixcosmic_sources_path"/modules/filesystems/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$nixcosmic_sources_path"/modules/hardened/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$nixcosmic_sources_path"/modules/hardware/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$nixcosmic_sources_path"/modules/platforms/*.nix
-install -D -m 644 -t "$nixos_config_dir"/pkgs/nixcosmic-dotfiles/ "$nixcosmic_sources_path"/pkgs/nixcosmic-dotfiles/default.nix
+install -D -m 644 -t "$nixos_config_dir"/ "$curios_sources_path"/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/ "$curios_sources_path"/modules/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/desktop-apps/ "$curios_sources_path"/modules/desktop-apps/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$curios_sources_path"/modules/filesystems/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$curios_sources_path"/modules/hardened/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$curios_sources_path"/modules/hardware/*.nix
+install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$curios_sources_path"/modules/platforms/*.nix
+install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-dotfiles/ "$curios_sources_path"/pkgs/curios-dotfiles/default.nix
+install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-update/ "$curios_sources_path"/pkgs/curios-update/default.nix
+install -D -m 555 -t "$nixos_config_dir"/pkgs/curios-update/bin/ "$curios_sources_path"/pkgs/curios-update/bin/curios-update
 
 # Update user language:
-sed "s/defaultLocale = \".*/defaultLocale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/configuration.nix
-# Update console key map for cryptroot:
-sed "s/defaultConsoleKeymap = \".*/defaultConsoleKeymap = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/configuration.nix
-# Update xserver keyboard layout:
-sed "s/xkb\.layout = \".*/xkb.layout = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/modules/services.nix
-sed "s/-layout [a-z]\{2\}/-layout ${selected_locale_console}/g" -i "$nixos_config_dir"/modules/services.nix
+sed "s/i18n\.locale = \".*/i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
+# Update console keyboard map:
+sed "s/keyboard = \".*/keyboard = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update time zone
-sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/configuration.nix
+sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update user name
 sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/user-me.nix
-sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/user-me.nix
+sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/settings.nix
+sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/settings.nix
 # Update hostname
-sed "s/networking\.hostName = \".*/networking.hostName = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/configuration.nix
+sed "s/hostname = \".*/hostname = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/settings.nix
 # platform settings:
 if [ $rpi4_install -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  # Update settings.nix
+  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.platform\.rpi4\.enable = .*/nixcosmic.platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.platform\.amd64\.enable = .*/nixcosmic.platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.bootefi\.enable = .*/nixcosmic.bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  # Also update settings.nix
+  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 fi
 # filesystems settings:
 if [ $encrypt_disk -eq 1 ]; then
-  # Update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  # Update settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 else
-  # Also update configuration.nix
-  sed 's/nixcosmic\.filesystems\.luks\.enable = .*/nixcosmic.filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.filesystems\.minimal\.enable = .*/nixcosmic.filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  # Also update settings.nix
+  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 fi
 # GPU settings:
 if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
   echo "Enabling AMD GPU..."
-  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
   echo "Enabling Nvidia GPU..."
-  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
 else
   echo "Disabling GPU..."
-  sed 's/nixcosmic\.hardware\.amdGpu\.enable = .*/nixcosmic.hardware.amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
-  sed 's/nixcosmic\.hardware\.nvidiaGpu\.enable = .*/nixcosmic.hardware.nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/configuration.nix
+  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
 fi
 
 while true; do
 read -r -p "Proceed with installation ? (y/n): " yn
 
 case $yn in
-  [yY] ) echo "Launching nixos installer...";
+  [yY] ) echo "Launching NixOS installer...";
     if [ $rpi4_install -eq 0 ]; then
       nixos-install --no-root-passwd
     else

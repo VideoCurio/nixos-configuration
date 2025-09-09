@@ -6,14 +6,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.services.ai.enable = lib.mkOption {
+    curios.services.ai.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "Enable Ollama and open-webui services.";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.services.ai.enable {
+  config = lib.mkIf config.curios.services.ai.enable {
     # Ollama, see: https://wiki.nixos.org/wiki/Ollama
     # For a ZSH integration, see: https://github.com/VideoCurio/nixos-dotfiles
     services.ollama = {
@@ -26,21 +26,14 @@
       #acceleration = "false"; # "false": 100% CPU, "cuda": modern Nvidia GPU, "rocm": modern AMD GPU
       acceleration =
       (
-        if (config.nixcosmic.hardware.nvidiaGpu.enable == true) then
+        if (config.curios.hardware.nvidiaGpu.enable == true) then
           "cuda"
         else (
-          if (config.nixcosmic.hardware.amdGpu.enable == true) then
+          if (config.curios.hardware.amdGpu.enable == true) then
             "rocm"
           else "false"
         )
       );
-
-      # For AMD Ryzen 7 PRO hardware
-      # nix-shell -p "rocmPackages.rocminfo" --run "rocminfo" | grep "gfx"
-      #environmentVariables = {
-      #  HCC_AMDGPU_TARGET = "gfx1103"; # used to be necessary, but doesn't seem to anymore
-      #};
-      #rocmOverrideGfx = "11.0.2";
     };
     # Open WebUI, see: https://docs.openwebui.com/
     services.open-webui = {

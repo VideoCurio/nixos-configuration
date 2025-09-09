@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.accountsDaemon.enable = lib.mkOption {
+    curios.hardened.accountsDaemon.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for accounts-daemon.";
+      description = "CuriOS hardened systemd configuration for accounts-daemon.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.accountsDaemon.enable {
+  config = lib.mkIf config.curios.hardened.accountsDaemon.enable {
     systemd.services.accounts-daemon.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "strict";

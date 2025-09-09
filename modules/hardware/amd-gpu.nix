@@ -6,14 +6,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardware.amdGpu.enable = lib.mkOption {
+    curios.hardware.amdGpu.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enabling AMD GPU configuration";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.hardware.amdGpu.enable {
+  config = lib.mkIf config.curios.hardware.amdGpu.enable {
     # Use the systemd-boot EFI boot loader.
     boot = {
       initrd.kernelModules = [ "amdgpu" ];

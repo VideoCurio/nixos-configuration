@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.cups.enable = lib.mkOption {
+    curios.hardened.cups.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for cups.";
+      description = "CuriOS hardened systemd configuration for cups.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.cups.enable {
+  config = lib.mkIf config.curios.hardened.cups.enable {
     systemd.services.cups.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "full";

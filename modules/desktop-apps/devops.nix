@@ -5,30 +5,37 @@
 {
   # Declare options
   options = {
-    nixcosmic.desktop.apps.devops.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Desktop apps for developers.";
-    };
-    nixcosmic.desktop.apps.devops.python312.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Python3.12 and JetBrains PyCharm Community.";
-    };
-    nixcosmic.desktop.apps.devops.rust.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Rust with cargo and JetBrains RustRover.";
-    };
-    nixcosmic.desktop.apps.devops.networks.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Nmap, Zenmap, wireshark, remina.";
+    curios.desktop.apps.devops = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Desktop apps for developers.";
+      };
+      go.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Go, gofmt and JetBrains GoLand.";
+      };
+      python312.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Python3.12, pip3 and JetBrains PyCharm Community.";
+      };
+      rust.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Rust with cargo and JetBrains RustRover.";
+      };
+      networks.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Nmap, Zenmap, wireshark, remina.";
+      };
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.desktop.apps.devops.enable {
+  config = lib.mkIf config.curios.desktop.apps.devops.enable {
     # basic Neovim
     programs.neovim =  {
       enable = true;
@@ -44,10 +51,21 @@
       cloudflared
       git-who
       gh
+      whois
+      # Bash linter
+      shellcheck
+      # Nix linter
+      statix
+      #lefthook
       # VNC
       remmina
     ]
-    ++ lib.optionals config.nixcosmic.desktop.apps.devops.python312.enable [
+    ++ lib.optionals config.curios.desktop.apps.devops.go.enable [
+      go
+      golangci-lint
+      jetbrains.goland
+    ]
+    ++ lib.optionals config.curios.desktop.apps.devops.python312.enable [
       # Python3
       python312Full
       python312Packages.pip
@@ -56,12 +74,12 @@
       jetbrains.pycharm-community
       ruff
     ]
-    ++ lib.optionals config.nixcosmic.desktop.apps.devops.rust.enable [
+    ++ lib.optionals config.curios.desktop.apps.devops.rust.enable [
       # Rust
       rustup # provide cargo, rustc, rust-analyzer and more
       jetbrains.rust-rover
     ]
-    ++ lib.optionals config.nixcosmic.desktop.apps.devops.networks.enable [
+    ++ lib.optionals config.curios.desktop.apps.devops.networks.enable [
       # Networks
       nmap
       zenmap

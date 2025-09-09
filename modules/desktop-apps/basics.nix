@@ -5,15 +5,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.desktop.apps.basics.enable = lib.mkOption {
+    curios.desktop.apps.basics.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "NixcOSmic minimum desktop apps.";
+      description = "CuriOS minimum desktop apps.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.desktop.apps.basics.enable {
+  config = lib.mkIf config.curios.desktop.apps.basics.enable {
     environment.systemPackages = with pkgs; [
       caligula
 
@@ -25,6 +25,7 @@
       bitwarden-desktop
       brave
       easyeffects
+      ffmpeg_6-full
       gimp3-with-plugins
       protonvpn-gui
       signal-desktop

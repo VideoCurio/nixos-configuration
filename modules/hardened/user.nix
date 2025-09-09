@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.user.enable = lib.mkOption {
+    curios.hardened.user.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for user.";
+      description = "CuriOS hardened systemd configuration for user.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.user.enable {
+  config = lib.mkIf config.curios.hardened.user.enable {
     systemd.services."user@".serviceConfig = {
       ProtectSystem = "strict";
       ProtectClock = true;

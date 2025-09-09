@@ -4,17 +4,27 @@
 {
   # Declare options
   options = {
-    nixcosmic.bootefi.enable = lib.mkOption {
+    curios.bootefi.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "Enable systemd EFI boot loader";
     };
+    curios.bootefi.kernel.latest = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Use latest stable kernel available if true, otherwise use LTS kernel. See: https://nixos.wiki/wiki/Linux_kernel";
+    };
   };
 
-  config = lib.mkIf config.nixcosmic.bootefi.enable {
+  config = lib.mkIf config.curios.bootefi.enable {
     # Use the systemd-boot EFI boot loader.
     boot = {
-      #kernelPackages = pkgs.linuxPackages_latest;  # Use latest kernel instead of LTS.
+      kernelPackages =
+        if config.curios.bootefi.kernel.latest then
+          pkgs.linuxPackages_latest
+        else
+          pkgs.linuxPackages
+        ;
       initrd.systemd.enable = true;
       kernel.sysctl = {
         "vm.swappiness" = 10; # Reduce the frequency of swapping data from RAM to swap space.

@@ -1,19 +1,19 @@
 # Minimal filesystems, partitions for: '/boot', '/' and swap
-# As configured by install-system.sh
+# As configured by 'curios-install /dev/XXX'
 
 { config, lib, pkgs, ... }:
 
 {
   # Declare options
   options = {
-    nixcosmic.filesystems.minimal.enable = lib.mkOption {
+    curios.filesystems.minimal.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Minimal filesystems as defined by install-system.sh /dev/XXX";
+      description = "Minimal filesystems as defined by 'curios-install /dev/XXX'";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.filesystems.minimal.enable {
+  config = lib.mkIf config.curios.filesystems.minimal.enable {
     boot.initrd.kernelModules = [ ];
 
     fileSystems."/" = {

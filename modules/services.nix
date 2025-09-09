@@ -1,20 +1,20 @@
-# NixcOSmic services base configuration
+# CuriOS services base configuration
 
 { config, lib, pkgs, ... }:
 {
   # Declare options
   options = {
-    nixcosmic.services.enable = lib.mkOption {
+    curios.services.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enable NixcOSmic services.";
+      description = "Enable CuriOS services.";
     };
-    nixcosmic.services.printing.enable = lib.mkOption {
+    curios.services.printing.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enable CUPS printing services.";
     };
-    nixcosmic.services.sshd.enable = lib.mkOption {
+    curios.services.sshd.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Enable SSH daemon services.";
@@ -22,22 +22,22 @@
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.services.enable {
+  config = lib.mkIf config.curios.services.enable {
     # X server
     services.xserver = {
       enable = lib.mkDefault true;
       # keyboard settings, see: 'localectl status' , 'setxkbmap -query' ?
-      xkb.layout = "us";
+      xkb.layout = config.curios.system.keyboard;
       xkb.model = "pc105";
       xkb.variant = "";
       #xkb.options = "eurosign:e,caps:escape";
-      displayManager.sessionCommands = "setxkbmap -layout us";
+      displayManager.sessionCommands = "setxkbmap -layout ${config.curios.system.keyboard}";
     };
 
     # OpenSSH server.
     services.openssh = {
       enable =
-        if config.nixcosmic.services.sshd.enable then
+        if config.curios.services.sshd.enable then
           true
         else
           false;
@@ -56,7 +56,7 @@
 
     # Enable CUPS to print documents.
     services.printing.enable =
-      if config.nixcosmic.services.printing.enable then
+      if config.curios.services.printing.enable then
         true
       else
         false;
@@ -72,7 +72,7 @@
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.flatpak ];
       script =
-        if config.nixcosmic.desktop.cosmic.enable then
+        if config.curios.desktop.cosmic.enable then
           ''
             /run/current-system/sw/bin/flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
             /run/current-system/sw/bin/flatpak remote-add --if-not-exists cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
@@ -84,32 +84,30 @@
     };
     # Flatpak user auto update
     # systemctl --user list-units --type=service
-    systemd.user.services.flatpak-update = {
-      enable = true;
-      description = "Flatpak user update";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      #path = [ pkgs.flatpak ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
-      };
-      wantedBy = [ "default.target" ];
-    };
     # systemctl --user list-timers
     # systemctl --user status flatpak-update.timer
-    systemd.user.timers.flatpak-update = {
-      enable = true;
-      description = "Flatpak user update";
-      timerConfig = {
-        OnBootSec = "2m";
-        OnActiveSec = "2m";
-        OnUnitInactiveSec = "24h";
-        OnUnitActiveSec = "24h";
-        AccuracySec = "1h";
-        RandomizedDelaySec = "10m";
+    systemd.user = {
+      services.flatpak-update = {
+        enable = true;
+        description = "Flatpak user update";
+        #path = [ pkgs.flatpak ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "/run/current-system/sw/bin/flatpak update --noninteractive --assumeyes";
+        };
+        wantedBy = [ ];
       };
-      wantedBy = [ "timers.target" ];
+      timers.flatpak-update = {
+        enable = true;
+        description = "Flatpak user update";
+        timerConfig = {
+          OnStartupSec = "30s";
+          OnUnitInactiveSec = "24h";
+          OnUnitActiveSec = "24h";
+          RandomizedDelaySec = "3m";
+        };
+        wantedBy = [ "timers.target" ];
+      };
     };
 
     # Enable sound.
@@ -122,9 +120,6 @@
       extraConfig.pipewire."92-low-latency" = {
         "context.properties" = {
           "default.clock.rate" = 48000;
-          "default.clock.quantum" = 512; # Keep increasing the quant value until you get no crackles
-          "default.clock.min-quantum" = 256;
-          "default.clock.max-quantum" = 16384;
         };
       };
       extraConfig.pipewire-pulse."92-low-latency" = {

@@ -6,14 +6,14 @@
 {
   # Declare options
   options = {
-    nixcosmic.platform.rpi4.enable = lib.mkOption {
+    curios.platform.rpi4.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Raspberry PI 4 configuration";
     };
   };
 
-  config = lib.mkIf config.nixcosmic.platform.rpi4.enable {
+  config = lib.mkIf config.curios.platform.rpi4.enable {
     boot = {
       kernelPackages = lib.mkDefault pkgs.linuxKernel.packages.linux_rpi4;
       kernelParams = [ "snd_bcm2835.enable_hdmi=1" "snd_bcm2835.enable_headphones=1" "usbhid.mousepoll=8" ];

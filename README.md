@@ -1,6 +1,6 @@
 [![NixOS Unstable](https://img.shields.io/badge/NixOS-25.05-blue.svg?style=flat-square&logo=NixOS&logoColor=white)](https://nixos.org)
 
-# NixOS + COSMIC = NixC*OS*MIC
+# NixOS + COSMIC = Curi*OS*
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
 ![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot6.png?raw=true "NixOS with COSMIC DE")
@@ -24,20 +24,23 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
-1. Get the latest NixC*OS*MIC 25.05 Minimal ISO image:
+1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0-rc3/nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso.sha256
-   sha256sum --check nixcosmic-minimal_*.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso.sha256
+   sha256sum --check curios-minimal_*.iso.sha256
    ```
    Must respond "Success".
 
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
-   sudo dd if=nixcosmic-minimal_25.05.0-rc3_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   # Good old dd:
+   sudo dd if=curios-minimal_25.05.0_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   # or shiny caligula:
+   caligula burn -s $(cat ./curios-minimal_25.05.0_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -49,18 +52,18 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `nixcosmic-install --crypt --root-size 80G /dev/nvme0n1`:
+6. Run the installer with the **recommended** options: `curios-install --crypt --root-size 80G /dev/nvme0n1`:
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
    # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
-   nixcosmic-install --crypt --root-size 120G /dev/nvme0n1
+   curios-install --crypt --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8
-   1) en_GB.UTF8
+   2) en_GB.UTF8
    3) fr_FR.UTF8
    4) es_ES.UTF8
    5) de_DE.UTF8
@@ -69,7 +72,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    Enter your choice (1-20): 3
    Choose your time zone (Europe/Paris):
    Choose your username: nixos
-   Choose your machine hostname (NixCOSMIC): EVAUnit02
+   Choose your machine hostname (curios): EVAUnit02
    AMD GPU detected, would like to install it ? (y/n): y
    Enabling AMD GPU...
    Partitioning disk /dev/nvme0n1 ? All data will be ERASED (y/n): y
@@ -90,7 +93,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    You can now reboot.
    
    # See --help option for more details:
-   nixcosmic-install --help
+   curios-install --help
    ```
 7. If everything went according to plan, reboot.
    ```bash
@@ -113,6 +116,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * [Modular configuration files](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) for apps like Steam, Discord, OBS, Ollama AI, docker, QEMU + virt-manager, Python3, Rust and more...
 * Modular hardened systemd services configurations files. -WIP-
 * NixOS packages **auto-update** every night or at first boot of the day.
+* Curi*OS* updater. Check this GitHub repo for new system version.
 * A bunch of nerd fonts...
 
 Useful COSMIC shortcuts:
@@ -132,24 +136,33 @@ Useful COSMIC shortcuts:
 
 ### Dot files
 
-[My NixOS-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+[curios-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
 
 -----
 
-## NixC*OS*MIC management
+## Curi*OS* management
 
-Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'nixcosmic.'.
+Activate or deactivate [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) to suit your needs and computer's hardware. [Modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) configuration start with 'curios.'.
 
-For example: you want to game and install Steam, Heroic launcher, Discord and more? Set: `nixcosmic.desktop.apps.gaming.enable` to `true;` into '/etc/nixos/configuration.nix' file.
+For example: you want to game and install Steam, Heroic launcher, Discord and more? Set: `curios.desktop.apps.gaming.enable` to `true;` into '/etc/nixos/settings.nix' file.
 ```bash
-sudo nano /etc/nixos/configuration.nix
+sudo nano /etc/nixos/settings.nix
 # Use Ctrl+s to save and Ctrl+x to exit nano
 ```
 followed by:
 ```bash
 sudo nixos-rebuild switch
 ```
-You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages).
+You want a package not in one of the already pre-configured [modules](https://github.com/VideoCurio/nixos-configuration/tree/master/modules) ? Find more packages or options configuration at [NixOS packages](https://search.nixos.org/packages?channel=25.05&size=50&sort=relevance&type=packages) and add it to `/etc/nixos/settings.nix`.
+
+### System upgrade
+When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop:
+![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.0/img/Updater.png?raw=true "CuriOS updater")
+
+To start the system upgrade, launch a terminal (Super + T) and type:
+```bash
+sudo curios-update --upgrade
+```
 
 ### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
@@ -177,18 +190,24 @@ sudo nix-store --gc
 
 -----
 
-## Developers notes
-Developers should try theirs code against the `testing` branch.
-```bash
-git clone -b testing https://github.com/VideoCurio/nixos-configuration.git
-```
-Pull Request are welcomed.
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 -----
 
 ## Version
 
-Current version is [25.05.0-rc3](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0-rc3) based on an Nixos 25.05 build.
+Current version is [25.05.0](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0) based on a Nixos 25.05 build.
 
 -----
 

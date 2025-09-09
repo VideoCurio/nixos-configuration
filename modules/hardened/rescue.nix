@@ -3,15 +3,15 @@
 {
   # Declare options
   options = {
-    nixcosmic.hardened.rescue.enable = lib.mkOption {
+    curios.hardened.rescue.enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "NixcOSmic hardened systemd configuration for rescue.";
+      description = "CuriOS hardened systemd configuration for rescue.";
     };
   };
 
   # Declare configuration
-  config = lib.mkIf config.nixcosmic.hardened.rescue.enable {
+  config = lib.mkIf config.curios.hardened.rescue.enable {
     systemd.services.rescue.serviceConfig = {
       NoNewPrivileges = true;
       ProtectSystem = "full";

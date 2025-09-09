@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+
+# CuriOS update script as NixOS package.
+#
+# Usage:
+#       curios-update [options]
+# Options:
+#     -h, --help         Print this message.
+#     --check            Check online if a most recent version of CuriOS exist.
+#     --upgrade          Download latest CuriOS and install it. Implies --check option.
+#     -v, --verbose      Print more information.
+#     --version          Print version number and exit.
+#
+# Examples:
+#    Check online for the latest version:
+#      curios-update --check
+#    Upgrade system:
+#      curios-update --upgrade
+
+set -eu
+
+# Print help function
+usage ()
+{
+  echo -e "
+Usage: curios-update [options]";
+
+  cat << EOF
+
+  Options:
+     -h, --help         Print this message.
+     --check            Check online if a most recent version of CuriOS exist.
+     --upgrade          Download latest CuriOS and install it. Implies --check option.
+     -v, --verbose      Print more information.
+     --version          Print version number and exit.
+
+  Examples:
+    Check online for the latest version:
+      curios-update --check
+    Upgrade system:
+      curios-update --upgrade
+EOF
+  exit;
+}
+
+# var init state
+version="0.2";
+verbose=0;
+check_online=0;
+upgrade_system=0;
+upgradable=0;
+latest_version="";
+latest_source="";
+script_path="$(dirname "$0")"
+
+# Scripts arguments parse options
+ARGS=$(getopt --longoptions="verbose,version,help,check,upgrade" --options ":hv" -- "$@")
+if [ $# -eq 0 ]; then
+  usage
+fi;
+
+eval set -- "$ARGS"
+
+while true; do
+  case "$1" in
+    -v | --verbose)
+      verbose=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      ;;
+    --check)
+      check_online=1
+      shift
+      ;;
+    --upgrade)
+      upgrade_system=1
+      check_online=1
+      shift
+      ;;
+    --version)
+      echo "$version"
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ $verbose -eq 1 ]; then
+  printf "Script current path: %s\n" "$script_path"
+fi
+
+# This script must be run as root for --upgrade option
+if [ "$EUID" -ne 0 ] && [ $upgrade_system -eq 1 ]; then
+  printf "\e[31mThis script MUST be run as root: sudo curios-update --upgrade \e[0m \n" >&2
+  exit 1
+fi
+
+# Check dependencies
+available() { command -v "$1" >/dev/null; }
+
+if ! available notify-send; then
+  printf "\e[31m notify-send command not found! \e[0m \n"
+  exit 2
+fi
+
+# check online latest version
+get_latest_version() {
+  if [ $verbose -eq 1 ]; then
+    printf "Checking github sources...\n"
+  fi
+  latest_version="$(curl -f --silent "https://api.github.com/repos/VideoCurio/nixos-configuration/tags" | jq -r '.[0].name')"
+  latest_source="$(curl -f --silent "https://api.github.com/repos/VideoCurio/nixos-configuration/tags" | jq -r '.[0].tarball_url')"
+}
+
+# Upgrade the system
+upgrade_curios() {
+  local extracted_source_path=""
+
+  printf "\e[32m Downloading %s sources...\e[0m \n" "$latest_version"
+  wget -O /tmp/CuriOS-"${latest_version}".tar.gz --show-progress "$latest_source"
+  mkdir -p /tmp/CuriOS-"${latest_version}"/ && tar -C /tmp/CuriOS-"${latest_version}"/ -xzf /tmp/CuriOS-"${latest_version}".tar.gz
+  extracted_source_path=$(fd --min-depth 1 --max-depth 1 --type d . /tmp/CuriOS-"${latest_version}"/ | head -n 1)
+  printf "Sources extracted to: %s\n" "$extracted_source_path"
+  # Checking extracted source
+  if [ ! -f "$extracted_source_path"/configuration.nix ]; then
+    printf "\e[31m configuration.nix file not found! \e[0m \n"
+    exit 1
+  fi
+
+  # Installing
+  printf "\e[32m Installing update...\e[0m \n"
+  install -D -m 644 -t /etc/nixos/ "$extracted_source_path"/configuration.nix
+  if [ ! -f /etc/nixos/user-me.nix ]; then
+    install -D -m 644 -t /etc/nixos/ "$extracted_source_path"/user-me.nix
+  fi
+  if [ ! -f /etc/nixos/settings.nix ]; then
+    install -D -m 644 -t /etc/nixos/ "$extracted_source_path"/settings.nix
+  fi
+  install -D -m 555 -t /etc/nixos/ "$extracted_source_path"/curios-*
+  mkdir -p /etc/nixos/modules/
+  cp -r -f "$extracted_source_path"/modules/ /etc/nixos/
+  mkdir -p /etc/nixos/pkgs/
+  cp -r -f "$extracted_source_path"/pkgs/ /etc/nixos/
+  /run/current-system/sw/bin/nixos-rebuild switch --upgrade
+  printf "\e[32mDone.\e[0m \n"
+}
+
+# Get current OS version
+if [ ! -f /etc/os-release ]; then
+  printf "\e[31m /etc/os-release file not found! \e[0m \n"
+  exit 1
+fi
+source /etc/os-release
+#VARIANT_ID="unstable"
+printf "CuriOS current version is \e[32m%s\e[0m\n" "$VARIANT_ID"
+
+if [ $check_online -eq 1 ]; then
+  get_latest_version
+  printf "CuriOS latest version is \e[32m%s\e[0m\n" "$latest_version"
+  if [ "$latest_version" == "$VARIANT_ID" ]; then
+    printf "\e[32m System is up-to-date.\e[0m \n"
+    exit 0
+  else
+    if [[ "$latest_version" == [0-9][0-9]* ]]; then
+      upgradable=1;
+      printf "\e[33m System should be upgraded.\e[0m \n"
+      if [ "$EUID" -ge 900 ]; then
+        /run/current-system/sw/bin/notify-send -a "CuriOS Updater" --urgency=critical "CuriOS ${latest_version} is available." "In a terminal type: sudo curios-update --upgrade"
+      fi
+    else
+      upgradable=0;
+      printf "\e[33m Latest version number is not correct.\e[0m \n"
+    fi
+  fi
+fi
+
+if [ $upgradable -eq 1 ] && [ $upgrade_system -eq 1 ]; then
+  upgrade_curios
+fi
