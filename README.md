@@ -117,6 +117,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 * Modular hardened systemd services configurations files. -WIP-
 * NixOS packages **auto-update** every night or at first boot of the day.
 * Curi*OS* updater. Check this GitHub repo for new system version.
+* Use of the latest stable Linux kernel by default.
 * A bunch of nerd fonts...
 
 Useful COSMIC shortcuts:
