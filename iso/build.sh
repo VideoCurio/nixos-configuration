@@ -64,9 +64,9 @@ done
 # Change some version number in nix file to match $currentRelease
 sed "s/nixos\.variant_id = \".*/nixos.variant_id = \"${currentRelease}\";/g" -i ./../configuration.nix
 sed "s/version = \".*/version = \"${currentRelease}\";/g" -i ./../pkgs/curios-sources/default.nix
-if [[ "$branch" == release* ]]; then
-  git commit -a -m "Release ${currentRelease}"
-fi
+#if [[ "$branch" == release* ]]; then
+  #git commit -a -m "Release ${currentRelease}"
+#fi
 
 # Build packages
 #printf "Build custom pkgs...\n"
