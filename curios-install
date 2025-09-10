@@ -319,38 +319,40 @@ if ! [[ $pc_hostname =~ ^[[:alnum:].]+$ ]]; then
 fi
 
 ########### GPU:
-nb_gpu=$(lspci | grep -ci "vga")
-if [ $verbose -eq 1 ]; then
-  printf "%d GPU found\n" "$nb_gpu"
-fi
-
-if [ "$nb_gpu" -ge 1 ]; then
-  gpu=$(lspci -nn | grep -i "vga")
-  if echo "$gpu" | grep -qi "amd"; then
-    gpu_detected="amd"
-    while true; do
-      read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
-      case $yn in
-        [yY] ) install_gpu=1;
-          break;;
-        [nN] ) echo "Proceeding without installing GPU pilot...";
-          break;;
-        * ) echo "Invalid response";;
-      esac
-    done
+if [ $rpi4_install -eq 0 ]; then
+  nb_gpu=$(lspci | grep -ci "vga")
+  if [ $verbose -eq 1 ]; then
+    printf "%d GPU found\n" "$nb_gpu"
   fi
-  if echo "$gpu" | grep -qi "nvidia"; then
-    gpu_detected="nvidia"
-    while true; do
-      read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
-      case $yn in
-        [yY] ) install_gpu=1;
-          break;;
-        [nN] ) echo "Proceeding without installing GPU pilot...";
-          break;;
-        * ) echo "Invalid response";;
-      esac
-    done
+
+  if [ "$nb_gpu" -ge 1 ]; then
+    gpu=$(lspci -nn | grep -i "vga")
+    if echo "$gpu" | grep -qi "amd"; then
+      gpu_detected="amd"
+      while true; do
+        read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
+        case $yn in
+          [yY] ) install_gpu=1;
+            break;;
+          [nN] ) echo "Proceeding without installing GPU pilot...";
+            break;;
+          * ) echo "Invalid response";;
+        esac
+      done
+    fi
+    if echo "$gpu" | grep -qi "nvidia"; then
+      gpu_detected="nvidia"
+      while true; do
+        read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
+        case $yn in
+          [yY] ) install_gpu=1;
+            break;;
+          [nN] ) echo "Proceeding without installing GPU pilot...";
+            break;;
+          * ) echo "Invalid response";;
+        esac
+      done
+    fi
   fi
 fi
 
