@@ -284,15 +284,21 @@ if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
 fi
 
 ########### Choose a username:
-read -r -p "Enter your username: " username
-# username check
-if [ -z "$username" ]; then
-  printf "\e[31m username cannot be empty.\e[0m \n"
-  exit 1
-fi
-if ! [[ $username =~ ^[[:alnum:]]+$ ]]; then
-  printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
-  exit 1
+if [ $rpi4_install -eq 1 ]; then
+  # Username must be 'nixos' on preconfigured sd-card for aarch64 platform
+  username="nixos"
+  printf "Username is set to\e[32m %s\e[0m on NixOS SD card for aarch64 platform.\n" "$username"
+else
+  read -r -p "Enter your username: " username
+  # username check
+  if [ -z "$username" ]; then
+    printf "\e[31m username cannot be empty.\e[0m \n"
+    exit 1
+  fi
+  if ! [[ $username =~ ^[[:alnum:]]+$ ]]; then
+    printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
+    exit 1
+  fi
 fi
 
 ########### Choose a full name:
@@ -631,12 +637,12 @@ read -r -p "Proceed with installation ? (y/n): " yn
 
 case $yn in
   [yY] ) echo "Launching NixOS installer...";
-    if [ $rpi4_install -eq 0 ]; then
-      nixos-install --no-root-passwd
-    else
+    if [ $rpi4_install -eq 1 ]; then
       nixos-rebuild boot
+    else
+      nixos-install --cores 0 --no-root-passwd
     fi
-    if [ $do_dotfiles_install -eq 1 ]; then
+    if [ $do_dotfiles_install -eq 1 ] && [ $rpi4_install -eq 0 ]; then
       dotfiles-inst
     fi
     printf "\e[32m Done... \e[0m \n"
