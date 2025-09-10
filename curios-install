@@ -549,10 +549,12 @@ if [ $verbose -eq 1 ]; then
   lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
 fi
 
-if [ $rpi4_install -eq 0 ]; then
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Create basic configuration..."
+printf "\e[32m================================\e[0m \n"
+printf "\e[32m================================\e[0m \n"
+echo "Create basic configuration..."
+if [ $rpi4_install -eq 1 ]; then
+  nixos-generate-config --no-filesystems
+else
   nixos-generate-config --root /mnt --no-filesystems
 fi
 
@@ -600,16 +602,16 @@ else
   sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
   sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
   sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-fi
-# filesystems settings:
-if [ $encrypt_disk -eq 1 ]; then
-  # Update settings.nix
-  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-else
-  # Also update settings.nix
-  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  # filesystems settings:
+  if [ $encrypt_disk -eq 1 ]; then
+    # Update settings.nix
+    sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+    sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+  else
+    # Also update settings.nix
+    sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
+    sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
+  fi
 fi
 # GPU settings:
 if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
