@@ -120,7 +120,7 @@
       enable = true;
       dates = "03:40";
       randomizedDelaySec = "10min";
-      allowReboot = true; # Reboot on new kernel, initrd or kernel module.
+      allowReboot = false; # Reboot on new kernel, initrd or kernel module.
       channel = "https://channels.nixos.org/nixos-25.05"; # The URI of the NixOS channel to use for automatic upgrades.
     };
     # Copy the NixOS configuration file and link it from the resulting system
