@@ -15,8 +15,6 @@
 # curios-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
 # curios-install /dev/vda                   - Standard install on a QEMU disk.
 
-# TODO: --assumeyes option
-
 set -eu
 
 # Print help function
@@ -36,6 +34,7 @@ Usage: curios-install [options] <disk_partition>
      --root-size SIZE   Set root partition size (e.g., 100G or 20%) - ONLY with --crypt option.
      --rpi4             Raspberry PI 4 installation (exclude --crypt option).
      -v, --verbose      Print more information.
+     -y, --yes          Batch/script mode. Do not prompt for confirmation interactively but always assume the answer is yes.
 
   Examples:
     Full encrypted disk install on the first NVMe SSD (with /home partition):
@@ -52,6 +51,7 @@ EOF
 }
 
 do_dotfiles_install=1;
+assume_yes=0;
 encrypt_disk=0;
 root_size="25G";
 rpi4_install=0;
@@ -75,7 +75,7 @@ validate_root_size() {
 }
 
 # Scripts arguments parse options
-ARGS=$(getopt --longoptions="verbose,help,crypt,rpi4,root-size:" --name "$0" --options ":hv" -- "$@")
+ARGS=$(getopt --longoptions="verbose,help,crypt,rpi4,root-size,yes:" --name "$0" --options ":hvy" -- "$@")
 if [ $# -lt 1 ]; then
   usage
 fi;
@@ -105,6 +105,10 @@ while true; do
       root_size="$2"
       validate_root_size "$root_size"
       shift 2
+      ;;
+    -y | --yes)
+      assume_yes=1
+      shift
       ;;
     --)
       shift
@@ -145,7 +149,7 @@ if [ $verbose -eq 1 ]; then
   printf "Package store path: %s\n" "$curios_sources_path"
 fi
 if [ ! -f "$curios_sources_path"/configuration.nix ]; then
-  printf "\e[31mconfiguration.nix file not found! \e[0m \n"
+  printf "\e[31m configuration.nix file not found! \e[0m \n"
   exit 1
 fi
 
@@ -155,7 +159,7 @@ if [ ! -f "$curios_sources_path"/settings.nix ]; then
 fi
 
 if [ ! -f "$curios_sources_path"/user-me.nix ]; then
-  printf "\e[31muser-me.nix file not found! \e[0m \n"
+  printf "\e[31m user-me.nix file not found! \e[0m \n"
   exit 1
 fi
 
@@ -173,7 +177,19 @@ fi
 available() { command -v "$1" >/dev/null; }
 
 if ! available git; then
-  printf "\e[31mgit command not found! \e[0m \n"
+  printf "\e[31m git command not found! \e[0m \n"
+  exit 2
+fi
+if ! available parted; then
+  printf "\e[31m parted command not found! \e[0m \n"
+  exit 2
+fi
+if ! available cryptsetup; then
+  printf "\e[31m cryptsetup command not found! \e[0m \n"
+  exit 2
+fi
+if ! available mkfs; then
+  printf "\e[31m mkfs command not found! \e[0m \n"
   exit 2
 fi
 
@@ -336,7 +352,11 @@ if [ $rpi4_install -eq 0 ]; then
     if echo "$gpu" | grep -qi "amd"; then
       gpu_detected="amd"
       while true; do
-        read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
+        if [ $assume_yes -eq 0 ]; then
+          read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
+        else
+          yn="y"
+        fi
         case $yn in
           [yY] ) install_gpu=1;
             break;;
@@ -349,7 +369,11 @@ if [ $rpi4_install -eq 0 ]; then
     if echo "$gpu" | grep -qi "nvidia"; then
       gpu_detected="nvidia"
       while true; do
-        read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
+        if [ $assume_yes -eq 0 ]; then
+          read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
+         else
+          yn="y"
+        fi
         case $yn in
           [yY] ) install_gpu=1;
             break;;
@@ -434,15 +458,20 @@ format () {
 
   printf "\e[32m================================\e[0m \n"
   printf "\e[32m================================\e[0m \n"
-  echo "UEFI partitionning..."
-  parted "$DISK_PART" -- mklabel gpt
-  parted "$DISK_PART" -- mkpart ESP fat32 1MB 512MB
-  parted "$DISK_PART" -- set 1 esp on
+  echo "UEFI partitioning..."
+
+  parted_opt=""
+  if [ $assume_yes -eq 1 ]; then
+    parted_opt="--script"
+  fi
+  parted "$parted_opt" "$DISK_PART" -- mklabel gpt
+  parted "$parted_opt" "$DISK_PART" -- mkpart ESP fat32 1MB 512MB
+  parted "$parted_opt" "$DISK_PART" -- set 1 esp on
   if [ $encrypt_disk -eq 0 ]; then
-    parted "$DISK_PART" -- mkpart root ext4 512MB -8GB
-    parted "$DISK_PART" -- mkpart swap linux-swap -8GB 100%
+    parted "$parted_opt" "$DISK_PART" -- mkpart root ext4 512MB -8GB
+    parted "$parted_opt" "$DISK_PART" -- mkpart swap linux-swap -8GB 100%
   else
-    parted "$DISK_PART" -- mkpart system 512MB 100%
+    parted "$parted_opt" "$DISK_PART" -- mkpart system 512MB 100%
   fi
 
   printf "\e[32m================================\e[0m \n"
@@ -508,14 +537,18 @@ format () {
 
 if [ $rpi4_install -eq 0 ]; then
   while true; do
-  read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
-  case $yn in
-    [yY] ) format;
-      break;;
-    [nN] ) echo "Proceeding without disk formatting...";
-      break;;
-    * ) echo "Invalid response";;
-  esac
+    if [ $assume_yes -eq 0 ]; then
+      read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
+    else
+      yn="y"
+    fi
+    case $yn in
+      [yY] ) format;
+        break;;
+      [nN] ) echo "Proceeding without disk formatting...";
+        break;;
+      * ) echo "Invalid response";;
+    esac
   done
 fi
 
@@ -634,23 +667,26 @@ else
 fi
 
 while true; do
-read -r -p "Proceed with installation ? (y/n): " yn
-
-case $yn in
-  [yY] ) echo "Launching NixOS installer...";
-    if [ $rpi4_install -eq 1 ]; then
-      nixos-rebuild boot
-    else
-      nixos-install --cores 0 --no-root-passwd
-    fi
-    if [ $do_dotfiles_install -eq 1 ] && [ $rpi4_install -eq 0 ]; then
-      dotfiles-inst
-    fi
-    printf "\e[32m Done... \e[0m \n"
-    printf "\e[32m You can now reboot. \e[0m \n"
-    break;;
-  [nN] ) echo "Exiting...";
-    exit;;
-  * ) echo "Invalid response";;
-esac
+  if [ $assume_yes -eq 0 ]; then
+    read -r -p "Proceed with installation ? (y/n): " yn
+  else
+    yn="y"
+  fi
+  case $yn in
+    [yY] ) echo "Launching NixOS installer...";
+      if [ $rpi4_install -eq 1 ]; then
+        nixos-rebuild boot
+      else
+        nixos-install --cores 0 --no-root-passwd
+      fi
+      if [ $do_dotfiles_install -eq 1 ] && [ $rpi4_install -eq 0 ]; then
+        dotfiles-inst
+      fi
+      printf "\e[32m Done... \e[0m \n"
+      printf "\e[32m You can now reboot. \e[0m \n"
+      break;;
+    [nN] ) echo "Exiting...";
+      exit;;
+    * ) echo "Invalid response";;
+  esac
 done
