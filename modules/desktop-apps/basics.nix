@@ -27,6 +27,7 @@
       easyeffects
       ffmpeg_6-full
       gimp3-with-plugins
+      libsecret
       protonvpn-gui
       signal-desktop
       vlc
