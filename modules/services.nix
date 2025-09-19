@@ -132,7 +132,7 @@
             OnStartupSec = "30s";
             OnUnitInactiveSec = "24h";
             OnUnitActiveSec = "24h";
-            RandomizedDelaySec = "3m";
+            RandomizedDelaySec = "2m";
           };
           wantedBy = [ "timers.target" ];
         };
