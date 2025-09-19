@@ -7,6 +7,17 @@
 # man configuration.nix
 
 { config, lib, pkgs, ... }:
+let
+  # App autostart example: It copy the desktop file from the package $package/share/applications/$srcPrefix$name.desktop
+  # to $out/etc/xdg/autostart/$name.desktop so the app will be launched on user graphical session opening.
+  # See: https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/make-startupitem/default.nix
+  # Next step: add 'protonvpn-gui-autostart' to "environment.systemPackages" below.
+  protonvpn-gui-autostart = pkgs.makeAutostartItem {
+    name = "protonvpn-app";
+    package = pkgs.protonvpn-gui;
+    appendExtraArgs = [ "--start-minimized" ]; # append extra arguments to protonvpn-app Exec
+  };
+in
 {
   ### CuriOS options settings goes here:
   curios = {
@@ -86,8 +97,9 @@
   };
 
   ### NixOS packages
-  environment.systemPackages = with pkgs; [
-    # Add your packages here:
+  environment.systemPackages = [
+    # Add your packages pkgs.foobar here:
+    #protonvpn-gui-autostart # Uncomment this line to autostart protonvpn-gui on user graphical session.
   ];
 
   ### Change user settings here:
