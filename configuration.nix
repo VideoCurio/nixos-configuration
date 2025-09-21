@@ -99,10 +99,6 @@
     pinentryPackage = pkgs.pinentry-curses;
   };
 
-  # Enabling Linux AppImage
-  #programs.appimage.enable = true;
-  #programs.appimage.binfmt = true;
-
   # Allow unfree packages, could be overridden by some modules.
   nixpkgs.config.allowUnfree =
     if config.curios.hardware.nvidiaGpu.enable then

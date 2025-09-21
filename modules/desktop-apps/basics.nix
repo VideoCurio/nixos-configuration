@@ -5,10 +5,17 @@
 {
   # Declare options
   options = {
-    curios.desktop.apps.basics.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "CuriOS minimum desktop apps.";
+    curios.desktop.apps = {
+      basics.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "CuriOS minimum desktop apps.";
+      };
+      appImage.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enabling Linux AppImage.";
+      };
     };
   };
 
@@ -36,5 +43,9 @@
 
     # Enabling PCSC-lite for Yubikey
     services.pcscd.enable = true;
+
+    # Enabling Linux AppImage
+    programs.appimage.enable = lib.mkDefault config.curios.desktop.apps.appImage.enable;
+    programs.appimage.binfmt = lib.mkDefault config.curios.desktop.apps.appImage.enable;
   };
 }

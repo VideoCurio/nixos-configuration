@@ -53,6 +53,7 @@ in
     ### Modules below SHOULD be activated on user needs:
     desktop.apps = {
       basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+      appImage.enable = lib.mkDefault false; # Enabling Linux AppImage
       devops = {
         enable = false; # Required by desktop.apps.devops options below. + Cloudlfared
         networks.enable = false; # Nmap, Zenmap, Wireshark
