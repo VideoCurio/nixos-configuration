@@ -34,7 +34,9 @@
       easyeffects
       ffmpeg_6-full
       gimp3-with-plugins
+      gparted
       libsecret
+      polkit_gnome
       protonvpn-gui
       signal-desktop
       vlc
@@ -43,6 +45,26 @@
 
     # Enabling PCSC-lite for Yubikey
     services.pcscd.enable = true;
+
+    # systemd
+    systemd = {
+      user = {
+        # Start polkit_gnome as a systemd service
+        services.polkit-gnome-authentication-agent-1 = {
+          description = "polkit-gnome-authentication-agent-1";
+          wantedBy = [ "graphical-session.target" ];
+          wants = [ "graphical-session.target" ];
+          after = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+            Restart = "on-failure";
+            RestartSec = 1;
+            TimeoutStopSec = 10;
+          };
+        };
+      };
+    };
 
     # Enabling Linux AppImage
     programs.appimage.enable = lib.mkDefault config.curios.desktop.apps.appImage.enable;
