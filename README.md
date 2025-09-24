@@ -52,14 +52,14 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `curios-install --crypt --root-size 80G /dev/nvme0n1`:
+6. Run the installer with the **recommended** options: `curios-install --crypt -y --root-size 80G /dev/nvme0n1`:
 > [!WARNING]
 > This script will **FORMAT** your disk !!! Backup your data before.
    ```bash
    # To find your disk /dev path:
    fdisk -l
    # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
-   curios-install --crypt --root-size 120G /dev/nvme0n1
+   curios-install --crypt -y --root-size 120G /dev/nvme0n1
    # Answer questions asked by the script to complete the installation:
    Choose your language in the list below:
    1) en_US.UTF8

@@ -31,12 +31,13 @@ readonly NC="\033[0m"              # No Color
 #------------- Print help function
 usage ()
 {
-  echo -e "Usage: ${GREY}curios-install [options] <disk_partition>${NC}
+  echo -e "${GREY}USAGE:${NC}
+  curios-install [options] <disk_partition>
 Where,
   ${GREY}disk_partition${NC}: Valid /dev path of a disk to install NixOS on.
   The default root partition size is set to 80G for full disk encryption option, use --root-size to change this.
 
-Options:
+${GREY}OPTIONS:${NC}
   ${GREY}-h, --help${NC}         Print this message.
   ${GREY}--crypt${NC}            Full disk encryption with LVM+LUKS with separated root and /home partitions.
   ${GREY}--root-size SIZE${NC}   Set root partition size (e.g., 100G or 20%) - ONLY with --crypt option.
@@ -45,7 +46,7 @@ Options:
   ${GREY}--version${NC}          Print version number and exit.
   ${GREY}-y, --yes${NC}          Batch/script mode. Do not prompt for confirmation interactively but always assume the answer is yes.
 
-Examples:
+${GREY}EXAMPLES:${NC}
   Full encrypted disk install on the first NVMe SSD (with /home partition and 120Go root partition):
     ${GREY}curios-install -y --crypt --root-size 120G /dev/nvme0n1${NC}
   Minimal disk install on the second HDD:

@@ -22,26 +22,27 @@ set -eu
 #------------- Colors -------------#
 readonly RED="\033[31;1m"          # Red and bold
 readonly GREEN="\033[32;1m"        # Green and bold
-readonly BLUE="\033[34;1m"         # Blue and bold
+#readonly BLUE="\033[34;1m"         # Blue and bold
 readonly GREY="\033[37;1m"         # Grey and bold
 readonly YELLOW="\033[33;1;3m"     # Yellow, bold and italic
-readonly YELLOWBLK="\033[33;1;5m"  # Yellow, bold and slow blink
-readonly UNDL="\033[4m"            # Underlined
-readonly BOLD="\033[1m"            # Bold
+#readonly YELLOWBLK="\033[33;1;5m"  # Yellow, bold and slow blink
+#readonly UNDL="\033[4m"            # Underlined
+#readonly BOLD="\033[1m"            # Bold
 readonly NC="\033[0m"              # No Color
 
 #------------- Print help function
 usage () {
-  echo -e "Usage: curios-update [options]
+  echo -e "${GREY}USAGE:${NC}
+  curios-update [options]
 
-Options:
+${GREY}OPTIONS:${NC}
   ${GREY}-h, --help${NC}         Print this message.
   ${GREY}--check${NC}            Check online if a most recent version of CuriOS exist.
   ${GREY}--upgrade${NC}          Download latest CuriOS and install it. Implies --check option.
   ${GREY}-v, --verbose${NC}      Print more information.
   ${GREY}--version${NC}          Print version number and exit.
 
-Examples:
+${GREY}EXAMPLES:${NC}
   Check online for the latest version:
     ${GREY}curios-update --check${NC}
   Upgrade system:
@@ -50,7 +51,7 @@ Examples:
 }
 
 #------------- var init state
-readonly VERSION="0.2";
+readonly SCRIPT_VERSION="0.2";
 VERBOSE=0;
 CHECK_ONLINE=0;
 UPGRADE_SYSTEM=0;
@@ -86,7 +87,7 @@ while true; do
       shift
       ;;
     --version)
-      echo "$VERSION"
+      echo "$SCRIPT_VERSION"
       exit 0
       ;;
     --)
