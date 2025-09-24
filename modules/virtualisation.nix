@@ -75,6 +75,11 @@
       virt-manager
       # Optional: QEMU support of different arch
       qemu-user
+
+      # WinApps missing dependencies - https://github.com/winapps-org/winapps/tree/main
+      dialog
+      freerdp
+      netcat
     ]
     ++ lib.optionals config.curios.desktop.apps.devops.python312.enable [
       pkgs.python312Packages.docker
