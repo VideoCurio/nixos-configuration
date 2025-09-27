@@ -99,8 +99,8 @@ in
 
   ### NixOS packages
   environment.systemPackages = [
-    # Add your packages pkgs.foobar here:
     #protonvpn-gui-autostart # Uncomment this line to autostart protonvpn-gui on user graphical session.
+    # Add your packages pkgs.foobar here:
   ];
 
   ### Change user settings here:

@@ -23,6 +23,7 @@ in {
   environment.systemPackages = [
     curios-sources
     curios-dotfiles
+    pkgs.dialog
     pkgs.nano
     pkgs.parted
     pkgs.git
