@@ -70,7 +70,7 @@
     wget
     curl
     fastfetch
-    killall
+    toybox
     git
     gnupg
     pinentry-curses
