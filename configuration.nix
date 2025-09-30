@@ -32,6 +32,7 @@
 
   # Select internationalisation properties. See 'locale' and 'locale -a'
   i18n = {
+    defaultCharset = "UTF-8";
     defaultLocale = config.curios.system.i18n.locale;
     extraLocales = "all"; # Support all glibc locales
     extraLocaleSettings = {
@@ -59,6 +60,7 @@
 
   console = {
     earlySetup = true; # initrd setup
+    font = "LatArCyrHeb-16";
     useXkbConfig = false; # use xkb.options in tty.
     keyMap = config.curios.system.keyboard;
   };

@@ -31,6 +31,9 @@ in {
     pkgs.pciutils
   ];
 
+  i18n.extraLocales = "all";
+  console.font = "LatArCyrHeb-16";
+
   networking.hostName = "CuriOS";
 }
 
