@@ -70,7 +70,7 @@
     wget
     curl
     fastfetch
-    toybox
+    busybox
     git
     gnupg
     pinentry-curses
