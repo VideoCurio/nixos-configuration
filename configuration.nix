@@ -117,7 +117,7 @@
     autoUpgrade = {
       enable = true;
       dates = "03:40";
-      randomizedDelaySec = "5min";
+      randomizedDelaySec = "3min";
       allowReboot = false; # Reboot on new kernel, initrd or kernel module.
       channel = "https://channels.nixos.org/nixos-25.05"; # The URI of the NixOS channel to use for automatic upgrades.
     };

@@ -84,6 +84,7 @@ LOCALES_TZ=(
   "Asia/Jerusalem"
   "Europe/Kyiv"
   "Asia/Kolkata"
+  "Europe/Athens"
 )
 
 #------------- Print help function
@@ -237,6 +238,7 @@ choose_lang() {
     "no" "Norsk" \
     "he" "עברית Hebrew" \
     "uk" "Українська - Ukrainian" \
+    "el" "Ελληνικά - Greek" \
     2>&1 1>&3)
   exit_status=$?
   # Close file descriptor 3
@@ -361,6 +363,11 @@ choose_lang() {
       SELECTED_LOCALE="hi_IN.UTF-8"
       SELECTED_LOCALE_CONSOLE="hi"
       LANG_CHOICE=23
+      ;;
+    el )
+      SELECTED_LOCALE="el_GR.UTF-8"
+      SELECTED_LOCALE_CONSOLE="el"
+      LANG_CHOICE=24
       ;;
   esac
   # Act on exit status
