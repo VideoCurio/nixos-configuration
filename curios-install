@@ -728,6 +728,9 @@ choose_disk_root_size() {
     clear
     exit 1
   fi
+  if [ "$DISK_SIZE_GO" -lt 100 ]; then
+    SELECTED_ROOT_SIZE=$DISK_ROOT_MIN_SIZE
+  fi
   DISK_ROOT_MAX_SIZE=$(awk -vp=$DISK_SIZE_GO 'BEGIN{print int(p * 0.85)}')
   # on descriptor 3
   exec 3>&1
@@ -738,7 +741,7 @@ choose_disk_root_size() {
     --ok-label "Next" \
     --clear \
     --colors \
-    --rangebox "Choose the /root partition size - 25Go at minimum.\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$DISK_ROOT_MIN_SIZE" "$DISK_ROOT_MAX_SIZE" "$SELECTED_ROOT_SIZE" \
+    --rangebox "Choose the /root partition size.\n25Go at minimum - 80Go recommended.\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$DISK_ROOT_MIN_SIZE" "$DISK_ROOT_MAX_SIZE" "$SELECTED_ROOT_SIZE" \
     2>&1 1>&3)
   exit_status=$?
   # Close file descriptor 3
