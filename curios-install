@@ -83,6 +83,7 @@ LOCALES_TZ=(
   "Europe/Oslo"
   "Asia/Jerusalem"
   "Europe/Kyiv"
+  "Asia/Kolkata"
 )
 
 #------------- Print help function
@@ -218,12 +219,13 @@ choose_lang() {
     "fr" "Français" \
     "es" "Español" \
     "de" "Deutsch" \
-    "zh" "中文 (汉语) Chinese (simplified)" \
-    "ja" "日本語 Japanese" \
+    "zh" "中文 (汉语) - Chinese (simplified)" \
+    "hi" "हिन्दी - Hindi" \
+    "ja" "日本語 - Japanese" \
     "pt" "Português" \
-    "ru" "Русский язык Russian" \
+    "ru" "Русский язык - Russian" \
     "it" "Italiano" \
-    "ko" "한국어 Korean" \
+    "ko" "한국어 - Korean" \
     "ar" "اَلْعَرَبِيَّةُ Arabic" \
     "nl" "Nederlands" \
     "pl" "Polski" \
@@ -234,7 +236,7 @@ choose_lang() {
     "hu" "Magyar nyelv" \
     "no" "Norsk" \
     "he" "עברית Hebrew" \
-    "uk" "Українська Ukrainian" \
+    "uk" "Українська - Ukrainian" \
     2>&1 1>&3)
   exit_status=$?
   # Close file descriptor 3
@@ -354,6 +356,11 @@ choose_lang() {
       SELECTED_LOCALE="uk_UA.UTF-8"
       SELECTED_LOCALE_CONSOLE="uk"
       LANG_CHOICE=22
+      ;;
+    hi )
+      SELECTED_LOCALE="hi_IN.UTF-8"
+      SELECTED_LOCALE_CONSOLE="hi"
+      LANG_CHOICE=23
       ;;
   esac
   # Act on exit status
@@ -872,7 +879,7 @@ format_disk () {
     exit 2
   fi
   swapoff -av
-  umount "$SELECTED_DISK"*
+  #umount "$SELECTED_DISK"*
   wipefs -af "$SELECTED_DISK"
 
   echo -e "${GREEN}================================${NC}"
