@@ -393,172 +393,176 @@ choose_lang() {
 #------------- Choose timezone
 # See: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 set_tz() {
-  while true; do
-    # Duplicate (make a backup copy of) file descriptor 1
-    # on descriptor 3
-    exec 3>&1
-    # Generate dialog box in a subshell
-    result=$(dialog \
-      --backtitle "System Information -- $DIALOG_HELP_TITLE" \
-      --title "Time Zone" \
-      --cancel-label "Previous" \
-      --ok-label "Next" \
-      --clear \
-      --no-collapse \
-      --inputbox "Enter your timezone:" $DIALOG_HEIGHT $DIALOG_WIDTH "${LOCALES_TZ[$((LANG_CHOICE))]}" \
-      2>&1 1>&3)
-    exit_status=$?
-    # Close file descriptor 3
-    exec 3>&-
-    # Act on exit status
-    case $exit_status in
-      "$DIALOG_CANCEL")
-        clear
-        choose_lang
-        ;;
-      "$DIALOG_ESC")
-        clear
-        echo "Program aborted." >&2
-        exit 1
-        ;;
-    esac
-    SELECTED_TZ=$result
-    if ! [[ $SELECTED_TZ =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
-      display_error "\Zb\Z1Invalid time zone!\Zn It could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'."
-    else
-      break
-    fi
-  done
-  set_hostname
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "System Information -- $DIALOG_HELP_TITLE" \
+    --title "Time Zone" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your timezone:" $DIALOG_HEIGHT $DIALOG_WIDTH "${LOCALES_TZ[$((LANG_CHOICE))]}" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      SELECTED_TZ=$result
+      if ! [[ $SELECTED_TZ =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
+        display_error "\Zb\Z1Invalid time zone!\Zn It could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'."
+        set_tz
+      else
+        set_hostname
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      choose_lang
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
 }
 
 #------------- Choose machine name
 set_hostname() {
-  while true; do
-    # Duplicate (make a backup copy of) file descriptor 1
-    # on descriptor 3
-    exec 3>&1
-    # Generate dialog box in a subshell
-    result=$(dialog \
-      --backtitle "System Information -- $DIALOG_HELP_TITLE" \
-      --title "Network configuration" \
-      --cancel-label "Previous" \
-      --ok-label "Next" \
-      --clear \
-      --no-collapse \
-      --inputbox "Enter this machine hostname:\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$PC_HOSTNAME" \
-      2>&1 1>&3)
-    exit_status=$?
-    # Close file descriptor 3
-    exec 3>&-
-    # Act on exit status
-    case $exit_status in
-      "$DIALOG_CANCEL")
-        clear
-        set_tz
-        ;;
-      "$DIALOG_ESC")
-        clear
-        echo "Program aborted." >&2
-        exit 1
-        ;;
-    esac
-    PC_HOSTNAME=$result
-    if ! [[ $PC_HOSTNAME =~ ^[[:alnum:].]+$ ]]; then
-      display_error "\Zb\Z1Invalid hostname!\Zn It could only contain alphanumerical or '.' characters."
-    else
-      break
-    fi
-  done
-  set_username
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "System Information -- $DIALOG_HELP_TITLE" \
+    --title "Network configuration" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter this machine hostname:\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$PC_HOSTNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      PC_HOSTNAME=$result
+      if ! [[ $PC_HOSTNAME =~ ^[[:alnum:].]+$ ]]; then
+        display_error "\Zb\Z1Invalid hostname!\Zn It could only contain alphanumerical or '.' characters."
+        set_hostname
+      else
+        set_username
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_tz
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
 }
 
 #------------- Choose username
 set_username() {
-  while true; do
-    # Duplicate (make a backup copy of) file descriptor 1
-    # on descriptor 3
-    exec 3>&1
-    # Generate dialog box in a subshell
-    result=$(dialog \
-      --backtitle "User Information -- $DIALOG_HELP_TITLE" \
-      --title "Create user" \
-      --cancel-label "Previous" \
-      --ok-label "Next" \
-      --clear \
-      --no-collapse \
-      --inputbox "Enter your username (id):" $DIALOG_HEIGHT $DIALOG_WIDTH "$USERNAME" \
-      2>&1 1>&3)
-    exit_status=$?
-    # Close file descriptor 3
-    exec 3>&-
-    # Act on exit status
-    case $exit_status in
-      "$DIALOG_CANCEL")
-        clear
-        set_hostname
-        ;;
-      "$DIALOG_ESC")
-        clear
-        echo "Program aborted." >&2
-        exit 1
-        ;;
-    esac
-    USERNAME=$result
-    if [ -z "$USERNAME" ]; then
-      display_error "\Zb\Z1username cannot be empty.\Zn"
-    elif ! [[ $USERNAME =~ ^[[:alnum:]]+$ ]]; then
-      display_error "\Zb\Z1Invalid username!\Zn It could only contain alphanumerical characters."
-    else
-      break
-    fi
-  done
-  set_fullname
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "User Information -- $DIALOG_HELP_TITLE" \
+    --title "Create user" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your username (id):" $DIALOG_HEIGHT $DIALOG_WIDTH "$USERNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      USERNAME=$result
+      if [ -z "$USERNAME" ]; then
+        display_error "\Zb\Z1username cannot be empty.\Zn"
+        set_username
+      elif ! [[ $USERNAME =~ ^[[:alnum:]]+$ ]]; then
+        display_error "\Zb\Z1Invalid username!\Zn It could only contain alphanumerical characters."
+        set_username
+      else
+        set_fullname
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_hostname
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
 }
 
 #------------- Choose user full name
 set_fullname() {
-  while true; do
-    # Duplicate (make a backup copy of) file descriptor 1
-    # on descriptor 3
-    exec 3>&1
-    # Generate dialog box in a subshell
-    result=$(dialog \
-      --backtitle "User Information -- $DIALOG_HELP_TITLE" \
-      --title "Create user" \
-      --cancel-label "Previous" \
-      --ok-label "Next" \
-      --clear \
-      --no-collapse \
-      --inputbox "Enter your full name:" $DIALOG_HEIGHT $DIALOG_WIDTH "$FULLNAME" \
-      2>&1 1>&3)
-    exit_status=$?
-    # Close file descriptor 3
-    exec 3>&-
-    # Act on exit status
-    case $exit_status in
-      "$DIALOG_CANCEL")
-        clear
-        set_username
-        ;;
-      "$DIALOG_ESC")
-        clear
-        echo "Program aborted." >&2
-        exit 1
-        ;;
-    esac
-    FULLNAME=$result
-    if [ -z "$FULLNAME" ]; then
-      FULLNAME="Dwight K. Schrute"
-      break
-    fi
-    if ! [[ $FULLNAME =~ ^[[:alnum:][:space:].]+$ ]]; then
-      display_error "\Zb\Z1Invalid full name!\Zn it could only contain alphanumerical, '.' or space characters."
-    else
-      break
-    fi
-  done
-  display_password_info
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "User Information -- $DIALOG_HELP_TITLE" \
+    --title "Create user" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your full name:" $DIALOG_HEIGHT $DIALOG_WIDTH "$FULLNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      FULLNAME=$result
+      if [ -z "$FULLNAME" ]; then
+        FULLNAME="Dwight K. Schrute"
+      fi
+      if ! [[ $FULLNAME =~ ^[[:alnum:][:space:].]+$ ]]; then
+        display_error "\Zb\Z1Invalid full name!\Zn it could only contain alphanumerical, '.' or space characters."
+        set_fullname
+      else
+        display_password_info
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_username
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
 }
 
 #------------- User temp password info
