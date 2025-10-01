@@ -141,6 +141,8 @@
       auto-optimise-store = true;
       # Allowing Flakes
       experimental-features = [ "nix-command" "flakes" ];
+      # List of users that have additional rights when connecting to the Nix daemon.
+      trusted-users = [ "@wheel" ];
     };
   };
 }
