@@ -3,7 +3,9 @@
 # NixOS + COSMIC = Curi*OS*
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
-![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot6.png?raw=true "NixOS with COSMIC DE")
+![Curios = NixOS + COSMIC Desktop](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Desktop.png?raw=true "NixOS with COSMIC DE - Curios")
+![Curios desktop tiles](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Tiles.png?raw=true "Curios desktop tiles")
+
 
 ------
 
@@ -138,6 +140,7 @@ Useful COSMIC shortcuts:
 ### Dot files
 
 [curios-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+![Curios dotfiles](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Terminal.png?raw=true "Curios dotfiles")
 
 -----
 
@@ -167,7 +170,7 @@ sudo curios-update --upgrade
 
 ### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
-![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
+![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Store.png?raw=true "COSMIC Store")
 
 ## NixOS management
 
