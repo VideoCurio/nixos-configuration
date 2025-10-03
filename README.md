@@ -31,11 +31,11 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.1/curios-minimal_25.05.1_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.1/curios-minimal_25.05.1_amd64-intel.iso.sha256
    sha256sum --check curios-minimal_*.iso.sha256
    ```
    Must respond "Success".
@@ -43,9 +43,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
    # Good old dd:
-   sudo dd if=curios-minimal_25.05.0_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=curios-minimal_25.05.1_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    # or shiny caligula:
-   caligula burn -s $(cat ./curios-minimal_25.05.0_amd64-intel.iso.sha256)
+   caligula burn -s $(cat ./curios-minimal_25.05.1_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -81,7 +81,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Features
 
-* Hardware configuration files for AMD and Intel. GPU configuration files for AMD and Nvidia hardware.
+* GPU configuration files for AMD and Nvidia hardware. GPU will be detected during installation.
 * File system configuration for full encrypted disk (LUKS+LVM).
 * COSMIC, a Wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
 * Pop_launcher, launch or switch to every application just with the Super key. Forget about your mouse, use Super key combinations for everything.
@@ -133,7 +133,7 @@ You want a package not in one of the already pre-configured [modules](https://gi
 
 ### System upgrade
 When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop:
-![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.0/img/Updater.png?raw=true "CuriOS updater")
+![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.1/img/Updater.png?raw=true "CuriOS updater")
 
 To start the system upgrade, launch a terminal (Super + T) and type:
 ```bash
@@ -183,7 +183,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## Version
 
-Current version is [25.05.0](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0) based on a Nixos 25.05 build.
+Current version is [25.05.1](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.1) based on a Nixos 25.05 build.
 
 -----
 
