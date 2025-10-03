@@ -46,6 +46,7 @@ curios = {
       };
       gaming.enable = false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
       studio.enable = false; # OBS, Audacity, DaVinci Resolve
+      office.enable = false; # LibreOffice suite
     };
     services = {
       enable = true; # Flatpak + flathub/cosmic repos, pipewire
