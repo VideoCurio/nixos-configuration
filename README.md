@@ -26,6 +26,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
+> [!WARNING]
+> The installation script will **FORMAT** your disk !!! Backup your data before.
+
 1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
    wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso
@@ -54,54 +57,23 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `curios-install --crypt -y --root-size 80G /dev/nvme0n1`:
-> [!WARNING]
-> This script will **FORMAT** your disk !!! Backup your data before.
+6. Launch the installer script:
    ```bash
-   # To find your disk /dev path:
-   fdisk -l
-   # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
-   curios-install --crypt -y --root-size 120G /dev/nvme0n1
-   # Answer questions asked by the script to complete the installation:
-   Choose your language in the list below:
-   1) en_US.UTF8
-   2) en_GB.UTF8
-   3) fr_FR.UTF8
-   4) es_ES.UTF8
-   5) de_DE.UTF8
-   6) zh_CN.UTF8
-   7) ...
-   Enter your choice (1-20): 3
-   Choose your time zone (Europe/Paris):
-   Choose your username: nixos
-   Choose your machine hostname (curios): EVAUnit02
-   AMD GPU detected, would like to install it ? (y/n): y
-   Enabling AMD GPU...
-   Partitioning disk /dev/nvme0n1 ? All data will be ERASED (y/n): y
-   ...
-   ================================
-   ================================
-   Creating encrypted partition...
-   Enter passphrase for /dev/nvme0n1p2:
-   Verify passphrase:
-   Enter passphrase for /dev/nvme0n1p2:
-   ...
-   ================================
-   ================================
-   Copying configurations files...
-   Proceed with installation ? (y/n): y
-   ...
-   Done...
-   You can now reboot.
-   
+   curios-install
+   ```
+   ![Curios ISO install cmd](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_cmd.png?raw=true "CuriOS install command") 
+7. Answer the various dialog questions:
+   ![CuriOS installation step 1](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_1.png?raw=true "CuriOS installation Step 1")
+   ![CuriOS installation choose disk](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_3.png?raw=true "CuriOS install choose disk")
+   The full disk encryption option is **HIGHLY RECOMMENDED**.
+   ![CuriOS full disk encryption](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_4.png?raw=true "CuriOS full disk encryption")
+   ```bash
    # See --help option for more details:
    curios-install --help
    ```
-7. If everything went according to plan, reboot.
-   ```bash
-   reboot now
-   ```
-8. **Enjoy!** User temporary password is **"changeme"**.
+8. If everything went according to plan, reboot.
+   ![CuriOS install reboot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_6.png?raw=true "CuriOs installation reboot")
+9. **Enjoy!** User temporary password is **"changeme"**.
     You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
     Or use the command `passwd` in a terminal.
 
