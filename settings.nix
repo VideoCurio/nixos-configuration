@@ -7,6 +7,17 @@
 # man configuration.nix
 
 { config, lib, pkgs, ... }:
+let
+  # App autostart example: It copy the desktop file from the package $package/share/applications/$srcPrefix$name.desktop
+  # to $out/etc/xdg/autostart/$name.desktop so the app will be launched on user graphical session opening.
+  # See: https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/make-startupitem/default.nix
+  # Next step: add 'protonvpn-gui-autostart' to "environment.systemPackages" below.
+  protonvpn-gui-autostart = pkgs.makeAutostartItem {
+    name = "protonvpn-app";
+    package = pkgs.protonvpn-gui;
+    appendExtraArgs = [ "--start-minimized" ]; # append extra arguments to protonvpn-app Exec
+  };
+in
 {
   ### CuriOS options settings goes here:
   curios = {
@@ -42,6 +53,7 @@
     ### Modules below SHOULD be activated on user needs:
     desktop.apps = {
       basics.enable = lib.mkDefault true; # Brave browser, Alacritty, Bitwarden, Signal, Yubico auth, Gimp3, EasyEffects, ProtonVPN gui.
+      appImage.enable = lib.mkDefault false; # Enabling Linux AppImage
       devops = {
         enable = false; # Required by desktop.apps.devops options below. + Cloudlfared
         networks.enable = false; # Nmap, Zenmap, Wireshark
@@ -51,6 +63,7 @@
       };
       gaming.enable = false; # Steam, Heroic Launcher, gamemoderun, Input-Remapper, TeamSpeak6 client
       studio.enable = false; # OBS, Audacity, DaVinci Resolve
+      office.enable = false; # LibreOffice suite
     };
     services = {
       enable = true; # Flatpak + flathub/cosmic repos, pipewire
@@ -86,8 +99,9 @@
   };
 
   ### NixOS packages
-  environment.systemPackages = with pkgs; [
-    # Add your packages here:
+  environment.systemPackages = [
+    #protonvpn-gui-autostart # Uncomment this line to autostart protonvpn-gui on user graphical session.
+    # Add your packages pkgs.foobar here:
   ];
 
   ### Change user settings here:

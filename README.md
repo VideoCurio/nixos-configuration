@@ -3,7 +3,9 @@
 # NixOS + COSMIC = Curi*OS*
 
 This is my NixOS installer scripts and its configuration files. The desktop environment is [COSMIC](https://system76.com/cosmic/).
-![NixOS COSMIC screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot6.png?raw=true "NixOS with COSMIC DE")
+![Curios = NixOS + COSMIC Desktop](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Desktop.png?raw=true "NixOS with COSMIC DE - Curios")
+![Curios desktop tiles](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Tiles.png?raw=true "Curios desktop tiles")
+
 
 ------
 
@@ -24,13 +26,16 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Quick start
 
+> [!WARNING]
+> The installation script will **FORMAT** your disk !!! Backup your data before.
+
 1. Get the latest Curi*OS* 25.05 Minimal ISO image:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.1/curios-minimal_25.05.1_amd64-intel.iso
    ```
    Download and check iso signature:
    ```bash
-   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.0/curios-minimal_25.05.0_amd64-intel.iso.sha256
+   wget --content-disposition https://github.com/VideoCurio/nixos-configuration/releases/download/25.05.1/curios-minimal_25.05.1_amd64-intel.iso.sha256
    sha256sum --check curios-minimal_*.iso.sha256
    ```
    Must respond "Success".
@@ -38,9 +43,9 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 2. Burn it on a USB stick with [Balena Etcher](https://etcher.balena.io/#download-etcher), [caligula](https://github.com/ifd3f/caligula) or the command `dd`.
    ```bash
    # Good old dd:
-   sudo dd if=curios-minimal_25.05.0_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
+   sudo dd if=curios-minimal_25.05.1_amd64-intel.iso of=/dev/sdb bs=10MB oflag=dsync status=progress
    # or shiny caligula:
-   caligula burn -s $(cat ./curios-minimal_25.05.0_amd64-intel.iso.sha256)
+   caligula burn -s $(cat ./curios-minimal_25.05.1_amd64-intel.iso.sha256)
    ```
    Replace `/dev/sdb` with the path of the USB card (see command `sudo fdisk -l`).
 3. Boot your machine on the USB stick (F8 or F12 key on startup, see your motherboard manufacturer's instructions). An internet connection is *REQUIRED* to perform the installation !
@@ -52,54 +57,23 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
    ```bash
    loadkeys fr
    ```
-6. Run the installer with the **recommended** options: `curios-install --crypt --root-size 80G /dev/nvme0n1`:
-> [!WARNING]
-> This script will **FORMAT** your disk !!! Backup your data before.
+6. Launch the installer script:
    ```bash
-   # To find your disk /dev path:
-   fdisk -l
-   # For a full encrypted disk (LUKS + LVM) and a root partition of 120Go, on your first SSD:
-   curios-install --crypt --root-size 120G /dev/nvme0n1
-   # Answer questions asked by the script to complete the installation:
-   Choose your language in the list below:
-   1) en_US.UTF8
-   2) en_GB.UTF8
-   3) fr_FR.UTF8
-   4) es_ES.UTF8
-   5) de_DE.UTF8
-   6) zh_CN.UTF8
-   7) ...
-   Enter your choice (1-20): 3
-   Choose your time zone (Europe/Paris):
-   Choose your username: nixos
-   Choose your machine hostname (curios): EVAUnit02
-   AMD GPU detected, would like to install it ? (y/n): y
-   Enabling AMD GPU...
-   Partitioning disk /dev/nvme0n1 ? All data will be ERASED (y/n): y
-   ...
-   ================================
-   ================================
-   Creating encrypted partition...
-   Enter passphrase for /dev/nvme0n1p2:
-   Verify passphrase:
-   Enter passphrase for /dev/nvme0n1p2:
-   ...
-   ================================
-   ================================
-   Copying configurations files...
-   Proceed with installation ? (y/n): y
-   ...
-   Done...
-   You can now reboot.
-   
+   curios-install
+   ```
+   ![Curios ISO install cmd](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_cmd.png?raw=true "CuriOS install command") 
+7. Answer the various dialog questions:
+   ![CuriOS installation step 1](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_1.png?raw=true "CuriOS installation Step 1")
+   ![CuriOS installation choose disk](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_3.png?raw=true "CuriOS install choose disk")
+   The full disk encryption option is **HIGHLY RECOMMENDED**.
+   ![CuriOS full disk encryption](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_4.png?raw=true "CuriOS full disk encryption")
+   ```bash
    # See --help option for more details:
    curios-install --help
    ```
-7. If everything went according to plan, reboot.
-   ```bash
-   reboot now
-   ```
-8. **Enjoy!** User temporary password is **"changeme"**.
+8. If everything went according to plan, reboot.
+   ![CuriOS install reboot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Install_dialog_6.png?raw=true "CuriOs installation reboot")
+9. **Enjoy!** User temporary password is **"changeme"**.
     You can now change it, within COSMIC desktop: click on top right power button, then Parameters > System & Accounts > Users > "Your Account Name" > Change password.
     Or use the command `passwd` in a terminal.
 
@@ -107,7 +81,7 @@ This is my NixOS installer scripts and its configuration files. The desktop envi
 
 ## Features
 
-* Hardware configuration files for AMD and Intel. GPU configuration files for AMD and Nvidia hardware.
+* GPU configuration files for AMD and Nvidia hardware. GPU will be detected during installation.
 * File system configuration for full encrypted disk (LUKS+LVM).
 * COSMIC, a Wayland desktop environment / windows manager by [System76](https://system76.com/cosmic/).
 * Pop_launcher, launch or switch to every application just with the Super key. Forget about your mouse, use Super key combinations for everything.
@@ -138,6 +112,7 @@ Useful COSMIC shortcuts:
 ### Dot files
 
 [curios-dotfiles](https://github.com/VideoCurio/nixos-dotfiles) come pre-installed with my COSMIC theme (WIP) and for a nice Alacritty and ZSH integration.
+![Curios dotfiles](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Terminal.png?raw=true "Curios dotfiles")
 
 -----
 
@@ -158,7 +133,7 @@ You want a package not in one of the already pre-configured [modules](https://gi
 
 ### System upgrade
 When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop:
-![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.0/img/Updater.png?raw=true "CuriOS updater")
+![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Updater.png?raw=true "CuriOS updater")
 
 To start the system upgrade, launch a terminal (Super + T) and type:
 ```bash
@@ -167,7 +142,7 @@ sudo curios-update --upgrade
 
 ### Flatpak / desktop apps installation
 You can also install Linux applications as flatpak. [Flathub](https://flathub.org/) and COSMIC repositories come pre-installed by default. You can also use the "COSMIC store" app (it is sourced with flathub and COSMIC repos) as seen below:
-![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/master/img/Screenshot8.png?raw=true "COSMIC Store")
+![COSMIC Store screenshot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Store.png?raw=true "COSMIC Store")
 
 ## NixOS management
 
@@ -208,7 +183,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## Version
 
-Current version is [25.05.0](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.0) based on a Nixos 25.05 build.
+Current version is [25.05.1](https://github.com/VideoCurio/nixos-configuration/tree/release/25.05.1) based on a Nixos 25.05 build.
 
 -----
 

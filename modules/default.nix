@@ -11,6 +11,7 @@
     ./desktop-apps/basics.nix
     ./desktop-apps/devops.nix
     ./desktop-apps/gaming.nix
+    ./desktop-apps/office.nix
     ./desktop-apps/studio.nix
     ./fonts.nix
     ./hardened/default.nix

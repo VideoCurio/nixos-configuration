@@ -1,5 +1,6 @@
 # For Raspberry PI 4 platform
 # All other platforms and file-system configurations should be disabled.
+# Download NixOS ISO file from: https://hydra.nixos.org/job/nixos/release-25.05/nixos.sd_image.aarch64-linux
 
 { config, pkgs, lib, ... }:
 

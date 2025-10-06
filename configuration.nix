@@ -32,6 +32,7 @@
 
   # Select internationalisation properties. See 'locale' and 'locale -a'
   i18n = {
+    defaultCharset = "UTF-8";
     defaultLocale = config.curios.system.i18n.locale;
     extraLocales = "all"; # Support all glibc locales
     extraLocaleSettings = {
@@ -59,6 +60,7 @@
 
   console = {
     earlySetup = true; # initrd setup
+    font = "LatArCyrHeb-16";
     useXkbConfig = false; # use xkb.options in tty.
     keyMap = config.curios.system.keyboard;
   };
@@ -70,7 +72,7 @@
     wget
     curl
     fastfetch
-    killall
+    busybox
     git
     gnupg
     pinentry-curses
@@ -99,10 +101,6 @@
     pinentryPackage = pkgs.pinentry-curses;
   };
 
-  # Enabling Linux AppImage
-  #programs.appimage.enable = true;
-  #programs.appimage.binfmt = true;
-
   # Allow unfree packages, could be overridden by some modules.
   nixpkgs.config.allowUnfree =
     if config.curios.hardware.nvidiaGpu.enable then
@@ -119,8 +117,8 @@
     autoUpgrade = {
       enable = true;
       dates = "03:40";
-      randomizedDelaySec = "10min";
-      allowReboot = true; # Reboot on new kernel, initrd or kernel module.
+      randomizedDelaySec = "3min";
+      allowReboot = false; # Reboot on new kernel, initrd or kernel module.
       channel = "https://channels.nixos.org/nixos-25.05"; # The URI of the NixOS channel to use for automatic upgrades.
     };
     # Copy the NixOS configuration file and link it from the resulting system
@@ -129,7 +127,7 @@
     copySystemConfiguration = true;
     # CuriOS variant version
     nixos.variantName = "CuriOS";
-    nixos.variant_id = "25.05.0";
+    nixos.variant_id = "25.05.1";
   };
 
   # Collect garbage
@@ -143,6 +141,8 @@
       auto-optimise-store = true;
       # Allowing Flakes
       experimental-features = [ "nix-command" "flakes" ];
+      # List of users that have additional rights when connecting to the Nix daemon.
+      trusted-users = [ "@wheel" ];
     };
   };
 }

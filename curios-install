@@ -1,227 +1,67 @@
 #!/usr/bin/env bash
 
-# CuriOS install script as NixOS package.
+# Dialog driven CuriOS install script as NixOS package.
 # Meant to be run during an NixOS ISO installation.
 # !IMPORTANT! Run this script as sudo
 # It will create 3 partitions for '/boot', '/' and a 8Go swap
 # OR with --crypt option, it will create a 512Mo boot and a LUKS partition.
 # The encrypted LUKS partition will contain LVM partitions for '/' (100Go), '/home' and a 8Go swap.
 #
-# Usage:
-#       curios-install [options] <disk_partition>
-#
-# Examples:
-# curios-install /dev/nvme0n1               - Standard install on the first NVMe SSD.
-# curios-install --crypt /dev/nvme0n1       - Full encrypted disk install on the first NVMe SSD.
-# curios-install /dev/vda                   - Standard install on a QEMU disk.
+# Dependencies: dialog, parted, git.
+# Test it with:
+# nix-shell -p dialog parted git
 
-# TODO: --assumeyes option
+# TODO: check internet connection
 
-set -eu
+#------------- Colors -------------#
+readonly RED="\033[31;1m"          # Red and bold
+readonly GREEN="\033[32;1m"        # Green and bold
+readonly BLUE="\033[34;1m"         # Blue and bold
+readonly GREY="\033[37;1m"         # Grey and bold
+readonly YELLOW="\033[33;1;3m"     # Yellow, bold and italic
+#readonly YELLOWBLK="\033[33;1;5m"  # Yellow, bold and slow blink
+#readonly UNDL="\033[4m"            # Underlined
+#readonly BOLD="\033[1m"            # Bold
+readonly NC="\033[0m"              # No Color
 
-# Print help function
-usage ()
-{
-  echo -e "
-Usage: curios-install [options] <disk_partition>
-  Where,
-    disk_partition: Valid /dev path of a disk to install NixOS on.
-    The default root partition size is set to 80G for full disk encryption option, use --root-size to change this.";
-
-  cat << EOF
-
-  Options:
-     -h, --help         Print this message.
-     --crypt            Full disk encryption with LVM+LUKS with separated root and /home partitions.
-     --root-size SIZE   Set root partition size (e.g., 100G or 20%) - ONLY with --crypt option.
-     --rpi4             Raspberry PI 4 installation (exclude --crypt option).
-     -v, --verbose      Print more information.
-
-  Examples:
-    Full encrypted disk install on the first NVMe SSD (with /home partition):
-      curios-install --crypt --root-size 120G /dev/nvme0n1
-    Minimal disk install on the second HDD:
-      curios-install /dev/sdb
-    Minimal disk install on a QEMU/KVM virtual disk:
-      curios-install /dev/vda
-    Raspberry Pi 4 install:
-      nix-shell -p git raspberrypi-eeprom
-      curios-install --rpi4 /dev/mmcblk1
-EOF
-  exit;
-}
-
-do_dotfiles_install=1;
-encrypt_disk=0;
-root_size="25G";
-rpi4_install=0;
-verbose=0;
-selected_locale="";
-selected_locale_console="";
-selected_timezone="";
-gpu_detected="";
-install_gpu=0;
-script_path="$(dirname "$0")"
-
-# Function to validate root size format
-validate_root_size() {
-  local pattern="^[0-9]+([GMm]|%)$"
-  if ! [[ "$1" =~ $pattern ]]; then
-    printf "\e[31mInvalid root size format. Use 'SIZE[G|M|m]' or 'SIZE%%' (e.g., 100G, 15%% or 80m).\e[0m \n"
-    exit 1
-  fi
-}
-
-# Scripts arguments parse options
-ARGS=$(getopt --longoptions="verbose,help,crypt,rpi4,root-size:" --name "$0" --options ":hv" -- "$@")
-if [ $# -lt 1 ]; then
-  usage
-fi;
-
-DISK_PART="${!#}"
-
-eval set -- "$ARGS"
-
-while true; do
-  case "$1" in
-    -v | --verbose)
-      verbose=1
-      shift
-      ;;
-    -h | --help)
-      usage
-      ;;
-    --crypt)
-      encrypt_disk=1
-      shift
-      ;;
-    --rpi4)
-      rpi4_install=1
-      shift
-      ;;
-    --root-size)
-      root_size="$2"
-      validate_root_size "$root_size"
-      shift 2
-      ;;
-    --)
-      shift
-      break
-      ;;
-    *)
-      break
-      ;;
-  esac
-done
-
-if [ $rpi4_install -eq 1 ]; then
-  # disk on RPI4 could not be modified
-  encrypt_disk=0
-fi
-
-# Check disk path
-if [ ! -e "$DISK_PART" ]; then
-  printf "\e[31mDisk path is invalid! \e[0m \n"
-  exit 2
-fi
-
-if [ $verbose -eq 1 ]; then
-  printf "Script current path: %s\n" "$script_path"
-fi
-
-# Check curios-sources files
-curios_install_path=$(dirname "$(realpath "$(which curios-install)")")
-curios_sources_path=$(realpath "$curios_install_path"/../share/curios)
-#curios_sources_path=$(nix-store --query --outputs "$(which curios-install)")
-#curios_sources_path=$(realpath "$curios_sources_path"/share/curios)
-#curios_sources_path=$(realpath "$script_path"/../share/curios)
-if [ $verbose -eq 1 ]; then
-  printf "Package store path: %s\n" "$curios_sources_path"
-fi
-if [ ! -f "$curios_sources_path"/configuration.nix ]; then
-  printf "\e[31mconfiguration.nix file not found! \e[0m \n"
-  exit 1
-fi
-
-if [ ! -f "$curios_sources_path"/settings.nix ]; then
-  printf "\e[31m settings.nix file not found! \e[0m \n"
-  exit 1
-fi
-
-if [ ! -f "$curios_sources_path"/user-me.nix ]; then
-  printf "\e[31muser-me.nix file not found! \e[0m \n"
-  exit 1
-fi
-
-if [ ! -d "$curios_sources_path"/modules/ ]; then
-  printf "\e[31m modules directory not found! \e[0m \n"
-  exit 1
-fi
-
-if [ ! -d "$curios_sources_path"/pkgs/ ]; then
-  printf "\e[31m pkgs directory not found! \e[0m \n"
-  exit 1
-fi
-
-# Check dependencies
-available() { command -v "$1" >/dev/null; }
-
-if ! available git; then
-  printf "\e[31mgit command not found! \e[0m \n"
-  exit 2
-fi
-
-########### Choose your language:
-locales=(
-  "en_US.UTF-8"
-  "en_GB.UTF-8"
-  "fr_FR.UTF-8"
-  "es_ES.UTF-8"
-  "de_DE.UTF-8"
-  "zh_CN.UTF-8"
-  "ja_JP.UTF-8"
-  "pt_PT.UTF-8"
-  "ru_RU.UTF-8"
-  "it_IT.UTF-8"
-  "ko_KR.UTF-8"
-  "ar_SA.UTF-8"
-  "nl_NL.UTF-8"
-  "pl_PL.UTF-8"
-  "sv_SE.UTF-8"
-  "tr_TR.UTF-8"
-  "cs_CZ.UTF-8"
-  "da_DK.UTF-8"
-  "hu_HU.UTF-8"
-  "no_NO.UTF-8"
-  "he_IL.UTF-8"
-  "uk_UA.UTF-8"
-)
-locales_console=(
-  "us"
-  "gb"
-  "fr"
-  "es"
-  "de"
-  "zh"
-  "ja"
-  "pt"
-  "ru"
-  "it"
-  "ko"
-  "ar"
-  "nl"
-  "pl"
-  "sv"
-  "tr"
-  "cs"
-  "da"
-  "hu"
-  "no"
-  "he"
-  "uk"
-)
-locales_timezone=(
-  "America/New_York"
+#------------- Variables init
+readonly SCRIPT_VERSION="0.4";
+CURIOS_INSTALL_PATH=".";
+CURIOS_SRC_PATH=".";
+SCRIPT_PATH="$(dirname "$0")"
+LANG_CHOICE=0;
+PC_HOSTNAME="CuriOS";
+SELECTED_DISK="";
+SELECTED_LOCALE="en_US.UTF-8";
+SELECTED_LOCALE_CONSOLE="us";
+SELECTED_TZ="";
+USERNAME="nixos";
+FULLNAME="";
+ENCRYPT_DISK=0;
+DISK_LUKS_KEY="";
+DISK_MIN_SIZE=40;
+DISK_ROOT_MIN_SIZE=25;
+SELECTED_ROOT_SIZE=80;
+DISK_SIZE_UNIT="G";
+GPU_VENDOR_DETECTED="";
+GPU_INSTALL=0;
+CONFIRM_INSTALL=0;
+NIXOS_CONFIG_DIR="/mnt/etc/nixos";
+DO_DOTFILES_INSTALL=1;
+VERBOSE=0;
+readonly DIALOG_OK=0
+readonly DIALOG_CANCEL=1
+#readonly DIALOG_HELP=2
+#readonly DIALOG_EXTRA=3
+#readonly DIALOG_ITEM_HELP=4
+readonly DIALOG_ESC=255
+readonly DIALOG_HEIGHT=0
+readonly DIALOG_WIDTH=0
+DIALOG_HELP_TITLE="<↕> Move cursor <Space> Select <Enter> Button activation 2*<Esc> Abort"
+# Pre configured timezone based on user language - adjust to choose_lang() list order.
+LOCALES_TZ=(
+  "Etc/GMT+1"
+  "US/Eastern"
   "Europe/London"
   "Europe/Paris"
   "Europe/Madrid"
@@ -243,278 +83,904 @@ locales_timezone=(
   "Europe/Oslo"
   "Asia/Jerusalem"
   "Europe/Kyiv"
+  "Asia/Kolkata"
+  "Europe/Athens"
 )
 
-# Print locales
-echo "Choose your language in the list below:"
-for i in "${!locales[@]}"; do
-  echo "$((i+1))) ${locales[i]}"
+#------------- Print help function
+usage () {
+  echo -e "CuriOS installer version ${SCRIPT_VERSION}
+* Dialog interface for CuriOS install script *
+
+${GREY}USAGE:${NC}
+  curios-install [options]
+
+${GREY}OPTIONS:${NC}
+  ${GREY}-h, --help${NC}         Print this message.
+  ${GREY}-v, --verbose${NC}      Print more information.
+  ${GREY}--version${NC}          Print version number and exit."
+  exit 0
+}
+
+#------------- Scripts arguments parse options
+ARGS=$(getopt --longoptions="verbose,version,help" --options ":hv" --name "$0" -- "$@")
+eval set -- "$ARGS"
+
+while true; do
+  case "$1" in
+    -v | --verbose)
+      VERBOSE=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      ;;
+    --version)
+      echo "$SCRIPT_VERSION"
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
 done
 
-read -r -p "Enter your choice (1-22): " lang_choice
-if [ "$lang_choice" -ge 1 ] && [ "$lang_choice" -le ${#locales[@]} ]; then
-  selected_locale="${locales[$((lang_choice-1))]}"
-  selected_locale_console="${locales_console[$((lang_choice-1))]}"
-  selected_timezone="${locales_timezone[$((lang_choice-1))]}"
-  # TODO: 'loadkeys XX' to the currently selected layout ?
-else
-  echo "Invalid choice.Choose a number between 1 and ${#locales[@]}."
-  exit 1
-fi
-# locale -a | grep "$selected_locale" ????
-# echo "LANG=fr_FR.UTF-8" > ~/.config/locale.conf
-
-########### TODO: keyboard layout
-
-########### Choose a timezone:
-read -r -p "Enter your time zone (${selected_timezone}): " pc_timezone
-# hostname check
-if [ -z "$pc_timezone" ]; then
- pc_timezone="${selected_timezone}"
-fi
-if ! [[ $pc_timezone =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
-  printf "\e[31m Invalid time zone, it could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'.\e[0m \n"
-  exit 1
+if [ $VERBOSE -eq 1 ]; then
+  echo -e "Script current path: ${SCRIPT_PATH}"
 fi
 
-########### Choose a username:
-read -r -p "Enter your username: " username
-# username check
-if [ -z "$username" ]; then
-  printf "\e[31m username cannot be empty.\e[0m \n"
+#------------- Check curios-sources files
+CURIOS_INSTALL_PATH=$(dirname "$(realpath "$(which curios-install)")")
+CURIOS_SRC_PATH=$(realpath "$CURIOS_INSTALL_PATH"/../share/curios)
+if [ $VERBOSE -eq 1 ]; then
+  echo -e "Package store path: ${CURIOS_SRC_PATH}"
+fi
+if [ ! -f "$CURIOS_SRC_PATH"/configuration.nix ]; then
+  echo -e "${RED}configuration.nix file not found!${NC}"
   exit 1
 fi
-if ! [[ $username =~ ^[[:alnum:]]+$ ]]; then
-  printf "\e[31m Invalid username, it could only contain alphanumerical characters.\e[0m \n"
+if [ ! -f "$CURIOS_SRC_PATH"/settings.nix ]; then
+  echo -e "${RED}settings.nix file not found!${NC}"
+  exit 1
+fi
+if [ ! -f "$CURIOS_SRC_PATH"/user-me.nix ]; then
+  echo -e "${RED}user-me.nix file not found!${NC}"
+  exit 1
+fi
+if [ ! -d "$CURIOS_SRC_PATH"/modules/ ]; then
+  echo -e "${RED}modules directory not found!${NC}"
+  exit 1
+fi
+if [ ! -d "$CURIOS_SRC_PATH"/pkgs/ ]; then
+  echo -e "${RED}pkgs directory not found!${NC}"
   exit 1
 fi
 
-########### Choose a full name:
-read -r -p "Enter your full name: " fullname
-# fullname check
-if [ -z "$fullname" ]; then
-  fullname="Dwight K. Schrute"
-  printf "You are now known as\e[32m %s\e[0m \n" "$fullname"
-fi
-if ! [[ $fullname =~ ^[[:alnum:][:space:].]+$ ]]; then
-  printf "\e[31m Invalid full name, it could only contain alphanumerical, '.' or space characters.\e[0m \n"
-  exit 1
-fi
+#------------- Check dependencies
+available() { command -v "$1" >/dev/null; }
 
-########### Choose a hostname:
-read -r -p "Choose your machine hostname (CuriOS): " pc_hostname
-# hostname check
-if [ -z "$pc_hostname" ]; then
- pc_hostname="CuriOS"
+if ! available git; then
+  echo -e "${RED}git command not found!${NC}"
+  exit 2
 fi
-if ! [[ $pc_hostname =~ ^[[:alnum:].]+$ ]]; then
-  printf "\e[31m Invalid hostname, it could only contain alphanumerical or '.' characters.\e[0m \n"
-  exit 1
+if ! available parted; then
+  echo -e "${RED}parted command not found!${NC}"
+  exit 2
 fi
-
-########### GPU:
-gpu=$(lspci -nn | grep -i vga)
-nb_gpu=$(lspci | grep -ci vga)
-
-if (( nb_gpu >= 1 )); then
-  if echo "$gpu" | grep -qi "amd"; then
-    gpu_detected="amd"
-    while true; do
-      read -r -p "AMD GPU detected, would like to install it ? (y/n): " yn
-      case $yn in
-        [yY] ) install_gpu=1;
-          break;;
-        [nN] ) echo "Proceeding without installing GPU pilot...";
-          break;;
-        * ) echo "Invalid response";;
-      esac
-    done
-  fi
-  if echo "$gpu" | grep -qi "nvidia"; then
-    gpu_detected="nvidia"
-    while true; do
-      read -r -p "Nvidia GPU detected, would like to install it ? (y/n): " yn
-      case $yn in
-        [yY] ) install_gpu=1;
-          break;;
-        [nN] ) echo "Proceeding without installing GPU pilot...";
-          break;;
-        * ) echo "Invalid response";;
-      esac
-    done
-  fi
+if ! available cryptsetup; then
+  echo -e "${RED}cryptsetup command not found!${NC}"
+  exit 2
 fi
-
-# Test - debug parameters
-if [ $verbose -eq 1 ]; then
-  echo "bin path: $curios_install_path"
-  echo "--crypt: $encrypt_disk"
-  echo "--rpi4: $rpi4_install"
-  echo "--root-size: $root_size"
-  echo "<disk_partition>: $DISK_PART"
-  echo "selected_locale: $selected_locale"
-  echo "username: $username"
-  echo "full name: $fullname"
-  echo "hostname: $pc_hostname"
-  echo "timezone: $pc_timezone"
-  echo "GPU: $gpu_detected"
-  echo "GPU install: $install_gpu"
+if ! available mkfs; then
+  eho -e "${RED}mkfs command not found!${NC}"
+  exit 2
+fi
+if ! available dialog; then
+  eho -e "${RED}dialog command not found!${NC}"
+  exit 2
 fi
 
 # This script must be run as root
 if [ "$EUID" -ne 0 ]; then
-  printf "\e[31mThis script MUST be run as root: sudo curios-install \e[0m \n" >&2
+  echo -e "${RED}This script MUST be run as root:${NC} sudo curios-install" >&2
   exit 1
 fi
 
-# curios dotfiles install, see: https://github.com/VideoCurio/nixos-dotfiles
-dotfiles-inst () {
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Custom dotfiles installation..."
-  local skel_dir="/mnt/etc/skel/"
-  local home_dir="/mnt/home/*/"
-  if [ $rpi4_install -eq 1 ]; then
-    skel_dir="/etc/skel/"
-    home_dir="/home/*/"
-  fi
-  mkdir -p "$skel_dir"
-  curios-dotfiles --lang "$selected_locale_console" "$skel_dir"
-  for dir in $home_dir; do
-    if [[ -d "$dir" && "$dir" != */lost+found/ ]]; then
-      curios-dotfiles --lang "$selected_locale_console" "$dir"
-      chown -R 1000:100 "$dir" # Any way to predict OWNER at this stage ?
-    fi
-  done
+# A standard dialog message box, for printing error message
+display_error() {
+  dialog --title "\Zb\Z1!! Error\Zn" \
+    --no-collapse \
+    --clear \
+    --colors \
+    --msgbox "$1" $DIALOG_HEIGHT $DIALOG_WIDTH
 }
 
-# Format disk function
-format () {
-  printf "\e[32m Formatting disk %s... \e[0m \n" "$DISK_PART"
-  if [ $encrypt_disk -eq 1 ]; then
-    echo "Disk will be fully encrypted..."
+#------------- Choose language
+# See: https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+choose_lang() {
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  selection=$(dialog \
+    --backtitle "System Information -- $DIALOG_HELP_TITLE" \
+    --title "Locale" \
+    --cancel-label "Exit" \
+    --ok-label "Next" \
+    --clear \
+    --default-item "$SELECTED_LOCALE_CONSOLE" \
+    --menu "Choose your language:" $DIALOG_HEIGHT $DIALOG_WIDTH 8 \
+    "C" "No localization" \
+    "us" "US English" \
+    "gb" "British English" \
+    "fr" "Français" \
+    "es" "Español" \
+    "de" "Deutsch" \
+    "zh" "中文 (汉语) - Chinese (simplified)" \
+    "hi" "हिन्दी - Hindi" \
+    "ja" "日本語 - Japanese" \
+    "pt" "Português" \
+    "ru" "Русский язык - Russian" \
+    "it" "Italiano" \
+    "ko" "한국어 - Korean" \
+    "ar" "اَلْعَرَبِيَّةُ Arabic" \
+    "nl" "Nederlands" \
+    "pl" "Polski" \
+    "sv" "Svenska" \
+    "tr" "Türkçe" \
+    "cs" "Čeština" \
+    "da" "Dansk" \
+    "hu" "Magyar nyelv" \
+    "no" "Norsk" \
+    "he" "עברית Hebrew" \
+    "uk" "Українська - Ukrainian" \
+    "el" "Ελληνικά - Greek" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  case $selection in
+    C )
+      SELECTED_LOCALE="C.UTF-8"
+      SELECTED_LOCALE_CONSOLE="us"
+      LANG_CHOICE=0
+      ;;
+    us )
+      SELECTED_LOCALE="en_US.UTF-8"
+      SELECTED_LOCALE_CONSOLE="us"
+      LANG_CHOICE=1
+      ;;
+    gb )
+      SELECTED_LOCALE="en_GB.UTF-8"
+      SELECTED_LOCALE_CONSOLE="gb"
+      LANG_CHOICE=2
+      ;;
+    fr )
+      SELECTED_LOCALE="fr_FR.UTF-8"
+      SELECTED_LOCALE_CONSOLE="fr"
+      LANG_CHOICE=3
+      ;;
+    es )
+      SELECTED_LOCALE="es_ES.UTF-8"
+      SELECTED_LOCALE_CONSOLE="es"
+      LANG_CHOICE=4
+      ;;
+    de )
+      SELECTED_LOCALE="de_DE.UTF-8"
+      SELECTED_LOCALE_CONSOLE="de"
+      LANG_CHOICE=5
+      ;;
+    zh )
+      SELECTED_LOCALE="zh_CN.UTF-8"
+      SELECTED_LOCALE_CONSOLE="zh"
+      LANG_CHOICE=6
+      ;;
+    ja )
+      SELECTED_LOCALE="ja_JP.UTF-8"
+      SELECTED_LOCALE_CONSOLE="ja"
+      LANG_CHOICE=7
+      ;;
+    pt )
+      SELECTED_LOCALE="pt_PT.UTF-8"
+      SELECTED_LOCALE_CONSOLE="pt"
+      LANG_CHOICE=8
+      ;;
+    ru )
+      SELECTED_LOCALE="ru_RU.UTF-8"
+      SELECTED_LOCALE_CONSOLE="ru"
+      LANG_CHOICE=9
+      ;;
+    it )
+      SELECTED_LOCALE="it_IT.UTF-8"
+      SELECTED_LOCALE_CONSOLE="it"
+      LANG_CHOICE=10
+      ;;
+    ko )
+      SELECTED_LOCALE="ko_KR.UTF-8"
+      SELECTED_LOCALE_CONSOLE="ko"
+      LANG_CHOICE=11
+      ;;
+    ar )
+      SELECTED_LOCALE="ar_SA.UTF-8"
+      SELECTED_LOCALE_CONSOLE="ar"
+      LANG_CHOICE=12
+      ;;
+    nl )
+      SELECTED_LOCALE="nl_NL.UTF-8"
+      SELECTED_LOCALE_CONSOLE="nl"
+      LANG_CHOICE=13
+      ;;
+    pl )
+      SELECTED_LOCALE="pl_PL.UTF-8"
+      SELECTED_LOCALE_CONSOLE="pl"
+      LANG_CHOICE=14
+      ;;
+    sv )
+      SELECTED_LOCALE="sv_SE.UTF-8"
+      SELECTED_LOCALE_CONSOLE="sv"
+      LANG_CHOICE=15
+      ;;
+    tr )
+      SELECTED_LOCALE="tr_TR.UTF-8"
+      SELECTED_LOCALE_CONSOLE="tr"
+      LANG_CHOICE=16
+      ;;
+    cs )
+      SELECTED_LOCALE="cs_CZ.UTF-8"
+      SELECTED_LOCALE_CONSOLE="cs"
+      LANG_CHOICE=17
+      ;;
+    da )
+      SELECTED_LOCALE="da_DK.UTF-8"
+      SELECTED_LOCALE_CONSOLE="da"
+      LANG_CHOICE=18
+      ;;
+    hu )
+      SELECTED_LOCALE="hu_HU.UTF-8"
+      SELECTED_LOCALE_CONSOLE="hu"
+      LANG_CHOICE=19
+      ;;
+    no )
+      SELECTED_LOCALE="no_NO.UTF-8"
+      SELECTED_LOCALE_CONSOLE="no"
+      LANG_CHOICE=20
+      ;;
+    he )
+      SELECTED_LOCALE="he_IL.UTF-8"
+      SELECTED_LOCALE_CONSOLE="he"
+      LANG_CHOICE=21
+      ;;
+    uk )
+      SELECTED_LOCALE="uk_UA.UTF-8"
+      SELECTED_LOCALE_CONSOLE="uk"
+      LANG_CHOICE=22
+      ;;
+    hi )
+      SELECTED_LOCALE="hi_IN.UTF-8"
+      SELECTED_LOCALE_CONSOLE="hi"
+      LANG_CHOICE=23
+      ;;
+    el )
+      SELECTED_LOCALE="el_GR.UTF-8"
+      SELECTED_LOCALE_CONSOLE="el"
+      LANG_CHOICE=24
+      ;;
+  esac
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      loadkeys $SELECTED_LOCALE_CONSOLE
+      set_tz
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      echo "Program terminated." >&2
+      exit 1
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- Choose timezone
+# See: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+set_tz() {
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "System Information -- $DIALOG_HELP_TITLE" \
+    --title "Time Zone" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your timezone:" $DIALOG_HEIGHT $DIALOG_WIDTH "${LOCALES_TZ[$((LANG_CHOICE))]}" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      SELECTED_TZ=$result
+      if ! [[ $SELECTED_TZ =~ ^[a-zA-Z0-9/_+\-]+$ ]]; then
+        display_error "\Zb\Z1Invalid time zone!\Zn It could only contain alphanumerical, '/', '-', '+' or '_' characters like 'America/New_York' or 'Etc/GMT+2'."
+        set_tz
+      else
+        set_hostname
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      choose_lang
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- Choose machine name
+set_hostname() {
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "System Information -- $DIALOG_HELP_TITLE" \
+    --title "Network configuration" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter this machine hostname:\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$PC_HOSTNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      PC_HOSTNAME=$result
+      if ! [[ $PC_HOSTNAME =~ ^[[:alnum:].]+$ ]]; then
+        display_error "\Zb\Z1Invalid hostname!\Zn It could only contain alphanumerical or '.' characters."
+        set_hostname
+      else
+        set_username
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_tz
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- Choose username
+set_username() {
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "User Information -- $DIALOG_HELP_TITLE" \
+    --title "Create user" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your username (id):" $DIALOG_HEIGHT $DIALOG_WIDTH "$USERNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      USERNAME=$result
+      if [ -z "$USERNAME" ]; then
+        display_error "\Zb\Z1username cannot be empty.\Zn"
+        set_username
+      elif ! [[ $USERNAME =~ ^[[:alnum:]]+$ ]]; then
+        display_error "\Zb\Z1Invalid username!\Zn It could only contain alphanumerical characters."
+        set_username
+      else
+        set_fullname
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_hostname
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- Choose user full name
+set_fullname() {
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  result=$(dialog \
+    --backtitle "User Information -- $DIALOG_HELP_TITLE" \
+    --title "Create user" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --no-collapse \
+    --inputbox "Enter your full name:" $DIALOG_HEIGHT $DIALOG_WIDTH "$FULLNAME" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      FULLNAME=$result
+      if [ -z "$FULLNAME" ]; then
+        FULLNAME="Dwight K. Schrute"
+      fi
+      if ! [[ $FULLNAME =~ ^[[:alnum:][:space:].]+$ ]]; then
+        display_error "\Zb\Z1Invalid full name!\Zn it could only contain alphanumerical, '.' or space characters."
+        set_fullname
+      else
+        display_password_info
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_username
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- User temp password info
+display_password_info() {
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "User Information" \
+    --title "User Password" \
+    --ok-label "Next" \
+    --no-collapse \
+    --clear \
+    --colors \
+    --msgbox "Your temporary password is set to \Zb\Z2changeme\Zn.\nChange it later from the desktop user interface or with the 'passwd' command in a terminal." $DIALOG_HEIGHT $DIALOG_WIDTH \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      choose_disk
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+#------------- Choose install disk
+choose_disk() {
+  DIALOG_DEVICES_LIST=()
+  DISK_NB=$(lsblk -A -pdn -o NAME | wc -l)
+  i=1
+  for device in $(lsblk -A -pdn -o NAME); do
+    DISK_SIZE=$(lsblk -dn -o SIZE "$device")
+    DISK_MODEL=$(lsblk -dn -o MODEL "$device")
+    DIALOG_DEVICES_LIST+=("$device")
+    DIALOG_DEVICES_LIST+=("$DISK_SIZE - $DISK_MODEL")
+    # Select last disk by default
+    if [ "$DISK_NB" -eq $i ]; then
+      DIALOG_DEVICES_LIST+=("on")
+    else
+      DIALOG_DEVICES_LIST+=("off")
+    fi
+    ((i++))
+  done
+  # Duplicate (make a backup copy of) file descriptor 1
+  # on descriptor 3
+  exec 3>&1
+  # Generate dialog box in a subshell
+  selection=$(dialog \
+    --backtitle "Disk Partition -- $DIALOG_HELP_TITLE" \
+    --title "Installation on disk" \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --radiolist "Choose which disk to install CuriOS on:" $DIALOG_HEIGHT $DIALOG_WIDTH 0 "${DIALOG_DEVICES_LIST[@]}" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      SELECTED_DISK=$selection
+      choose_disk_encryption
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      set_fullname
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+choose_disk_encryption() {
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "Disk Partition -- $DIALOG_HELP_TITLE" \
+    --title "Full disk encryption (recommended)" \
+    --no-collapse \
+    --cancel-label "No" \
+    --ok-label "Yes" \
+    --clear \
+    --colors \
+    --insecure \
+    --passwordbox "Should your disk be fully encrypted ?\n\Zb\Z4HIGHLY\Zn recommended.\nA passphrase will be needed during PC boot sequence.\nEnter your passphrase for the full disk encryption:" $DIALOG_HEIGHT $DIALOG_WIDTH \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  if [ $exit_status -eq $DIALOG_OK ]; then
+    if [ ${#result} -le 7 ]; then
+      display_error "\Zb\Z1Passphrase is too short!\Zn It should be at least 8 characters long."
+      choose_disk_encryption
+    elif ! [[ $result =~ ^[[:alnum:]]+$ ]]; then
+      display_error "\Zb\Z1Invalid passphrase!\Zn it could only contain alphanumerical characters."
+      choose_disk_encryption
+    fi
+  fi
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      ENCRYPT_DISK=1
+      DISK_LUKS_KEY=$result
+      confirm_disk_passphrase
+      ;;
+    "$DIALOG_CANCEL")
+      ENCRYPT_DISK=0
+      clear
+      choose_disk_root_size
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+confirm_disk_passphrase() {
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "Disk Partition -- $DIALOG_HELP_TITLE" \
+    --no-collapse \
+    --cancel-label "Cancel" \
+    --ok-label "Ok" \
+    --clear \
+    --colors \
+    --insecure \
+    --passwordbox "Confirm disk passphrase:" $DIALOG_HEIGHT $DIALOG_WIDTH \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      if [ "$DISK_LUKS_KEY" != "$result" ]; then
+        display_error "Passphrase and confirmation are different!"
+        choose_disk_encryption
+      else
+        choose_disk_root_size
+      fi
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      choose_disk_encryption
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+choose_disk_root_size() {
+  DISK_SIZE=$(lsblk -dn -b -o SIZE "$SELECTED_DISK")
+  DISK_SIZE_GO=$((DISK_SIZE / 1000000000))
+  if [ "$DISK_SIZE_GO" -lt $DISK_MIN_SIZE ]; then
+    display_error "Disk size is too small.\n A minimum of $DISK_MIN_SIZE Go is recommended."
+    clear
+    exit 1
+  fi
+  if [ "$DISK_SIZE_GO" -lt 100 ]; then
+    SELECTED_ROOT_SIZE=$DISK_ROOT_MIN_SIZE
+  fi
+  DISK_ROOT_MAX_SIZE=$(awk -vp=$DISK_SIZE_GO 'BEGIN{print int(p * 0.85)}')
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "Disk Partition -- $DIALOG_HELP_TITLE" \
+    --title "Installation on disk" \
+    --no-collapse \
+    --cancel-label "Previous" \
+    --ok-label "Next" \
+    --clear \
+    --colors \
+    --rangebox "Choose the /root partition size.\n25Go at minimum - 80Go recommended.\n" $DIALOG_HEIGHT $DIALOG_WIDTH "$DISK_ROOT_MIN_SIZE" "$DISK_ROOT_MAX_SIZE" "$SELECTED_ROOT_SIZE" \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      SELECTED_ROOT_SIZE="$result"
+      hardware_detection_gpu
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      choose_disk
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+hardware_detection_gpu() {
+  NB_GPU=$(lspci | grep -ci "vga")
+  if [ $VERBOSE -eq 1 ]; then
+    echo -e "${GREY}${NB_GPU}${NC} GPU found."
+  fi
+  if [ "$NB_GPU" -ge 1 ]; then
+    GPU=$(lspci -nn | grep -i "vga")
+    if echo "$GPU" | grep -qi "amd"; then
+      GPU_VENDOR_DETECTED="AMD"
+    elif echo "$GPU" | grep -qi "nvidia"; then
+      GPU_VENDOR_DETECTED="Nvidia"
+    fi
+    if [[ -n $GPU_VENDOR_DETECTED ]]; then
+      # on descriptor 3
+      exec 3>&1
+      result=$(dialog --backtitle "Hardware detection -- $DIALOG_HELP_TITLE" \
+        --title "GPU detected" \
+        --no-collapse \
+        --clear \
+        --colors \
+        --yesno "GPU detected: $GPU_VENDOR_DETECTED \nWould you like to install the hardware pilot (recommended) ?\nIt may imply the installation of unfree packages." $DIALOG_HEIGHT $DIALOG_WIDTH \
+        2>&1 1>&3)
+      exit_status=$?
+      # Close file descriptor 3
+      exec 3>&-
+      case $exit_status in
+        "$DIALOG_OK")
+          GPU_INSTALL=1
+          clear
+          ;;
+        "$DIALOG_CANCEL")
+          GPU_INSTALL=0
+          clear
+          ;;
+        "$DIALOG_ESC")
+          clear
+          echo "Program aborted." >&2
+          exit 1
+          ;;
+      esac
+    fi
+  fi
+  confirm_install
+}
+
+confirm_install() {
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "Final step" \
+    --title "Final step: Installation" \
+    --no-collapse \
+    --clear \
+    --colors \
+    --yesno "Proceed with installation ?\nYour hard drive disk will be formatted and all data erased." $DIALOG_HEIGHT $DIALOG_WIDTH \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  case $exit_status in
+    "$DIALOG_OK")
+      CONFIRM_INSTALL=1
+      clear
+      ;;
+    "$DIALOG_CANCEL")
+      clear
+      echo "Program terminated without install." >&2
+      #exit 1
+      ;;
+    "$DIALOG_ESC")
+      clear
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+}
+
+choose_lang
+
+if [ $VERBOSE -eq 1 ]; then
+  echo -e "${YELLOW}Current options:${NC}"
+  echo "bin path: $CURIOS_INSTALL_PATH"
+  echo "locale: $SELECTED_LOCALE"
+  echo "keyboard: $SELECTED_LOCALE_CONSOLE"
+  echo "time zone: $SELECTED_TZ"
+  echo "hostname: $PC_HOSTNAME"
+  echo "username: $USERNAME"
+  echo "user full name: $FULLNAME"
+  echo "install on disk: $SELECTED_DISK"
+  echo "encrypt disk: $ENCRYPT_DISK"
+  echo "/root size: $SELECTED_ROOT_SIZE$DISK_SIZE_UNIT"
+  echo "GPU hardware vendor: $GPU_VENDOR_DETECTED"
+  echo "install GPU driver: $GPU_INSTALL"
+  echo -e "${YELLOW}End of options.${NC}"
+fi
+
+#------------- Format disk function
+format_disk () {
+  set -eu
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Formatting disk:${NC} ${SELECTED_DISK}"
+  if [ $ENCRYPT_DISK -eq 1 ]; then
+    echo -e "${YELLOW}Disk will be fully encrypted...${NC}"
   fi
 
   # Check if disk exist
-  if fdisk -l "$DISK_PART"; then
-    DISK_PART1="$DISK_PART"1
-    DISK_PART2="$DISK_PART"2
-    DISK_PART3="$DISK_PART"3
-    if [[ $DISK_PART =~ ^"/dev/nvme" ]]; then
-      DISK_PART1="$DISK_PART"p1
-      DISK_PART2="$DISK_PART"p2
-      DISK_PART3="$DISK_PART"p3
+  if fdisk -l "$SELECTED_DISK"; then
+    SELECTED_DISK1="$SELECTED_DISK"1
+    SELECTED_DISK2="$SELECTED_DISK"2
+    if [[ $SELECTED_DISK =~ ^"/dev/nvme" ]]; then
+      SELECTED_DISK1="$SELECTED_DISK"p1
+      SELECTED_DISK2="$SELECTED_DISK"p2
     fi
   else
-    printf "\e[31mDisk %s not found! \e[0m \n" "$DISK_PART"
+    echo -e "${RED}Disk ${SELECTED_DISK} not found!${NC}"
     exit 2
   fi
+  swapoff -av
+  #umount "$SELECTED_DISK"*
+  wipefs -af "$SELECTED_DISK"
 
-  #parted -l
-  if [ $verbose -eq 1 ]; then
-    lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,UUID
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}UEFI partitioning...${NC}"
+  parted --script "$SELECTED_DISK" mklabel gpt
+  parted --script "$SELECTED_DISK" mkpart ESP fat32 1MB 512MB
+  parted --script "$SELECTED_DISK" set 1 esp on
+  parted --script "$SELECTED_DISK" mkpart system 512MB 100%
+
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Filesystem formatting...${NC}"
+  mkfs.fat -F 32 -n boot "$SELECTED_DISK1"
+
+  LVM_MAPPED_DEVICE=$SELECTED_DISK2
+  if [ $ENCRYPT_DISK -eq 1 ]; then
+    echo -e "${GREEN}================================${NC}"
+    echo -e "${GREEN}================================${NC}"
+    echo -e "${BLUE}Creating encrypted partition...${NC}"
+    DEVICE_NAME="cryptroot" # /dev/mapper/ name
+    LVM_MAPPED_DEVICE="/dev/mapper/$DEVICE_NAME"
+    cryptsetup -q --label="curiosystem" --type=luks2 luksFormat "$SELECTED_DISK2" <<< "${DISK_LUKS_KEY}"
+    # open the encrypted partition and map it to /dev/mapper/$DEVICE_NAME
+    echo -n "$DISK_LUKS_KEY" | cryptsetup luksOpen "$SELECTED_DISK2" $DEVICE_NAME -
   fi
 
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "UEFI partitionning..."
-  parted "$DISK_PART" -- mklabel gpt
-  parted "$DISK_PART" -- mkpart ESP fat32 1MB 512MB
-  parted "$DISK_PART" -- set 1 esp on
-  if [ $encrypt_disk -eq 0 ]; then
-    parted "$DISK_PART" -- mkpart root ext4 512MB -8GB
-    parted "$DISK_PART" -- mkpart swap linux-swap -8GB 100%
-  else
-    parted "$DISK_PART" -- mkpart system 512MB 100%
-  fi
-
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Filesystem formatting..."
-  mkfs.fat -F 32 -n boot "$DISK_PART1"
-  if [ $encrypt_disk -eq 0 ]; then
-    mkfs.ext4 -L nixos "$DISK_PART2"
-    mkswap -L swap "$DISK_PART3"
-  fi
-
-  if [ $encrypt_disk -eq 1 ]; then
-    printf "\e[32m================================\e[0m \n"
-    printf "\e[32m================================\e[0m \n"
-    echo "Creating encrypted partition..."
-    cryptsetup luksFormat -q -y --label nixossystem  "$DISK_PART2"
-    # open the encrypted partition and map it to /dev/mapper/cryptroot
-    cryptsetup luksOpen "$DISK_PART2" cryptroot
-
-    printf "\e[32m================================\e[0m \n"
-    printf "\e[32m================================\e[0m \n"
-    echo "Creating LVM volumes..."
-    pvcreate /dev/mapper/cryptroot
-    if [ $verbose -eq 1 ]; then
-      pvdisplay
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Creating LVM volumes...${NC}"
+  pvcreate "$LVM_MAPPED_DEVICE"
+  # create a volume group inside
+  vgcreate curioslvm "$LVM_MAPPED_DEVICE"
+  # create the swap volume
+  lvcreate --size 8G curioslvm --name swap
+  # create the root volume
+  lvcreate --size "$SELECTED_ROOT_SIZE$DISK_SIZE_UNIT" curioslvm --name root
+  # create a home volume (100% of free disk)
+  lvcreate -l 100%FREE curioslvm --name home
+  if [ $VERBOSE -eq 1 ]; then
+    #pvdisplay "$LVM_MAPPED_DEVICE"
+    #vgdisplay "$LVM_MAPPED_DEVICE"
+    lvdisplay
+    if [ $ENCRYPT_DISK -eq 1 ]; then
+      cryptsetup status "$LVM_MAPPED_DEVICE"
     fi
-    # create a volume group inside
-    vgcreate lvmroot /dev/mapper/cryptroot
-    if [ $verbose -eq 1 ]; then
-      vgdisplay
-    fi
-    # create the swap volume
-    lvcreate --size 8G lvmroot --name swap
-    # create the root volume
-    lvcreate --size "$root_size" lvmroot --name root
-    # create a home volume (100% of free disk)
-    lvcreate -l 100%FREE lvmroot --name home
-    if [ $verbose -eq 1 ]; then
-      lvdisplay
-    fi
-
-    # Filesystem formatting
-    mkfs.ext4 -L nixos /dev/mapper/lvmroot-root
-    mkfs.ext4 -L home /dev/mapper/lvmroot-home
-    mkswap -L swap /dev/mapper/lvmroot-swap
   fi
+
+  # Filesystem formatting
+  mkfs.ext4 -L nixos /dev/mapper/curioslvm-root
+  mkfs.ext4 -L home /dev/mapper/curioslvm-home
+  mkswap -L swap /dev/mapper/curioslvm-swap
+
+  # DEBUG
+  # Unmount and remove volumes:
+  #umount /dev/mapper/curioslvm-home && umount /dev/mapper/curioslvm-root
+  #lvremove /dev/curioslvm/home && lvremove /dev/curioslvm/root && lvremove /dev/curioslvm/swap
+  #vgchange -an curioslvm
+  #vgremove curioslvm
+  #pvremove "$LVM_MAPPED_DEVICE"
 }
 
-# Raspberry Pi 4 install
-# Prepare an SD card
-# Download an SD card image from https://hydra.nixos.org/job/nixos/trunk-combined/nixos.sd_image.aarch64-linux
-# Unzip it with:
-# zstd -d nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img.zst
-# Burn it with Balena Etcher, Caligula or dd
-# sudo dd if=nixos-image-sd-card-25.05.805977.88983d4b665f-aarch64-linux.img of=/dev/sdb bs=10MB oflag=dsync status=progress
-# boot from the SD card, then as root:
-# nix-shell -p git raspberrypi-eeprom
-# cd /tmp
-# git clone https://github.com/VideoCurio/nixos-configuration
-# cd nixos-configuration/
-# curios-install --rpi4 /dev/mmcblk1
-
-if [ $rpi4_install -eq 0 ]; then
-  while true; do
-  read -r -p "Partitioning disk $DISK_PART ? All data will be ERASED (y/n): " yn
-  case $yn in
-    [yY] ) format;
-      break;;
-    [nN] ) echo "Proceeding without disk formatting...";
-      break;;
-    * ) echo "Invalid response";;
-  esac
+#------------- CuriOS dotfiles install, see: https://github.com/VideoCurio/nixos-dotfiles
+dotfiles_install () {
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Custom dotfiles installation...${NC}"
+  local SKEL_DIR="/mnt/etc/skel/"
+  local HOME_DIR="/mnt/home/*/"
+  mkdir -p "$SKEL_DIR"
+  curios-dotfiles --lang "$SELECTED_LOCALE_CONSOLE" "$SKEL_DIR"
+  for DIR in $HOME_DIR; do
+    if [[ -d "$DIR" && "$DIR" != */lost+found/ ]]; then
+      curios-dotfiles --lang "$SELECTED_LOCALE_CONSOLE" "$DIR"
+      chown -R 1000:100 "$DIR" # Any way to predict OWNER at this stage ?
+    fi
   done
-fi
+}
 
-if [ $verbose -eq 1 ]; then
-  lsblk --fs
-fi
-
-printf "\e[32m================================\e[0m \n"
-printf "\e[32m================================\e[0m \n"
-echo "Mounting system..."
-sleep 2s
-if [ $rpi4_install -eq 1 ]; then
-  printf "\e[32mRaspberry Pi 4 updating firmware... \e[0m \n"
-  # Updating firmware
-  mount /dev/disk/by-label/FIRMWARE /mnt
-  BOOTFS=/mnt rpi-eeprom-update -d -a
-else
+if [ $CONFIRM_INSTALL -eq 1 ]; then
+  if [ $VERBOSE -eq 1 ]; then
+    lsblk -A -pdn -o NAME
+  fi
+  format_disk
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Mounting system...${NC}"
+  sleep 2s
   if ! mountpoint -q /mnt; then
     mount /dev/disk/by-label/nixos /mnt
   fi
@@ -525,112 +991,103 @@ else
   if [[ $(swapon -s | wc -l) -eq 1 ]]; then
     swapon /dev/disk/by-label/swap
   fi
-  if [ $encrypt_disk -eq 1 ]; then
-    mkdir -p /mnt/home
-    if ! mountpoint -q /mnt/home; then
-      mount /dev/disk/by-label/home /mnt/home
-    fi
+  mkdir -p /mnt/home
+  if ! mountpoint -q /mnt/home; then
+    mount /dev/disk/by-label/home /mnt/home
   fi
-fi
 
-if [ $verbose -eq 1 ]; then
-  fdisk -l "$DISK_PART"
-  lsblk -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
-fi
+  if [ $VERBOSE -eq 1 ]; then
+    lsblk -A -lo NAME,SIZE,TYPE,MOUNTPOINTS,PARTLABEL,UUID
+  fi
 
-if [ $rpi4_install -eq 0 ]; then
-  printf "\e[32m================================\e[0m \n"
-  printf "\e[32m================================\e[0m \n"
-  echo "Create basic configuration..."
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Create basic configuration...${NC}"
   nixos-generate-config --root /mnt --no-filesystems
-fi
 
-printf "\e[32m================================\e[0m \n"
-printf "\e[32m================================\e[0m \n"
-echo "Preparing configurations files..."
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Preparing configurations files...${NC}"
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/ "$CURIOS_SRC_PATH"/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/ "$CURIOS_SRC_PATH"/modules/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/desktop-apps/ "$CURIOS_SRC_PATH"/modules/desktop-apps/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/filesystems/ "$CURIOS_SRC_PATH"/modules/filesystems/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/hardened/ "$CURIOS_SRC_PATH"/modules/hardened/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/hardware/ "$CURIOS_SRC_PATH"/modules/hardware/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/modules/platforms/ "$CURIOS_SRC_PATH"/modules/platforms/*.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/pkgs/curios-dotfiles/ "$CURIOS_SRC_PATH"/pkgs/curios-dotfiles/default.nix
+  install -D -m 644 -t "$NIXOS_CONFIG_DIR"/pkgs/curios-update/ "$CURIOS_SRC_PATH"/pkgs/curios-update/default.nix
+  install -D -m 555 -t "$NIXOS_CONFIG_DIR"/pkgs/curios-update/bin/ "$CURIOS_SRC_PATH"/pkgs/curios-update/bin/curios-update
 
-nixos_config_dir="/mnt/etc/nixos"
-if [ $rpi4_install -eq 1 ]; then
-  nixos_config_dir="/etc/nixos"
-fi
-install -D -m 644 -t "$nixos_config_dir"/ "$curios_sources_path"/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/ "$curios_sources_path"/modules/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/desktop-apps/ "$curios_sources_path"/modules/desktop-apps/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/filesystems/ "$curios_sources_path"/modules/filesystems/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/hardened/ "$curios_sources_path"/modules/hardened/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/hardware/ "$curios_sources_path"/modules/hardware/*.nix
-install -D -m 644 -t "$nixos_config_dir"/modules/platforms/ "$curios_sources_path"/modules/platforms/*.nix
-install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-dotfiles/ "$curios_sources_path"/pkgs/curios-dotfiles/default.nix
-install -D -m 644 -t "$nixos_config_dir"/pkgs/curios-update/ "$curios_sources_path"/pkgs/curios-update/default.nix
-install -D -m 555 -t "$nixos_config_dir"/pkgs/curios-update/bin/ "$curios_sources_path"/pkgs/curios-update/bin/curios-update
+  # Update user language:
+  sed "s/i18n\.locale = \".*/i18n.locale = \"${SELECTED_LOCALE}\";/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # Update console keyboard map:
+  sed "s/keyboard = \".*/keyboard = \"${SELECTED_LOCALE_CONSOLE}\";/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # Update time zone
+  sed "s/timeZone = \".*/timeZone = \"${SELECTED_TZ//\//\\\/}\";/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # Update user name
+  sed "s/users\.users\..*/users.users.${USERNAME} = {/g" -i "$NIXOS_CONFIG_DIR"/user-me.nix
+  sed "s/users\.users\..*/users.users.${USERNAME} = {/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  sed "s/description = \".*/description = \"${FULLNAME}\";/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # Update hostname
+  sed "s/hostname = \".*/hostname = \"${PC_HOSTNAME}\";/g" -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # platform settings:
+  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  # filesystems settings:
+  if [ $ENCRYPT_DISK -eq 1 ]; then
+    # Update settings.nix
+    sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+    sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  else
+    # Also update settings.nix
+    sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+    sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  fi
+  # GPU settings:
+  if [[ "$GPU_INSTALL" -eq 1 && "$GPU_VENDOR_DETECTED" == "AMD" ]]; then
+    echo "Enabling AMD GPU..."
+    sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  elif [[ "$GPU_INSTALL" -eq 1 && "$GPU_VENDOR_DETECTED" == "Nvidia" ]]; then
+    echo "Enabling Nvidia GPU..."
+    sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  else
+    echo "Disabling GPU..."
+    sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+    sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+  fi
 
-# Update user language:
-sed "s/i18n\.locale = \".*/i18n.locale = \"${selected_locale}\";/g" -i "$nixos_config_dir"/settings.nix
-# Update console keyboard map:
-sed "s/keyboard = \".*/keyboard = \"${selected_locale_console}\";/g" -i "$nixos_config_dir"/settings.nix
-# Update time zone
-sed "s/timeZone = \".*/timeZone = \"${pc_timezone//\//\\\/}\";/g" -i "$nixos_config_dir"/settings.nix
-# Update user name
-sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/user-me.nix
-sed "s/users\.users\..*/users.users.${username} = {/g" -i "$nixos_config_dir"/settings.nix
-sed "s/description = \".*/description = \"${fullname}\";/g" -i "$nixos_config_dir"/settings.nix
-# Update hostname
-sed "s/hostname = \".*/hostname = \"${pc_hostname}\";/g" -i "$nixos_config_dir"/settings.nix
-# platform settings:
-if [ $rpi4_install -eq 1 ]; then
-  # Update settings.nix
-  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-else
-  # Also update settings.nix
-  sed 's/platform\.rpi4\.enable = .*/platform.rpi4.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/platform\.amd64\.enable = .*/platform.amd64.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/bootefi\.enable = .*/bootefi.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-fi
-# filesystems settings:
-if [ $encrypt_disk -eq 1 ]; then
-  # Update settings.nix
-  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-else
-  # Also update settings.nix
-  sed 's/filesystems\.luks\.enable = .*/filesystems.luks.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/filesystems\.minimal\.enable = .*/filesystems.minimal.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-fi
-# GPU settings:
-if [[ "$install_gpu" -eq 1 && "$gpu_detected" == "amd" ]]; then
-  echo "Enabling AMD GPU..."
-  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-elif [[ "$install_gpu" -eq 1 && "$gpu_detected" == "nvidia" ]]; then
-  echo "Enabling Nvidia GPU..."
-  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault true;/g' -i "$nixos_config_dir"/settings.nix
-else
-  echo "Disabling GPU..."
-  sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-  sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault false;/g' -i "$nixos_config_dir"/settings.nix
-fi
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${GREEN}================================${NC}"
+  echo -e "${BLUE}Launching NixOS installer...${NC}";
+  nixos-install --cores 0 --no-root-passwd
+  if [ $DO_DOTFILES_INSTALL -eq 1 ]; then
+    dotfiles_install
+  fi
 
-while true; do
-read -r -p "Proceed with installation ? (y/n): " yn
-
-case $yn in
-  [yY] ) echo "Launching NixOS installer...";
-    if [ $rpi4_install -eq 0 ]; then
-      nixos-install --no-root-passwd
-    else
-      nixos-rebuild boot
-    fi
-    if [ $do_dotfiles_install -eq 1 ]; then
-      dotfiles-inst
-    fi
-    printf "\e[32m Done... \e[0m \n"
-    printf "\e[32m You can now reboot. \e[0m \n"
-    break;;
-  [nN] ) echo "Exiting...";
-    exit;;
-  * ) echo "Invalid response";;
-esac
-done
+  echo -e "${GREEN}Done...${NC}"
+  # on descriptor 3
+  exec 3>&1
+  result=$(dialog --backtitle "Success" \
+    --ok-label "Reboot" \
+    --no-collapse \
+    --clear \
+    --colors \
+    --msgbox "\Zb\Z2CuriOS was successfully installed! \Zn\nYou can now reboot." $DIALOG_HEIGHT $DIALOG_WIDTH \
+    2>&1 1>&3)
+  exit_status=$?
+  # Close file descriptor 3
+  exec 3>&-
+  # Act on exit status
+  case $exit_status in
+    "$DIALOG_OK")
+      clear
+      reboot now
+      ;;
+    "$DIALOG_ESC")
+      echo "Program aborted." >&2
+      exit 1
+      ;;
+  esac
+fi

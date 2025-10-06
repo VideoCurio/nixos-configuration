@@ -1,5 +1,5 @@
 # CuriOS-minimal ISO configuration file
-# Basic installer for the console. Based on NixOS installation-cd-minimal-new-kernel.nix
+# Basic installer for the console. Based on NixOS ${modulesPath}/installer/cd-dvd/installation-cd-minimal-new-kernel.nix
 # See: https://nixos.wiki/wiki/Creating_a_NixOS_live_CD
 # https://nixos.org/manual/nixos/stable/index.html#sec-building-image
 # https://nixos.org/manual/nixpkgs/stable/#chap-stdenv
@@ -23,12 +23,16 @@ in {
   environment.systemPackages = [
     curios-sources
     curios-dotfiles
+    pkgs.dialog
     pkgs.nano
     pkgs.parted
     pkgs.git
     pkgs.gnused
     pkgs.pciutils
   ];
+
+  i18n.extraLocales = "all";
+  console.font = "LatArCyrHeb-16";
 
   networking.hostName = "CuriOS";
 }

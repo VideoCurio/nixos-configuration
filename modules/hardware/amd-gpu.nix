@@ -28,11 +28,6 @@
         enable = lib.mkDefault true;
         #enable32Bit = lib.mkDefault true;
       };
-      amdgpu = {
-        # Enable Vulkan
-        amdvlk.enable = lib.mkDefault true;
-        #amdvlk.support32Bit.enable = lib.mkDefault true;
-      };
     };
 
     # Load driver for Xorg and Wayland
