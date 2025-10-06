@@ -158,6 +158,7 @@ upgrade_curios() {
   cp -r -f "$extracted_source_path"/pkgs/ /etc/nixos/
   /run/current-system/sw/bin/nixos-rebuild switch --upgrade
   echo -e "${GREEN}Done.${NC}"
+  #cryptsetup config /dev/nvme0n1p2 --label "curiosystem"
 }
 
 # Get current OS version
