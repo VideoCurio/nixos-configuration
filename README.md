@@ -133,7 +133,7 @@ You want a package not in one of the already pre-configured [modules](https://gi
 
 ### System upgrade
 When a new version of Curi*OS* is available, you will see a pop-up appear on your desktop:
-![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/release/25.05.1/img/Updater.png?raw=true "CuriOS updater")
+![CuriOS updater screenshot](https://github.com/VideoCurio/nixos-configuration/blob/testing/img/Updater.png?raw=true "CuriOS updater")
 
 To start the system upgrade, launch a terminal (Super + T) and type:
 ```bash
