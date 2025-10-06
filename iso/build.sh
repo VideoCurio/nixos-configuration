@@ -91,6 +91,7 @@ while true; do
 read -r -p "Push ISO file to GitHub.com ? (y/n): " yn
 case $yn in
   [yY] ) echo "gh release upload..."
+    git push --set-upstream origin "$branch"
     gh release create "$currentRelease" --target "$branch" --title "$currentRelease" --prerelease --generate-notes
     gh release upload "$currentRelease" "$isoFilePath"
     gh release upload "$currentRelease" "$isoFilePath".sha256
