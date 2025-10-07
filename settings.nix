@@ -5,6 +5,8 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 # See: https://nixos.org/manual/nixos/stable/
 # man configuration.nix
+#
+# Use `sudo nixos-rebuild switch` command in a terminal after an update in this file.
 
 { config, lib, pkgs, ... }:
 let
@@ -16,6 +18,14 @@ let
     name = "protonvpn-app";
     package = pkgs.protonvpn-gui;
     appendExtraArgs = [ "--start-minimized" ]; # append extra arguments to protonvpn-app Exec
+  };
+  # Autostart Steam client in big picture mode example.
+  # add 'steam-bigpicture-autostart' to "environment.systemPackages" below.
+  # desktop.apps.gaming.enable option set to true is required. See below.
+  steam-bigpicture-autostart = pkgs.makeAutostartItem {
+    name = "steam";
+    package = pkgs.steam;
+    appendExtraArgs = [ "-bigpicture" ];
   };
 in
 {
@@ -101,6 +111,7 @@ in
   ### NixOS packages
   environment.systemPackages = [
     #protonvpn-gui-autostart # Uncomment this line to autostart protonvpn-gui on user graphical session.
+    #steam-bigpicture-autostart # Uncomment this line to autostart Steam client in big picture mode.
     # Add your packages pkgs.foobar here:
   ];
 
