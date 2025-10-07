@@ -77,6 +77,9 @@
     ++ lib.optionals config.curios.desktop.apps.devops.rust.enable [
       # Rust
       rustup # provide cargo, rustc, rust-analyzer and more
+      cargo-about
+      cargo-generate
+      cargo-readme
       jetbrains.rust-rover
     ]
     ++ lib.optionals config.curios.desktop.apps.devops.networks.enable [
