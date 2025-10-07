@@ -1052,6 +1052,8 @@ if [ $CONFIRM_INSTALL -eq 1 ]; then
   elif [[ "$GPU_INSTALL" -eq 1 && "$GPU_VENDOR_DETECTED" == "Nvidia" ]]; then
     echo "Enabling Nvidia GPU..."
     sed 's/nvidiaGpu\.enable = .*/nvidiaGpu.enable = lib.mkDefault true;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
+    # Switch to LTS kernel by default for Nvidia GPU
+    sed 's/bootefi\.kernel\.latest = .*/bootefi.kernel.latest = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
   else
     echo "Disabling GPU..."
     sed 's/amdGpu\.enable = .*/amdGpu.enable = lib.mkDefault false;/g' -i "$NIXOS_CONFIG_DIR"/settings.nix
