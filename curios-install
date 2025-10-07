@@ -899,9 +899,9 @@ format_disk () {
   echo -e "${GREEN}================================${NC}"
   echo -e "${BLUE}UEFI partitioning...${NC}"
   parted --script "$SELECTED_DISK" mklabel gpt
-  parted --script "$SELECTED_DISK" mkpart ESP fat32 1MB 512MB
+  parted --script "$SELECTED_DISK" mkpart ESP fat32 1MB 1024MB
   parted --script "$SELECTED_DISK" set 1 esp on
-  parted --script "$SELECTED_DISK" mkpart system 512MB 100%
+  parted --script "$SELECTED_DISK" mkpart system 1024MB 100%
 
   echo -e "${GREEN}================================${NC}"
   echo -e "${GREEN}================================${NC}"
