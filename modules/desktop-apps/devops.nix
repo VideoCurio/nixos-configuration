@@ -81,6 +81,11 @@
       cargo-generate
       cargo-readme
       jetbrains.rust-rover
+      # build tools
+      autoconf
+      automake
+      gcc
+      gnumake
     ]
     ++ lib.optionals config.curios.desktop.apps.devops.networks.enable [
       # Networks
