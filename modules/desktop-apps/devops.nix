@@ -77,15 +77,13 @@
     ++ lib.optionals config.curios.desktop.apps.devops.rust.enable [
       # Rust
       rustup # provide cargo, rustc, rust-analyzer and more
-      cargo-about
-      cargo-generate
-      cargo-readme
+      cargo-c
       jetbrains.rust-rover
       # build tools
-      autoconf
-      automake
-      gcc
-      gnumake
+      clang
+      libxkbcommon
+      llvmPackages_20.bintools
+      pkg-config
     ]
     ++ lib.optionals config.curios.desktop.apps.devops.networks.enable [
       # Networks
