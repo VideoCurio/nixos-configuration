@@ -1076,7 +1076,7 @@ if [ $CONFIRM_INSTALL -eq 1 ]; then
     --no-collapse \
     --clear \
     --colors \
-    --msgbox "\Zb\Z2CuriOS was successfully installed! \Zn\nYou can now reboot." $DIALOG_HEIGHT $DIALOG_WIDTH \
+    --msgbox "\Zb\Z2CuriOS was successfully installed! \Zn\nRemember to remove USB installer!" $DIALOG_HEIGHT $DIALOG_WIDTH \
     2>&1 1>&3)
   exit_status=$?
   # Close file descriptor 3
