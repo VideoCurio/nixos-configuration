@@ -11,8 +11,6 @@
 # Test it with:
 # nix-shell -p dialog parted git
 
-# TODO: check internet connection
-
 #------------- Colors -------------#
 readonly RED="\033[31;1m"          # Red and bold
 readonly GREEN="\033[32;1m"        # Green and bold
@@ -176,12 +174,20 @@ if ! available cryptsetup; then
   exit 2
 fi
 if ! available mkfs; then
-  eho -e "${RED}mkfs command not found!${NC}"
+  echo -e "${RED}mkfs command not found!${NC}"
   exit 2
 fi
 if ! available dialog; then
-  eho -e "${RED}dialog command not found!${NC}"
+  echo -e "${RED}dialog command not found!${NC}"
   exit 2
+fi
+
+#------------- Check internet connectivity
+if nc -zw1 github.com 443; then
+  echo -e "Internet connectivity: ${GREEN}Check${NC}"
+else
+  echo -e "${RED}No internet connectivity - an internet connection is required!${NC}"
+  exit 1
 fi
 
 # This script must be run as root
