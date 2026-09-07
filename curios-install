@@ -24,6 +24,8 @@ readonly NC="\033[0m" # No Color
 
 #------------- Variables init
 readonly SCRIPT_VERSION="0.12"
+CONN_MAX_RETRIES=10
+CONN_RETRY_COUNT=0
 CURIOS_INSTALL_PATH="."
 CURIOS_SRC_PATH="."
 SCRIPT_PATH="$(dirname "$0")"
@@ -312,12 +314,17 @@ elif [[ $RPI4_INSTALL -eq 1 || $RPI5_INSTALL -eq 1 ]]; then
 fi
 
 #------------- Check internet connectivity
-if nc -zw1 github.com 443; then
-  echo -e "Internet connectivity: ${GREEN}Check${NC}"
-else
-  echo -e "${RED}No internet connectivity - an internet connection is required!${NC}"
-  exit 1
-fi
+while ! nc -z -w 2 github.com 443 2>/dev/null; do
+  CONN_RETRY_COUNT=$((CONN_RETRY_COUNT + 1))
+  if [ "$CONN_RETRY_COUNT" -ge "$CONN_MAX_RETRIES" ]; then
+    echo -e "${RED}No internet connectivity - an internet connection is required!${NC}"
+    exit 1
+  fi
+  echo "Connection failed. Retrying..."
+  sleep 2
+done
+
+echo -e "Internet connectivity: ${GREEN}Check${NC}"
 
 #------------- Settings and checks
 # This script must be run as root
