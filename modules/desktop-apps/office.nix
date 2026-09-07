@@ -9,7 +9,7 @@ in {
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "REQUIRED office applications - Obsidian, Joplin.";
+        description = "Office applications - Obsidian, Joplin.";
       };
       calibre.enable = lib.mkOption {
         type = lib.types.bool;
