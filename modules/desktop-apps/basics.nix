@@ -30,7 +30,7 @@ in {
         type = lib.types.bool;
         default = true;
         description =
-          "REQUIRED - CuriOS desktop applications: Brave, Bitwarden, VLC, Yubikey...";
+          "REQUIRED - CuriOS desktop applications: Brave, Bitwarden, Yubikey...";
       };
       appImage.enable = lib.mkOption {
         type = lib.types.bool;
@@ -293,14 +293,12 @@ in {
         # 3rd party apps
         pkgs.easyeffects
         pkgs.ffmpeg_6-full
-        pkgs.gimp3-with-plugins
         pkgs.gparted
         pkgs.imagemagick
         pkgs.libsecret
         pkgs.polkit_gnome
         pkgs.procs
         pkgs.tldr
-        pkgs.vlc
         pkgs.yubioath-flutter
       ] ++ lib.optionals config.curios.desktop.vpn.proton.enable [
         pkgs.proton-vpn

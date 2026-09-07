@@ -241,7 +241,13 @@
         }
       },
       "studio": {
-        "enable": false,
+        "audacity": {
+          "enable": false
+        },
+        "enable": true,
+        "darktable": {
+          "enable": false
+        },
         "davinci-resolve": {
           "enable": false
         },
@@ -249,6 +255,12 @@
           "enable": false
         },
         "mpv": {
+          "enable": false
+        },
+        "obs-studio": {
+          "enable": false
+        },
+        "rawtherapee": {
           "enable": false
         }
       },

@@ -138,8 +138,6 @@ import <nixpkgs/nixos/tests/make-test-python.nix> {
         machine.succeed("test -f /etc/voxtype/config.toml")
 
     with subtest("check-unconditional-basics"):
-        check_which("vlc")
-        check_which("gimp")
         check_which("tldr")
         check_which("tmux")
         check_which("procs")
