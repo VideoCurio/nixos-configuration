@@ -26,6 +26,7 @@ build: lint update-nixos-hardware
     fi
     releaseNumber=$(sed -E "s/release\/(.+)/\1/" <<<"{{branch}}")
   fi
+  mkdir -p iso/
   isoFilename="CuriOS_${releaseNumber}_{{platform}}.iso"
   isoFilePath="./iso/${isoFilename}"
   printf "\e[32m Building %s file...\e[0m\n" "${isoFilePath}"
@@ -47,8 +48,9 @@ build: lint update-nixos-hardware
   nix-build '<nixpkgs/nixos>' --show-trace --cores 0 --max-jobs auto -A config.system.build.isoImage -I nixos-config=./iso/iso-installer.nix
   # Save and rename ISO file
   cp ./result/iso/nixos-minimal-*.iso "${isoFilePath}"
-  sha256sum "${isoFilePath}" >>"${isoFilePath}".sha256
-  chmod 0444 "${isoFilePath}".sha256
+  cd ./iso/
+  sha256sum "${isoFilename}" >>"${isoFilename}".sha256
+  chmod 0444 "${isoFilename}".sha256
   printf "\e[32m Build done...\e[0m\n"
 
 # Cleaning build and test artifacts.
