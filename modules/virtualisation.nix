@@ -11,11 +11,18 @@
         default = false;
         description = "Enabling virtualisation app: QEMU/KVM - virt-manager.";
       };
-      docker.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description =
-          "Docker containers + docker-compose, docker-buildx, lazydocker.";
+      docker = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description =
+            "Docker containers + docker-compose, docker-buildx, lazydocker.";
+        };
+        rootless = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Run Docker daemon as a non-root user.";
+        };
       };
       podman.enable = lib.mkOption {
         type = lib.types.bool;
@@ -62,12 +69,25 @@
       # Docker
       # See https://wiki.nixos.org/wiki/Docker for more settings.
       docker = {
-        enable = lib.mkDefault config.curios.virtualisation.docker.enable;
+        enable = lib.mkDefault (config.curios.virtualisation.docker.enable
+          && !config.curios.virtualisation.docker.rootless);
+        daemon.settings = { log-driver = "journald"; };
         # dockerd needs apparmor_parser on its PATH to load the "docker-default"
         # profile at container start. Without it, containers run unconfined
         # despite docker inspect reporting the profile name.
         extraPackages =
           lib.optional config.security.apparmor.enable pkgs.apparmor-parser;
+        rootless = {
+          enable = lib.mkDefault config.curios.virtualisation.docker.rootless;
+          daemon.settings = {
+            data-root = ".local/docker";
+            log-driver = "journald";
+          };
+          extraPackages =
+            lib.optional config.security.apparmor.enable pkgs.apparmor-parser;
+          setSocketVariable =
+            lib.mkDefault config.curios.virtualisation.docker.rootless;
+        };
       };
       # Podman
       containers.enable =

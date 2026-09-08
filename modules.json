@@ -550,7 +550,8 @@
     },
     "virtualisation": {
       "docker": {
-        "enable": false
+        "enable": false,
+        "rootless": false
       },
       "enable": false,
       "k3s": {
