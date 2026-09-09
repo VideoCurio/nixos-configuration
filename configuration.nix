@@ -135,7 +135,7 @@ in {
     copySystemConfiguration = true;
     # CuriOS variant version
     nixos.variantName = "CuriOS";
-    nixos.variant_id = "unstable-20260905.0844";
+    nixos.variant_id = "unstable-20260909.1242";
   };
 
   nix = {
@@ -143,6 +143,8 @@ in {
       auto-optimise-store = true;
       # Allowing Flakes
       experimental-features = [ "nix-command" "flakes" ];
+      # A list of names of users that are allowed to connect to the Nix daemon
+      allowed-users = [ "root" "@wheel" ];
       # List of users that have additional rights when connecting to the Nix daemon.
       trusted-users = [ "@wheel" ];
     };
