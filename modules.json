@@ -53,6 +53,7 @@
       "browser": {
         "brave": {
           "enable": true,
+          "policy-enterprise": false,
           "remoteDebuggingAllowed": false
         },
         "chromium": {

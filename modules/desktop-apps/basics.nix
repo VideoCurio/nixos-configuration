@@ -44,6 +44,12 @@ in {
             default = true;
             description = "Brave privacy-oriented Web Browser";
           };
+          policy-enterprise = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description =
+              "Disable Brave password manager, payment autofill, browser sign-in and profile sync.";
+          };
           remoteDebuggingAllowed = lib.mkOption {
             type = lib.types.bool;
             default = false;
@@ -359,13 +365,36 @@ in {
       # Brave group policy examples
       # See: https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
       # https://chromeenterprise.google/policies/
+      # TODO: GPO to consider: DownloadRestrictions, ExtensionInstallAllowlist
+      # DefaultNotificationsSetting, BraveAIChatEnabled, BraveNewsDisabled,
+      # BravePlaylistEnabled, BraveTalkDisabled, EmailAliasesEnabled
       etc = {
         "brave/policies/managed/settings.json".text = ''
           {
             "BraveRewardsDisabled": true,
-            "BraveWalletDisabled": true
+            "BraveWalletDisabled": true,
+            "BraveWebDiscoveryEnabled": false
           }
         '';
+        "brave/policies/managed/enterprise.json" =
+          lib.mkIf config.curios.desktop.browser.brave.policy-enterprise {
+            text = ''
+              {
+                "AutofillAddressEnabled": false,
+                "AutofillCreditCardEnabled": false,
+                "BraveP3AEnabled": false,
+                "BrowserAddPersonEnabled": false,
+                "BrowserSignin": 0,
+                "ImportAutofillFormData": false,
+                "ImportSavedPasswords": false,
+                "PasswordManagerEnabled": false,
+                "PasswordManagerPasskeysEnabled": false,
+                "PasswordSharingEnabled": false,
+                "PaymentMethodQueryEnabled": false,
+                "SyncDisabled": true
+              }
+            '';
+          };
         "brave/policies/managed/inspect.json" =
           lib.mkIf config.curios.desktop.browser.brave.remoteDebuggingAllowed {
             text = ''
