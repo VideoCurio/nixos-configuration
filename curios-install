@@ -592,8 +592,8 @@ set_fullname() {
   if [ -z "$FULLNAME" ]; then
     FULLNAME="Dwight K. Schrute"
   fi
-  if ! [[ $FULLNAME =~ ^[[:alnum:][:space:].]+$ ]]; then
-    display_error "Invalid full name! it could only contain alphanumerical, '.' or space characters."
+  if ! [[ $FULLNAME =~ ^[[:alnum:][:space:].-]+$ ]]; then
+    display_error "Invalid full name! it could only contain alphanumerical, '.', '-' or space characters."
     set_fullname
   else
     set_user_passwd
