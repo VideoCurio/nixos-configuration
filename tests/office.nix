@@ -32,6 +32,13 @@ import <nixpkgs/nixos/tests/make-test-python.nix> {
         };
         erp = { odoo.enable = true; };
         finance = { };
+        ms = {
+          office365 = {
+            excel.enable = true;
+            powerpoint.enable = true;
+            word.enable = true;
+          };
+        };
         projects = {
           basecamp = {
             enable = true;
@@ -84,6 +91,11 @@ import <nixpkgs/nixos/tests/make-test-python.nix> {
 
     #with subtest("check-finance-apps"):
     #    check_which("")
+
+    with subtest("check-msoffice365-webapps"):
+        check_webapp("microsoft.cloud.excel")
+        check_webapp("microsoft.cloud.powerpoint")
+        check_webapp("microsoft.cloud.word")
 
     with subtest("check-project-management-webapps"):
         check_webapp("com.basecamp")

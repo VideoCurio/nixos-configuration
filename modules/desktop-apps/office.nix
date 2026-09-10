@@ -89,6 +89,25 @@ in {
           description = "DEPRECATED";
         };
       };
+      ms = {
+        office365 = {
+          excel.enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Microsoft 365 Excel (buy online).";
+          };
+          powerpoint.enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Microsoft 365 PowerPoint (buy online).";
+          };
+          word.enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Microsoft 365 Word (buy online).";
+          };
+        };
+      };
       projects = {
         basecamp = {
           enable = lib.mkOption {
@@ -163,6 +182,12 @@ in {
       [ (import ./webapp-hubspot.nix { inherit config pkgs lib; }) ]
       ++ lib.optionals config.curios.desktop.office.erp.odoo.enable
       [ (import ./webapp-odoo.nix { inherit config pkgs lib; }) ]
+      ++ lib.optionals config.curios.desktop.office.ms.office365.excel.enable
+      [ (import ./webapp-ms-excel.nix { inherit pkgs lib; }) ] ++ lib.optionals
+      config.curios.desktop.office.ms.office365.powerpoint.enable
+      [ (import ./webapp-ms-powerpoint.nix { inherit pkgs lib; }) ]
+      ++ lib.optionals config.curios.desktop.office.ms.office365.word.enable
+      [ (import ./webapp-ms-word.nix { inherit pkgs lib; }) ]
       ++ lib.optionals config.curios.desktop.office.projects.basecamp.enable
       [ (import ./webapp-basecamp.nix { inherit config pkgs lib; }) ]
       ++ lib.optionals config.curios.desktop.office.projects.basecamp.cli

@@ -218,6 +218,19 @@
         "libreoffice": {
           "enable": false
         },
+        "ms": {
+          "office365": {
+            "excel": {
+              "enable": false
+            },
+            "powerpoint": {
+              "enable": false
+            },
+            "word": {
+              "enable": false
+            }
+          }
+        },
         "onlyoffice": {
           "desktopeditors": {
             "enable": false
