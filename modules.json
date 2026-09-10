@@ -578,6 +578,9 @@
       "podman": {
         "enable": false
       },
+      "winboat": {
+        "enable": false
+      },
       "wine": {
         "enable": false
       }
