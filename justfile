@@ -188,8 +188,7 @@ nixos-upgrade: lint
     *) echo "Invalid input"; exit 1;;
   esac
 
-# Push source to GitHub and upload the ISO to Cloudflare R2.
-# Configure "endpoint_url" in ~/.aws/config and connect with `aws configure`
+# Push source to GitHub and upload the ISO to Cloudflare R2. Configure "endpoint_url" in ~/.aws/config and connect with `aws configure`
 publish: lint
   #!/usr/bin/env bash
   set -euxo pipefail
@@ -232,8 +231,7 @@ test-unit target:
   statix check "./tests/{{target}}.nix"
   nix-build "./tests/{{target}}.nix" --show-trace
 
-# Run the aarch64-linux (RPI4) platform compatibility test.
-# Evaluates all modules with all options enabled and reports x86_64-only packages.
+# Run the aarch64-linux (RPI4) platform compatibility test. Evaluates all modules with all options enabled and reports x86_64-only packages.
 test-aarch64:
   statix check "./tests/platform-aarch64.nix"
   nix-build "./tests/platform-aarch64.nix" --show-trace
