@@ -444,6 +444,7 @@
         "enable": false
       },
       "nvidiaGpu": {
+        "branch": "production",
         "enable": false
       },
       "various": {
