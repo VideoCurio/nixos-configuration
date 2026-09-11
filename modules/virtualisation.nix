@@ -58,8 +58,7 @@
       winboat.enable = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description =
-          "Run Windows apps on Linux with seamless integration - Podman REQUIRED.";
+        description = "Run Windows apps on Linux with seamless integration.";
       };
       wine.enable = lib.mkOption {
         type = lib.types.bool;
