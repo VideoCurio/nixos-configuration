@@ -179,6 +179,11 @@ in {
           default = false;
           description = "TeamSpeak6 desktop app.";
         };
+        telegram.enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Telegram messenger desktop app.";
+        };
         whatsapp.enable = lib.mkOption {
           type = lib.types.bool;
           default = true;
@@ -347,6 +352,8 @@ in {
         [ pkgs.signal-desktop ] ++ lib.optionals
         (config.curios.desktop.chat.teamspeak.enable
           && config.curios.platform.amd64.enable) [ pkgs.teamspeak6-client ]
+        ++ lib.optionals config.curios.desktop.chat.telegram.enable
+        [ pkgs.telegram-desktop ]
         ++ lib.optionals config.curios.desktop.chat.whatsapp.enable
         [ (import ./webapp-whatsapp.nix) ]
         ++ lib.optionals config.curios.desktop.music.strawberry.enable

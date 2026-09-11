@@ -75,6 +75,7 @@ let
             discord.enable = true;
             signal.enable = true;
             teamspeak.enable = true;
+            telegram.enable = true;
             whatsapp.enable = true;
           };
           music = {

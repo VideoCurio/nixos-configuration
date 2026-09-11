@@ -57,6 +57,7 @@ import <nixpkgs/nixos/tests/make-test-python.nix> {
           discord.enable = true;
           signal.enable = true;
           teamspeak.enable = true;
+          telegram.enable = true;
           whatsapp.enable = true;
         };
 
@@ -123,6 +124,7 @@ import <nixpkgs/nixos/tests/make-test-python.nix> {
         check_which("Discord")
         check_which("signal-desktop")
         check_which("TeamSpeak")
+        check_which("Telegram")
         check_webapp("com.whatsapp.web")
 
     with subtest("check-music-players"):

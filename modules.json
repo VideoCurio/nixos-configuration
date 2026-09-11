@@ -79,6 +79,9 @@
         "teamspeak": {
           "enable": false
         },
+        "telegram": {
+          "enable": false
+        },
         "whatsapp": {
           "enable": true
         }
