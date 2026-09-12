@@ -56,8 +56,7 @@
     programs.obs-studio = {
       enable = lib.mkDefault config.curios.desktop.studio.obs-studio.enable;
     };
-    environment.systemPackages =
-      [ pkgs.gimp3-with-plugins pkgs.vlc pkgs.darktable ]
+    environment.systemPackages = [ pkgs.gimp3-with-plugins pkgs.vlc ]
       ++ lib.optionals config.curios.desktop.studio.audacity.enable
       [ pkgs.audacity ]
       ++ lib.optionals config.curios.desktop.studio.darktable.enable
